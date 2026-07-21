@@ -1,0 +1,85 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+@import "tailwindcss";
+
+:root {
+  --color-primary: #7A0C1E;
+  --color-gold: #A87B39;
+  --color-brown: #4A2E1B;
+  --color-olive: #7A0C1E;
+  --color-olive-hover: #5F0917;
+  --color-secondary: #F2E6DA;
+  --color-accent: #A87B39;
+  --color-bg: #FAF5EF;
+  --color-text: #2B1B17;
+  --color-muted: #705B54;
+  --color-border: #E8DACD;
+  --color-success: #3A7D44;
+  --color-error: #D92D20;
+
+  --font-serif: 'Cormorant Garamond', Georgia, serif;
+  --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+.font-serif-luxury {
+  font-family: var(--font-serif);
+}
+
+.font-sans-clean {
+  font-family: var(--font-sans);
+}
+
+/* Custom Utilities based on Fleur Notes Logo */
+.bg-florea-bg {
+  background-color: #FAF5EF;
+}
+
+.bg-florea-olive {
+  background-color: #7A0C1E;
+}
+
+.bg-florea-olive:hover {
+  background-color: #5F0917;
+}
+
+.text-florea-olive {
+  color: #7A0C1E;
+}
+
+.bg-florea-primary {
+  background-color: #7A0C1E;
+}
+
+.text-florea-primary {
+  color: #7A0C1E;
+}
+
+.bg-florea-cream {
+  background-color: #F2E6DA;
+}
+
+.border-florea {
+  border-color: #E8DACD;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #F2E6DA;
+}
+::-webkit-scrollbar-thumb {
+  background: #A87B39;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #7A0C1E;
+}

@@ -1,0 +1,148 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-brand-primary: #FF9D9D;
+  --color-brand-secondary: #FFC5AA;
+  --color-brand-hover: #EEF8CD;
+  --color-brand-mint: #BBF1D2;
+
+  --color-app-bg: #EEF8CD;
+  --color-app-card: #FFFFFF;
+  --color-app-border: #EFECE8;
+  --color-app-text: #2D252E;
+  --color-app-text-muted: #7A6F7B;
+}
+
+/* Base Theme Variables (Light Theme) */
+:root {
+  --coral: #FF9D9D;
+  --peach: #FFC5AA;
+  --lime: #EEF8CD;
+  --mint: #BBF1D2;
+
+  --background: #EEF8CD;
+  --card: #FFFFFF;
+  --border: #EFECE8;
+  --text: #2D252E;
+  --text-muted: #7A6F7B;
+
+  --primary: #FF9D9D;
+  --secondary: #FFC5AA;
+  --hover-bg: #FFC5AA;
+  --sidebar-bg: #FF9D9D;
+  --sidebar-text: #2D252E;
+  --sidebar-text-muted: #61434B;
+}
+
+/* Dark Theme Palette Override */
+.dark,
+.dark-theme {
+  --background: #140E13;
+  --card: #1E1622;
+  --border: #2E2333;
+  --text: #F8F5F9;
+  --text-muted: #A396A6;
+
+  --primary: #FF9D9D;
+  --secondary: #FFC5AA;
+  --hover-bg: #3D3524;
+  --sidebar-bg: #1E1622;
+  --sidebar-text: #FFFFFF;
+  --sidebar-text-muted: #A396A6;
+}
+
+/* Global Styles */
+body {
+  background-color: var(--background);
+  color: var(--text);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  min-height: 100vh;
+  margin: 0;
+  overflow-x: hidden;
+}
+
+/* Hide scrollbar utility while maintaining scrollability */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Standard Scrollbar Styling for main pages */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+
+::-webkit-scrollbar-thumb {
+  background: #FFC5AA;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #FF9D9D;
+}
+
+/* Card Styling */
+.jobie-card {
+  background-color: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 1.25rem;
+  box-shadow: 0 4px 20px -2px rgba(44, 26, 46, 0.04), 0 2px 6px -1px rgba(0, 0, 0, 0.02);
+  padding: 1.5rem;
+  transition: all 0.25s ease;
+}
+
+.jobie-card:hover {
+  box-shadow: 0 10px 25px -5px rgba(255, 157, 157, 0.2), 0 8px 10px -6px rgba(0, 0, 0, 0.03);
+}
+
+/* 4-Color Stat Header Cards */
+.stat-card-coral {
+  background: linear-gradient(135deg, #FF9D9D 0%, #F58383 100%);
+  color: #2D252E;
+}
+
+.stat-card-peach {
+  background: linear-gradient(135deg, #FFC5AA 0%, #F8B091 100%);
+  color: #2D252E;
+}
+
+.stat-card-lime {
+  background: linear-gradient(135deg, #EEF8CD 0%, #DEEEA9 100%);
+  color: #2D252E;
+}
+
+.stat-card-mint {
+  background: linear-gradient(135deg, #BBF1D2 0%, #9DE3B9 100%);
+  color: #2D252E;
+}
+
+/* Primary Button */
+.btn-purple,
+.btn-primary {
+  background-color: #FF9D9D;
+  color: #2D252E;
+  font-weight: 800;
+  border-radius: 0.75rem;
+  padding: 0.625rem 1.25rem;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(255, 157, 157, 0.35);
+}
+
+.btn-purple:hover,
+.btn-primary:hover {
+  background-color: #FFC5AA;
+  color: #2D252E;
+  transform: translateY(-1px);
+}

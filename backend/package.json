@@ -1,0 +1,31 @@
+{
+  "name": "backend",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "nodemon ./fleur.js",
+    "db:sync": "node sync-db.js",
+    "db:sync:force": "node sync-db.js --force"
+  },
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "cookie-parser": "~1.4.4",
+    "cors": "^2.8.6",
+    "debug": "~2.6.9",
+    "dotenv": "^17.4.2",
+    "express": "~4.16.1",
+    "http-errors": "~1.6.3",
+    "init": "^0.1.2",
+    "jade": "~1.11.0",
+    "jsonwebtoken": "^9.0.3",
+    "morgan": "~1.9.1",
+    "multer": "^2.2.0",
+    "mysql2": "^3.22.6",
+    "node": "^26.4.0",
+    "nodemailer": "^9.0.3",
+    "nodemon": "^3.1.14",
+    "sequelize": "^6.37.8",
+    "sequelize-auto": "^0.8.8",
+    "sequelize-cli": "^6.6.5"
+  }
+}

@@ -1,0 +1,75 @@
+# Common .gitignore for Fleur Notes monorepo (admin, backend, website)
+
+# Dependencies
+node_modules/
+**/node_modules/
+.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# Build and Output Directories
+dist/
+dist-ssr/
+build/
+out/
+.next/
+**/dist/
+**/build/
+**/.next/
+
+# Testing & Coverage
+coverage/
+**/coverage/
+.nyc_output/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+lerna-debug.log*
+
+# Environment & Secret Files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env*.local
+!.env.example
+
+# IDE & Editor Settings
+.vscode/*
+!.vscode/extensions.json
+!.vscode/launch.json
+!.vscode/settings.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# OS & System Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Cloud & Deployment Metadata
+.vercel/
+
+# TypeScript & Cache
+*.tsbuildinfo
+next-env.d.ts
+.eslintcache
+.cache/
