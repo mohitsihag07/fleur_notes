@@ -30,7 +30,6 @@ import { formatPrice } from '@/utils/formatPrice';
 
 export default function ProductDetailPage() {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
-  const [slideDirection, setSlideDirection] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState('description');
   const [isInWishlist, setIsInWishlist] = useState(false);
@@ -39,7 +38,6 @@ export default function ProductDetailPage() {
   const [touchEndX, setTouchEndX] = useState(0);
 
   const selectImage = (idx) => {
-    setSlideDirection(idx > selectedImageIndex ? 1 : -1);
     setSelectedImageIndex(idx);
   };
 
@@ -91,12 +89,10 @@ export default function ProductDetailPage() {
   ];
 
   const nextImage = () => {
-    setSlideDirection(1);
     setSelectedImageIndex((prev) => (prev + 1) % galleryImages.length);
   };
 
   const prevImage = () => {
-    setSlideDirection(-1);
     setSelectedImageIndex((prev) => (prev - 1 + galleryImages.length) % galleryImages.length);
   };
 
@@ -115,21 +111,6 @@ export default function ProductDetailPage() {
     if (touchStartX - touchEndX < -50) {
       prevImage();
     }
-  };
-
-  const slideVariants = {
-    enter: (direction) => ({
-      x: direction > 0 ? 60 : -60,
-      opacity: 0
-    }),
-    center: {
-      x: 0,
-      opacity: 1
-    },
-    exit: (direction) => ({
-      x: direction < 0 ? 60 : -60,
-      opacity: 0
-    })
   };
 
   return (
@@ -172,29 +153,26 @@ export default function ProductDetailPage() {
               onTouchMove={handleTouchMove}
               onTouchEnd={handleTouchEnd}
             >
-              <AnimatePresence initial={false} custom={slideDirection}>
+              <div className="absolute inset-0 overflow-hidden">
                 <motion.div
-                  key={selectedImageIndex}
-                  custom={slideDirection}
-                  variants={slideVariants}
-                  initial="enter"
-                  animate="center"
-                  exit="exit"
-                  transition={{
-                    x: { type: 'spring', stiffness: 350, damping: 30 },
-                    opacity: { duration: 0.2 }
-                  }}
-                  className="absolute inset-0 w-full h-full"
+                  className="flex h-full w-full"
+                  animate={{ x: `-${selectedImageIndex * 100}%` }}
+                  transition={{ type: 'spring', stiffness: 280, damping: 28 }}
                 >
-                  <Image
-                    src={galleryImages[selectedImageIndex]}
-                    alt="Minimal Ceramic Vase"
-                    fill
-                    className="object-cover"
-                    priority
-                  />
+                  {galleryImages.map((img, idx) => (
+                    <div key={idx} className="relative w-full h-full shrink-0">
+                      <Image
+                        src={img}
+                        alt="Product Image"
+                        fill
+                        className="object-cover"
+                        priority={idx === 0}
+                        sizes="(max-width: 1024px) 100vw, 50vw"
+                      />
+                    </div>
+                  ))}
                 </motion.div>
-              </AnimatePresence>
+              </div>
 
               {/* Overlay Actions: Wishlist and Share */}
               <div className="absolute top-4 right-4 flex flex-col gap-3.5 z-10">
