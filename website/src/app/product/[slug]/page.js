@@ -172,7 +172,7 @@ export default function ProductDetailPage() {
               onTouchMove={handleTouchMove}
               onTouchEnd={handleTouchEnd}
             >
-              <AnimatePresence initial={false} mode="wait" custom={slideDirection}>
+              <AnimatePresence initial={false} custom={slideDirection}>
                 <motion.div
                   key={selectedImageIndex}
                   custom={slideDirection}
@@ -222,14 +222,14 @@ export default function ProductDetailPage() {
               <button
                 type="button"
                 onClick={prevImage}
-                className="absolute left-4 top-1/2 -translate-y-1/2 w-9 h-9 flex items-center justify-center rounded-full bg-white/80 hover:bg-white text-[#2B1B17] hover:text-[#7A0C1E] shadow-md transition-all duration-300 opacity-0 group-hover:opacity-100 max-lg:opacity-100 cursor-pointer"
+                className="lg:hidden absolute left-4 top-1/2 -translate-y-1/2 w-9 h-9 flex items-center justify-center rounded-full bg-white/80 hover:bg-white text-[#2B1B17] hover:text-[#7A0C1E] shadow-md transition-all duration-300 cursor-pointer"
               >
                 <ChevronLeft className="w-5 h-5" />
               </button>
               <button
                 type="button"
                 onClick={nextImage}
-                className="absolute right-4 top-1/2 -translate-y-1/2 w-9 h-9 flex items-center justify-center rounded-full bg-white/80 hover:bg-white text-[#2B1B17] hover:text-[#7A0C1E] shadow-md transition-all duration-300 opacity-0 group-hover:opacity-100 max-lg:opacity-100 cursor-pointer"
+                className="lg:hidden absolute right-4 top-1/2 -translate-y-1/2 w-9 h-9 flex items-center justify-center rounded-full bg-white/80 hover:bg-white text-[#2B1B17] hover:text-[#7A0C1E] shadow-md transition-all duration-300 cursor-pointer"
               >
                 <ChevronRight className="w-5 h-5" />
               </button>
