@@ -58,7 +58,7 @@ export default function RegisterPage() {
                 </div>
                 <div>
                   <h4 className="text-xs font-semibold text-[#2B1B17]">Fast & Free Shipping</h4>
-                  <p className="text-[11px] text-[#705B54]">Free shipping on orders over $75 and fast delivery at your doorstep.</p>
+                  <p className="text-[11px] text-[#705B54]">Free shipping on orders over ₹1,500 and fast delivery at your doorstep.</p>
                 </div>
               </div>
 
@@ -136,7 +136,7 @@ export default function RegisterPage() {
                 <div className="relative flex items-center">
                   <div className="absolute left-3 flex items-center gap-1 text-xs text-gray-500 border-r border-gray-200 pr-2">
                     <Phone className="w-3.5 h-3.5 text-gray-400" />
-                    <span>🇺🇸 +1</span>
+                    <span>🇮🇳 +91</span>
                   </div>
                   <input
                     type="tel"

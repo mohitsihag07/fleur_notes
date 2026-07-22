@@ -4,11 +4,13 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
+import { motion } from 'framer-motion';
 import {
   Search,
   User,
   ShoppingBag,
-  ChevronDown
+  ChevronDown,
+  Heart
 } from 'lucide-react';
 import { SearchBar } from './SearchBar';
 import { heroSlide } from '@/data/banners';
@@ -40,13 +42,6 @@ export function Header() {
 
   return (
     <>
-      {/* Top Announcement Bar */}
-      <div className="bg-[#7A0C1E] text-[#FAF5EF] py-1.5 px-3 text-center text-[11px] sm:text-xs tracking-wide font-medium">
-        <div className="max-w-7xl mx-auto flex items-center justify-center gap-2">
-          <span>{heroSlide.announcement}</span>
-        </div>
-      </div>
-
       {/* Main Sticky Header */}
       <header
         className={`sticky top-0 z-40 bg-[#FAF5EF]/95 backdrop-blur-md transition-all duration-300 border-b border-[#E8DACD]/60 ${
@@ -83,18 +78,25 @@ export function Header() {
               {navLinks.map((link) => {
                 const isActive = pathname === link.href;
                 return (
-                  <div key={link.name} className="relative group">
+                  <div key={link.name} className="relative py-2 group">
                     <Link
                       href={link.href}
-                      className={`flex items-center gap-1 text-sm font-medium transition-colors ${
+                      className={`flex items-center gap-1 text-sm font-medium transition-colors relative ${
                         isActive
                           ? 'text-[#7A0C1E] font-semibold'
                           : 'text-[#2B1B17] hover:text-[#7A0C1E]'
                       }`}
                     >
-                      {link.name}
+                      <span>{link.name}</span>
                       {link.hasDropdown && (
                         <ChevronDown className="w-3.5 h-3.5 text-gray-400 group-hover:text-[#7A0C1E] transition-transform group-hover:rotate-180" />
+                      )}
+                      {isActive && (
+                        <motion.div
+                          layoutId="headerActiveNavUnderline"
+                          className="absolute -bottom-1 left-0 right-0 h-[2px] bg-[#7A0C1E] rounded-full"
+                          transition={{ type: 'spring', stiffness: 350, damping: 30 }}
+                        />
                       )}
                     </Link>
                   </div>
@@ -107,29 +109,68 @@ export function Header() {
               {/* Search button (Desktop only) */}
               <button
                 onClick={() => setSearchOpen(true)}
-                className="hidden lg:flex p-2 text-[#2B1B17] hover:text-[#7A0C1E] hover:bg-[#F2E6DA] rounded-full transition-colors"
+                className="hidden lg:flex p-2 text-[#2B1B17] hover:text-[#7A0C1E] hover:bg-[#F2E6DA] rounded-full transition-colors cursor-pointer"
                 aria-label="Search"
               >
-                <Search className="w-5 h-5" />
+                <motion.div
+                  whileHover={{ scale: 1.12 }}
+                  whileTap={{ scale: 0.93 }}
+                  transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+                >
+                  <Search className="w-5 h-5" />
+                </motion.div>
               </button>
+
+              {/* Cart Link (Desktop only) */}
+              <Link
+                href="/cart"
+                className="hidden lg:flex p-2 text-[#2B1B17] hover:text-[#7A0C1E] hover:bg-[#F2E6DA] rounded-full transition-colors relative"
+                aria-label="Cart"
+              >
+                <motion.div
+                  whileHover={{ scale: 1.12 }}
+                  whileTap={{ scale: 0.93 }}
+                  transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+                  className="relative"
+                >
+                  <ShoppingBag className="w-5 h-5" />
+                  <span className="absolute -top-1 -right-1 bg-[#7A0C1E] text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+                    2
+                  </span>
+                </motion.div>
+              </Link>
 
               <Link
                 href="/profile"
                 className="hidden sm:flex p-1.5 sm:p-2 text-[#2B1B17] hover:text-[#7A0C1E] hover:bg-[#F2E6DA] rounded-full transition-colors"
                 aria-label="Profile"
               >
-                <User className="w-5 h-5" />
+                <motion.div
+                  whileHover={{ scale: 1.12 }}
+                  whileTap={{ scale: 0.93 }}
+                  transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+                >
+                  <User className="w-5 h-5" />
+                </motion.div>
               </Link>
 
+              {/* Wishlist Link (Visible on Mobile) */}
               <Link
-                href="/cart"
+                href="/wishlist"
                 className="relative p-1.5 sm:p-2 text-[#2B1B17] hover:text-[#7A0C1E] hover:bg-[#F2E6DA] rounded-full transition-colors"
-                aria-label="Cart"
+                aria-label="Wishlist"
               >
-                <ShoppingBag className="w-5 h-5" />
-                <span className="absolute top-0.5 right-0.5 sm:top-1 sm:right-1 bg-[#7A0C1E] text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
-                  2
-                </span>
+                <motion.div
+                  whileHover={{ scale: 1.12 }}
+                  whileTap={{ scale: 0.93 }}
+                  transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+                  className="relative"
+                >
+                  <Heart className="w-5 h-5" />
+                  <span className="absolute -top-1 -right-1 bg-[#7A0C1E] text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+                    3
+                  </span>
+                </motion.div>
               </Link>
             </div>
           </div>

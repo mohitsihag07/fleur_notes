@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   Star,
   Truck,
@@ -18,17 +19,23 @@ import {
   CheckCircle2,
   Gift,
   Leaf,
-  Box
+  Box,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 import { Container } from '@/components/ui/Container';
 import { ProductCard } from '@/components/shop/ProductCard';
 import { featuredProducts } from '@/data/products';
+import { formatPrice } from '@/utils/formatPrice';
 
 export default function ProductDetailPage() {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
-  const [selectedColor, setSelectedColor] = useState('Beige');
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState('description');
+  const [isInWishlist, setIsInWishlist] = useState(false);
+
+  const [touchStartX, setTouchStartX] = useState(0);
+  const [touchEndX, setTouchEndX] = useState(0);
 
   const galleryImages = [
     '/images/products/vase.jpg',
@@ -36,13 +43,7 @@ export default function ProductDetailPage() {
     '/images/categories/gifts.jpg',
     '/images/banners/hero_banner.jpg',
     '/images/categories/candles.jpg'
-  ];
-
-  const colors = [
-    { name: 'Beige', class: 'bg-[#F2E6DA]' },
-    { name: 'Bronze', class: 'bg-[#A87B39]' },
-    { name: 'Crimson', class: 'bg-[#7A0C1E]' }
-  ];
+  ].slice(0, 4);
 
   const valueBadges = [
     { icon: Sparkles, title: 'Handmade', desc: 'Carefully crafted by artisans' },
@@ -58,6 +59,55 @@ export default function ProductDetailPage() {
     { label: 'Weight', value: '0.45 kg' },
     { label: 'Care Instructions', value: 'Wipe with a soft, dry cloth' }
   ];
+
+  const mockReviews = [
+    {
+      id: 'rev-1',
+      name: 'Aditi Sharma',
+      date: 'July 15, 2026',
+      rating: 5,
+      comment: 'Absolutely gorgeous bouquet! The dried eucalyptus leaves smell divine and the packaging was extremely secure. Highly recommended.'
+    },
+    {
+      id: 'rev-2',
+      name: 'Rohan Mehta',
+      date: 'June 28, 2026',
+      rating: 4,
+      comment: 'Very premium look and feel. It looks stunning on my dining table. Knocked off one star because shipping took a day longer than expected.'
+    },
+    {
+      id: 'rev-3',
+      name: 'Priyanka Sen',
+      date: 'June 10, 2026',
+      rating: 5,
+      comment: 'The quality of Fleur Notes products is unmatched. Exceeded all my expectations. Will definitely buy more items soon!'
+    }
+  ];
+
+  const nextImage = () => {
+    setSelectedImageIndex((prev) => (prev + 1) % galleryImages.length);
+  };
+
+  const prevImage = () => {
+    setSelectedImageIndex((prev) => (prev - 1 + galleryImages.length) % galleryImages.length);
+  };
+
+  const handleTouchStart = (e) => {
+    setTouchStartX(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchMove = (e) => {
+    setTouchEndX(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchEnd = () => {
+    if (touchStartX - touchEndX > 50) {
+      nextImage();
+    }
+    if (touchStartX - touchEndX < -50) {
+      prevImage();
+    }
+  };
 
   return (
     <div className="bg-[#FAF5EF] min-h-screen py-10">
@@ -83,7 +133,7 @@ export default function ProductDetailPage() {
                 <button
                   key={idx}
                   onClick={() => setSelectedImageIndex(idx)}
-                  className={`relative w-16 h-16 rounded-xl overflow-hidden border-2 transition-all ${
+                  className={`relative w-16 h-16 rounded-xl overflow-hidden border-2 transition-all cursor-pointer ${
                     selectedImageIndex === idx ? 'border-[#7A0C1E] shadow-sm scale-105' : 'border-[#E8DACD] opacity-70'
                   }`}
                 >
@@ -93,15 +143,61 @@ export default function ProductDetailPage() {
             </div>
 
             {/* Main Enlarged Product Image */}
-            <div className="relative flex-1 aspect-square rounded-2xl overflow-hidden bg-[#FAF5EF] border border-[#E8DACD] shadow-xs">
+            <div
+              className="relative flex-1 aspect-square rounded-2xl overflow-hidden bg-[#FAF5EF] border border-[#E8DACD] shadow-xs group"
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
+            >
               <Image
                 src={galleryImages[selectedImageIndex]}
                 alt="Minimal Ceramic Vase"
                 fill
-                className="object-cover"
+                className="object-cover transition-all duration-300"
                 priority
               />
-              <button className="absolute bottom-4 right-4 p-2.5 rounded-full bg-white/90 shadow-md text-[#2B1B17] hover:text-[#7A0C1E]">
+
+              {/* Wishlist Button Overlay */}
+              <button
+                type="button"
+                onClick={() => setIsInWishlist(!isInWishlist)}
+                className="absolute top-4 right-4 p-2.5 rounded-full bg-white/95 shadow-md text-[#2B1B17] hover:text-[#7A0C1E] transition-all cursor-pointer z-10"
+              >
+                <Heart className={`w-4.5 h-4.5 transition-colors ${
+                  isInWishlist ? 'fill-[#7A0C1E] text-[#7A0C1E]' : 'text-gray-600'
+                }`} />
+              </button>
+
+              {/* Slide Navigation Arrows */}
+              <button
+                type="button"
+                onClick={prevImage}
+                className="absolute left-4 top-1/2 -translate-y-1/2 w-9 h-9 flex items-center justify-center rounded-full bg-white/80 hover:bg-white text-[#2B1B17] hover:text-[#7A0C1E] shadow-md transition-all duration-300 opacity-0 group-hover:opacity-100 max-lg:opacity-100 cursor-pointer"
+              >
+                <ChevronLeft className="w-5 h-5" />
+              </button>
+              <button
+                type="button"
+                onClick={nextImage}
+                className="absolute right-4 top-1/2 -translate-y-1/2 w-9 h-9 flex items-center justify-center rounded-full bg-white/80 hover:bg-white text-[#2B1B17] hover:text-[#7A0C1E] shadow-md transition-all duration-300 opacity-0 group-hover:opacity-100 max-lg:opacity-100 cursor-pointer"
+              >
+                <ChevronRight className="w-5 h-5" />
+              </button>
+
+              {/* Image Dots Indicator */}
+              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5 bg-black/25 px-3 py-1.5 rounded-full backdrop-blur-xs">
+                {galleryImages.map((_, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setSelectedImageIndex(idx)}
+                    className={`w-1.5 h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
+                      selectedImageIndex === idx ? 'bg-white w-3.5' : 'bg-white/50'
+                    }`}
+                  />
+                ))}
+              </div>
+
+              <button className="absolute bottom-4 right-4 p-2.5 rounded-full bg-white/90 shadow-md text-[#2B1B17] hover:text-[#7A0C1E] max-sm:hidden cursor-pointer">
                 <Maximize2 className="w-4 h-4" />
               </button>
             </div>
@@ -130,7 +226,7 @@ export default function ProductDetailPage() {
 
             {/* Price */}
             <div className="text-2xl font-bold text-[#2B1B17]">
-              $28.00
+              {formatPrice(28)}
             </div>
 
             <p className="text-xs text-[#705B54] leading-relaxed">
@@ -144,29 +240,12 @@ export default function ProductDetailPage() {
               </span>
               <span className="flex items-center gap-1">
                 <Truck className="w-3.5 h-3.5 text-[#7A0C1E]" />
-                Free Shipping over $75
+                Free Shipping over {formatPrice(1500)}
               </span>
               <span className="flex items-center gap-1">
                 <RotateCcw className="w-3.5 h-3.5 text-[#7A0C1E]" />
                 30-Day Returns
               </span>
-            </div>
-
-            {/* Color Selection */}
-            <div>
-              <span className="block text-xs font-semibold text-[#2B1B17] mb-2">Color: {selectedColor}</span>
-              <div className="flex gap-2">
-                {colors.map((c) => (
-                  <button
-                    key={c.name}
-                    onClick={() => setSelectedColor(c.name)}
-                    className={`w-7 h-7 rounded-full border ${c.class} transition-transform ${
-                      selectedColor === c.name ? 'scale-115 ring-2 ring-[#7A0C1E] ring-offset-1' : ''
-                    }`}
-                    title={c.name}
-                  />
-                ))}
-              </div>
             </div>
 
             {/* Quantity Selector */}
@@ -234,21 +313,36 @@ export default function ProductDetailPage() {
 
         {/* Product Tabs Section */}
         <div className="mt-16 bg-white rounded-2xl border border-[#E8DACD] p-6 sm:p-10 shadow-sm">
-          <div className="flex border-b border-[#E8DACD] gap-8 text-xs font-bold text-gray-400 overflow-x-auto pb-3 mb-6">
+          <div className="flex border-b border-[#E8DACD] gap-8 text-xs font-bold text-gray-400 overflow-x-auto no-scrollbar pb-3 mb-6 relative">
             {['description', 'specifications', 'reviews', 'shipping'].map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`uppercase tracking-wider transition-colors pb-3 border-b-2 -mb-[14px] ${
-                  activeTab === tab ? 'border-[#7A0C1E] text-[#7A0C1E]' : 'border-transparent hover:text-[#2B1B17]'
+                className={`uppercase tracking-wider transition-colors pb-3 relative ${
+                  activeTab === tab ? 'text-[#7A0C1E]' : 'hover:text-[#2B1B17]'
                 }`}
               >
-                {tab === 'shipping' ? 'Shipping & Returns' : tab === 'reviews' ? 'Reviews (126)' : tab}
+                <span>{tab === 'shipping' ? 'Shipping & Returns' : tab === 'reviews' ? 'Reviews (126)' : tab}</span>
+                {activeTab === tab && (
+                  <motion.div
+                    layoutId="productActiveTabUnderline"
+                    className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#7A0C1E]"
+                    transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                  />
+                )}
               </button>
             ))}
           </div>
 
-          {activeTab === 'description' && (
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeTab}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+            >
+              {activeTab === 'description' && (
             <div className="space-y-4 text-xs text-gray-600 leading-relaxed max-w-3xl">
               <p>
                 This minimal ceramic vase brings a touch of elegance to any space. Its neutral tones and smooth matte finish make it easy to pair with any decor style — from modern to rustic.
@@ -278,21 +372,83 @@ export default function ProductDetailPage() {
           )}
 
           {activeTab === 'reviews' && (
-            <div className="space-y-4 max-w-2xl text-xs text-gray-600">
-              <div className="flex items-center gap-2 text-[#A87B39] font-bold">
-                <Star className="w-4 h-4 fill-[#A87B39]" />
-                <span className="text-base text-[#2B1B17]">4.8 out of 5</span>
+            <div className="space-y-8">
+              {/* Rating Summary Block */}
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-8 border-b border-[#E8DACD]/60 pb-8">
+                {/* Average score */}
+                <div className="md:col-span-4 flex flex-col items-center justify-center bg-[#FAF5EF]/60 p-6 rounded-xl border border-[#E8DACD]/40 text-center">
+                  <span className="text-4xl font-bold text-[#2B1B17]">4.8</span>
+                  <div className="flex items-center gap-1 text-[#A87B39] my-2">
+                    {[...Array(5)].map((_, i) => (
+                      <Star key={i} className={`w-4 h-4 ${i < 4 ? 'fill-[#A87B39]' : 'fill-[#A87B39]/30'} text-[#A87B39]`} />
+                    ))}
+                  </div>
+                  <span className="text-xs text-[#705B54]">Based on 126 ratings</span>
+                </div>
+
+                {/* Rating distribution bars */}
+                <div className="md:col-span-8 space-y-2.5 flex flex-col justify-center">
+                  {[
+                    { stars: 5, percentage: 85 },
+                    { stars: 4, percentage: 10 },
+                    { stars: 3, percentage: 3 },
+                    { stars: 2, percentage: 1 },
+                    { stars: 1, percentage: 1 }
+                  ].map((row) => (
+                    <div key={row.stars} className="flex items-center gap-3 text-xs">
+                      <span className="w-4 text-[#2B1B17] font-semibold">{row.stars}★</span>
+                      <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
+                        <div className="h-full bg-[#A87B39] rounded-full" style={{ width: `${row.percentage}%` }}></div>
+                      </div>
+                      <span className="w-8 text-right text-gray-500 font-medium">{row.percentage}%</span>
+                    </div>
+                  ))}
+                </div>
               </div>
-              <p>Based on 126 verified customer reviews across all handcrafted batches.</p>
+
+              {/* Reviews List */}
+              <div className="space-y-6">
+                <h4 className="font-serif-luxury text-lg font-bold text-[#2B1B17] mb-4">Customer Reviews</h4>
+                <div className="divide-y divide-[#E8DACD]/40 space-y-6">
+                  {mockReviews.map((rev) => (
+                    <div key={rev.id} className="pt-6 first:pt-0">
+                      <div className="flex items-center justify-between gap-4 mb-2">
+                        <div className="flex items-center gap-3">
+                          {/* User Avatar Circle */}
+                          <div className="w-9 h-9 rounded-full bg-[#7A0C1E] text-white flex items-center justify-center font-bold text-xs">
+                            {rev.name.split(' ').map(n => n[0]).join('')}
+                          </div>
+                          <div>
+                            <span className="block text-xs font-bold text-[#2B1B17]">{rev.name}</span>
+                            <span className="block text-[10px] text-gray-400">{rev.date}</span>
+                          </div>
+                        </div>
+
+                        {/* User Rating stars */}
+                        <div className="flex gap-0.5 text-[#A87B39]">
+                          {[...Array(5)].map((_, i) => (
+                            <Star key={i} className={`w-3.5 h-3.5 ${i < rev.rating ? 'fill-[#A87B39]' : 'fill-none'} text-[#A87B39]`} />
+                          ))}
+                        </div>
+                      </div>
+                      <p className="text-xs text-gray-600 leading-relaxed sm:pl-12">
+                        {rev.comment}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           )}
 
-          {activeTab === 'shipping' && (
-            <div className="space-y-2 max-w-2xl text-xs text-gray-600">
-              <p className="font-semibold text-[#2B1B17]">Free standard shipping on orders over $75.</p>
-              <p>Orders are dispatched within 1-2 business days with 30-day return policy guarantee.</p>
-            </div>
-          )}
+              {activeTab === 'shipping' && (
+                <div className="space-y-2 max-w-2xl text-xs text-gray-600">
+                  <p className="font-semibold text-[#2B1B17]">Free standard shipping on orders over {formatPrice(1500)}.</p>
+                  <p>Orders are dispatched within 1-2 business days with 30-day return policy guarantee.</p>
+                </div>
+              )}
+            </motion.div>
+          </AnimatePresence>
         </div>
 
         {/* You May Also Like Section */}

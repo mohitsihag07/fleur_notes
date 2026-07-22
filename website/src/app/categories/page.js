@@ -23,32 +23,33 @@ const iconMap = {
 export default function CategoriesPage() {
   return (
     <div className="bg-[#FAF5EF] min-h-screen">
-      {/* Hero Header Banner */}
-      <section className="relative bg-[#F2E6DA] py-12 lg:py-16 border-b border-[#E8DACD]">
-        <Container>
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-            <div className="lg:col-span-6 space-y-3">
-              <div className="inline-flex items-center gap-2 text-xs font-semibold tracking-widest text-[#7A0C1E] uppercase">
-                <Sparkles className="w-3.5 h-3.5 fill-[#7A0C1E]" />
-                <span>BROWSE CATEGORIES</span>
-              </div>
-              <h1 className="font-serif-luxury text-4xl sm:text-5xl font-bold text-[#2B1B17] tracking-tight">
-                Explore Our Categories
-              </h1>
-              <p className="text-sm sm:text-base text-[#705B54]">
-                Handpicked collections crafted with love, just for you.
-              </p>
-            </div>
+      {/* Hero Header Banner (Full Screen Width) */}
+      <section className="relative overflow-hidden w-full h-[70vh] sm:h-[80vh] min-h-[580px] border-b border-[#E8DACD]/40 bg-[#FAF5EF] flex items-center">
+        {/* Background Image */}
+        <div className="absolute inset-0 z-0">
+          <Image
+            src="/images/banners/hero_banner.jpg"
+            alt="Explore Categories"
+            fill
+            className="object-cover"
+            priority
+            quality={100}
+          />
+        </div>
 
-            <div className="lg:col-span-6 relative aspect-[16/9] lg:aspect-[3/1] rounded-2xl overflow-hidden shadow-sm border border-[#E8DACD]">
-              <Image
-                src="/images/banners/hero_banner.jpg"
-                alt="Explore Categories"
-                fill
-                className="object-cover"
-                priority
-              />
+        {/* Hero Content (Layered directly over the banner) */}
+        <Container className="relative z-10 w-full">
+          <div className="max-w-xl md:max-w-2xl flex flex-col items-start space-y-4">
+            <div className="inline-flex items-center gap-2 text-xs font-bold tracking-widest text-[#7A0C1E] uppercase">
+              <Sparkles className="w-3.5 h-3.5 fill-[#7A0C1E]" />
+              <span>BROWSE CATEGORIES</span>
             </div>
+            <h1 className="font-serif-luxury text-4xl sm:text-5xl font-bold text-[#7A0C1E] tracking-tight leading-tight">
+              Explore Our Categories
+            </h1>
+            <p className="text-base sm:text-lg text-black font-medium leading-relaxed max-w-lg">
+              Handpicked collections crafted with love, just for you.
+            </p>
           </div>
         </Container>
       </section>

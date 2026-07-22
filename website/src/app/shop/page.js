@@ -18,33 +18,34 @@ export default function ShopPage() {
 
   return (
     <div className="bg-[#FAF5EF] min-h-screen">
-      {/* Hero Header Banner */}
-      <section className="relative bg-[#F2E6DA] py-12 lg:py-16 border-b border-[#E8DACD]">
-        <Container>
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-            <div className="lg:col-span-6 space-y-3">
-              <nav className="text-xs text-gray-500 flex items-center gap-2">
-                <Link href="/" className="hover:text-[#7A0C1E]">Home</Link>
-                <span>›</span>
-                <span className="text-[#7A0C1E] font-medium">Shop</span>
-              </nav>
-              <h1 className="font-serif-luxury text-4xl sm:text-5xl font-bold text-[#2B1B17] tracking-tight">
-                Shop Our Collection
-              </h1>
-              <p className="text-sm sm:text-base text-[#705B54]">
-                Handcrafted with love, made for you.
-              </p>
-            </div>
+      {/* Hero Header Banner (Full Screen Width) */}
+      <section className="relative overflow-hidden w-full h-[70vh] sm:h-[80vh] min-h-[580px] border-b border-[#E8DACD]/40 bg-[#FAF5EF] flex items-center">
+        {/* Background Image */}
+        <div className="absolute inset-0 z-0">
+          <Image
+            src="/images/banners/hero_banner.jpg"
+            alt="Shop Collection"
+            fill
+            className="object-cover"
+            priority
+            quality={100}
+          />
+        </div>
 
-            <div className="lg:col-span-6 relative aspect-[16/9] lg:aspect-[3/1] rounded-2xl overflow-hidden shadow-sm border border-[#E8DACD]">
-              <Image
-                src="/images/banners/hero_banner.jpg"
-                alt="Shop Collection"
-                fill
-                className="object-cover"
-                priority
-              />
-            </div>
+        {/* Hero Content (Layered directly over the banner) */}
+        <Container className="relative z-10 w-full">
+          <div className="max-w-xl md:max-w-2xl flex flex-col items-start space-y-4">
+            <nav className="text-xs text-black font-semibold flex items-center gap-2">
+              <Link href="/" className="hover:text-[#7A0C1E] hover:underline">Home</Link>
+              <span>›</span>
+              <span className="text-[#7A0C1E] font-bold">Shop</span>
+            </nav>
+            <h1 className="font-serif-luxury text-4xl sm:text-5xl font-bold text-[#7A0C1E] tracking-tight leading-tight">
+              Shop Our Collection
+            </h1>
+            <p className="text-base sm:text-lg text-black font-medium leading-relaxed max-w-lg">
+              Handcrafted with love, made for you.
+            </p>
           </div>
         </Container>
       </section>
@@ -150,11 +151,34 @@ export default function ShopPage() {
                 </div>
               </div>
 
-              {/* Product Grid */}
-              <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-                {featuredProducts.map((product) => (
-                  <ProductCard key={product.id} product={product} />
-                ))}
+              {/* Product Grid / List container */}
+              <div className={viewMode === 'grid'
+                ? "grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6"
+                : "flex flex-col gap-4"
+              }>
+                {featuredProducts
+                  .filter((product) => {
+                    if (activeCategory === 'all') return true;
+                    if (activeCategory === 'bestsellers') return product.isBestSeller;
+                    if (activeCategory === 'new-arrivals') return product.isNew;
+                    const catLower = product.category?.toLowerCase().trim() || '';
+                    const activeLower = activeCategory.toLowerCase().trim();
+                    if (activeLower === 'bouquets') return catLower === 'bouquets';
+                    if (activeLower === 'candles') return catLower === 'candles';
+                    if (activeLower === 'candle-combos') return catLower === 'candle combos';
+                    if (activeLower === 'gift-hamper') return catLower === 'gift hamper';
+                    return catLower === activeLower;
+                  })
+                  .sort((a, b) => {
+                    if (sortBy === 'price-low') return a.price - b.price;
+                    if (sortBy === 'price-high') return b.price - a.price;
+                    if (sortBy === 'newest') return (b.isNew ? 1 : 0) - (a.isNew ? 1 : 0);
+                    if (sortBy === 'popular') return (b.isBestSeller ? 1 : 0) - (a.isBestSeller ? 1 : 0);
+                    return 0;
+                  })
+                  .map((product) => (
+                    <ProductCard key={product.id} product={product} layout={viewMode} />
+                  ))}
               </div>
 
               {/* Pagination */}

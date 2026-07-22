@@ -5,14 +5,49 @@ export const heroSlide = {
   primaryCta: 'Shop Now',
   secondaryCta: 'Explore Collection',
   image: '/images/banners/hero_banner.jpg',
-  announcement: '🚚 Free shipping on orders over $75  •  30-day easy returns  •  Secure payments'
+  announcement: '🚚 Free shipping on orders over ₹1,500  •  30-day easy returns  •  Secure payments'
 };
+
+export const heroSlides = [
+  {
+    tagline: 'ROMANTICISE EVERY DAY',
+    title: 'Beautiful things for every moment.',
+    description: 'Discover handcrafted products that bring beauty, warmth, and meaning to your life.',
+    primaryCta: 'Shop Now',
+    secondaryCta: 'Explore Collection',
+    image: '/images/banners/hero_banner.jpg'
+  },
+  {
+    tagline: 'CRAFTED WITH PASSION',
+    title: 'Artisanal Candles & Scents',
+    description: 'Fill your home with soothing aromas and a warm, inviting glow crafted from natural soy wax.',
+    primaryCta: 'Shop Candles',
+    secondaryCta: 'Explore Collection',
+    image: '/images/categories/candles.jpg'
+  },
+  {
+    tagline: 'CURATED GIFTING',
+    title: 'Thoughtful Gift Hampers',
+    description: 'Show your love with our handpicked, beautifully wrapped gift collections for every special occasion.',
+    primaryCta: 'Shop Hampers',
+    secondaryCta: 'Explore Collection',
+    image: '/images/products/hamper.jpg'
+  },
+  {
+    tagline: 'ELEVATE YOUR SPACE',
+    title: 'Minimalist Home Decor',
+    description: 'Explore our selection of handcrafted ceramics, vases, and hangings that redefine modern living.',
+    primaryCta: 'Shop Decor',
+    secondaryCta: 'Explore Collection',
+    image: '/images/categories/home_decor.jpg'
+  }
+];
 
 export const valueProps = [
   {
     icon: 'Truck',
     title: 'Free Shipping',
-    subtitle: 'On orders over $75'
+    subtitle: 'On orders over ₹1,500'
   },
   {
     icon: 'ShieldCheck',

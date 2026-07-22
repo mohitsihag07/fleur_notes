@@ -6,7 +6,6 @@ import { categories } from '@/data/categories';
 export function FilterSidebar({ activeCategory, onSelectCategory }) {
   const [priceRange, setPriceRange] = useState(150);
   const [selectedColor, setSelectedColor] = useState(null);
-  const [selectedMaterials, setSelectedMaterials] = useState([]);
 
   const colors = [
     { name: 'White', colorClass: 'bg-white border-gray-300' },
@@ -16,22 +15,6 @@ export function FilterSidebar({ activeCategory, onSelectCategory }) {
     { name: 'Bronze', colorClass: 'bg-[#A87B39]' },
     { name: 'Mocha', colorClass: 'bg-[#4A2E1B]' }
   ];
-
-  const materials = [
-    { name: 'Ceramic', count: 18 },
-    { name: 'Wood', count: 20 },
-    { name: 'Glass', count: 14 },
-    { name: 'Cotton', count: 16 },
-    { name: 'Metal', count: 10 }
-  ];
-
-  const toggleMaterial = (mat) => {
-    if (selectedMaterials.includes(mat)) {
-      setSelectedMaterials(selectedMaterials.filter((m) => m !== mat));
-    } else {
-      setSelectedMaterials([...selectedMaterials, mat]);
-    }
-  };
 
   return (
     <div className="space-y-8 bg-white p-6 rounded-2xl border border-[#E8DACD]/70 shadow-sm">
@@ -52,6 +35,32 @@ export function FilterSidebar({ activeCategory, onSelectCategory }) {
             >
               <span>All Products</span>
               <span className="text-gray-400 font-normal">(120)</span>
+            </button>
+          </li>
+          <li>
+            <button
+              onClick={() => onSelectCategory('bestsellers')}
+              className={`w-full flex items-center justify-between py-2 px-3 rounded-lg text-left transition-colors ${
+                activeCategory === 'bestsellers'
+                  ? 'bg-[#F2E6DA] text-[#7A0C1E] font-bold'
+                  : 'text-gray-600 hover:bg-gray-50'
+              }`}
+            >
+              <span>Bestsellers</span>
+              <span className="text-gray-400 font-normal">(15)</span>
+            </button>
+          </li>
+          <li>
+            <button
+              onClick={() => onSelectCategory('new-arrivals')}
+              className={`w-full flex items-center justify-between py-2 px-3 rounded-lg text-left transition-colors ${
+                activeCategory === 'new-arrivals'
+                  ? 'bg-[#F2E6DA] text-[#7A0C1E] font-bold'
+                  : 'text-gray-600 hover:bg-gray-50'
+              }`}
+            >
+              <span>New Arrivals</span>
+              <span className="text-gray-400 font-normal">(8)</span>
             </button>
           </li>
           {categories.map((cat) => (
@@ -84,7 +93,7 @@ export function FilterSidebar({ activeCategory, onSelectCategory }) {
         <div className="mb-6">
           <div className="flex items-center justify-between text-xs font-medium text-[#2B1B17] mb-2">
             <span>Price</span>
-            <span className="text-[#7A0C1E]">$0 – ${priceRange}</span>
+            <span className="text-[#7A0C1E]">₹0 – ₹{priceRange}</span>
           </div>
           <input
             type="range"
@@ -95,13 +104,13 @@ export function FilterSidebar({ activeCategory, onSelectCategory }) {
             className="w-full accent-[#7A0C1E] cursor-pointer"
           />
           <div className="flex justify-between text-[10px] text-gray-400 mt-1">
-            <span>$0</span>
-            <span>$150</span>
+            <span>₹0</span>
+            <span>₹150</span>
           </div>
         </div>
 
         {/* Color Swatches */}
-        <div className="mb-6">
+        <div>
           <span className="block text-xs font-medium text-[#2B1B17] mb-2">Color</span>
           <div className="flex flex-wrap gap-2">
             {colors.map((c) => (
@@ -113,27 +122,6 @@ export function FilterSidebar({ activeCategory, onSelectCategory }) {
                 }`}
                 title={c.name}
               />
-            ))}
-          </div>
-        </div>
-
-        {/* Material Checkboxes */}
-        <div>
-          <span className="block text-xs font-medium text-[#2B1B17] mb-2">Material</span>
-          <div className="space-y-2">
-            {materials.map((m) => (
-              <label key={m.name} className="flex items-center justify-between text-xs text-gray-600 cursor-pointer hover:text-[#2B1B17]">
-                <div className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    checked={selectedMaterials.includes(m.name)}
-                    onChange={() => toggleMaterial(m.name)}
-                    className="rounded text-[#7A0C1E] focus:ring-[#7A0C1E] accent-[#7A0C1E]"
-                  />
-                  <span>{m.name}</span>
-                </div>
-                <span className="text-gray-400">({m.count})</span>
-              </label>
             ))}
           </div>
         </div>

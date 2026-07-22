@@ -21,6 +21,7 @@ import {
 import { Container } from '@/components/ui/Container';
 import { ProductCard } from '@/components/shop/ProductCard';
 import { featuredProducts } from '@/data/products';
+import { formatPrice } from '@/utils/formatPrice';
 
 export default function CartPage() {
   const [cartItems, setCartItems] = useState([
@@ -90,9 +91,9 @@ export default function CartPage() {
 
   // Calculations
   const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
-  const freeShippingThreshold = 75;
+  const freeShippingThreshold = 1500;
   const amountForFreeShipping = Math.max(0, freeShippingThreshold - subtotal);
-  const shippingCost = subtotal >= freeShippingThreshold || subtotal === 0 ? 0 : 9.99;
+  const shippingCost = subtotal >= freeShippingThreshold || subtotal === 0 ? 0 : 150;
   const discountAmount = (subtotal * appliedDiscount) / 100;
   const estimatedTax = (subtotal - discountAmount) * 0.05;
   const grandTotal = Math.max(0, subtotal - discountAmount + shippingCost + estimatedTax);
@@ -169,13 +170,13 @@ export default function CartPage() {
                     <Truck className="w-4 h-4 text-[#7A0C1E]" />
                     {amountForFreeShipping > 0 ? (
                       <span>
-                        Add <strong className="text-[#7A0C1E]">${amountForFreeShipping.toFixed(2)}</strong> more to qualify for <strong>FREE Shipping</strong>!
+                        Add <strong className="text-[#7A0C1E]">{formatPrice(amountForFreeShipping)}</strong> more to qualify for <strong>FREE Shipping</strong>!
                       </span>
                     ) : (
                       <span className="text-green-700 font-bold">🎉 Congratulations! You qualify for FREE Shipping!</span>
                     )}
                   </div>
-                  <span className="text-[11px] text-[#705B54] font-normal">Threshold $75.00</span>
+                  <span className="text-[11px] text-[#705B54] font-normal">Threshold {formatPrice(freeShippingThreshold)}</span>
                 </div>
                 <div className="w-full h-2 bg-white rounded-full overflow-hidden border border-[#E8DACD]/60">
                   <div
@@ -204,14 +205,14 @@ export default function CartPage() {
                           {item.name}
                         </Link>
                         <p className="text-xs text-gray-500">Color/Option: <span className="text-[#2B1B17] font-medium">{item.color}</span></p>
-                        <p className="font-bold text-sm text-[#2B1B17] sm:hidden">${item.price.toFixed(2)}</p>
+                        <p className="font-bold text-sm text-[#2B1B17] sm:hidden">{formatPrice(item.price)}</p>
                       </div>
                     </div>
 
                     {/* Quantity & Subtotal Controls */}
                     <div className="flex items-center justify-between w-full sm:w-auto sm:gap-8 pt-2 sm:pt-0 border-t sm:border-t-0 border-[#E8DACD]/50">
                       <div className="hidden sm:block text-right">
-                        <span className="font-bold text-sm text-[#2B1B17] block">${item.price.toFixed(2)}</span>
+                        <span className="font-bold text-sm text-[#2B1B17] block">{formatPrice(item.price)}</span>
                         <span className="text-[10px] text-gray-400">per item</span>
                       </div>
 
@@ -235,7 +236,7 @@ export default function CartPage() {
                       {/* Total Item Price */}
                       <div className="text-right min-w-[70px]">
                         <span className="font-bold text-sm text-[#7A0C1E] block">
-                          ${(item.price * item.quantity).toFixed(2)}
+                          {formatPrice(item.price * item.quantity)}
                         </span>
                       </div>
 
@@ -297,31 +298,31 @@ export default function CartPage() {
                 <div className="space-y-3 text-xs">
                   <div className="flex justify-between text-gray-600">
                     <span>Subtotal</span>
-                    <span className="font-semibold text-[#2B1B17]">${subtotal.toFixed(2)}</span>
+                    <span className="font-semibold text-[#2B1B17]">{formatPrice(subtotal)}</span>
                   </div>
 
                   {appliedDiscount > 0 && (
                     <div className="flex justify-between text-green-700 font-semibold">
                       <span>Discount ({appliedDiscount}%)</span>
-                      <span>-${discountAmount.toFixed(2)}</span>
+                      <span>-{formatPrice(discountAmount)}</span>
                     </div>
                   )}
 
                   <div className="flex justify-between text-gray-600">
                     <span>Estimated Shipping</span>
                     <span className="font-semibold text-[#2B1B17]">
-                      {shippingCost === 0 ? <strong className="text-green-700 uppercase">Free</strong> : `$${shippingCost.toFixed(2)}`}
+                      {shippingCost === 0 ? <strong className="text-green-700 uppercase">Free</strong> : formatPrice(shippingCost)}
                     </span>
                   </div>
 
                   <div className="flex justify-between text-gray-600">
                     <span>Estimated Tax (5%)</span>
-                    <span className="font-semibold text-[#2B1B17]">${estimatedTax.toFixed(2)}</span>
+                    <span className="font-semibold text-[#2B1B17]">{formatPrice(estimatedTax)}</span>
                   </div>
 
                   <div className="pt-3 border-t border-[#E8DACD] flex justify-between items-center text-sm font-bold text-[#2B1B17]">
                     <span>Total</span>
-                    <span className="text-xl text-[#7A0C1E]">${grandTotal.toFixed(2)}</span>
+                    <span className="text-xl text-[#7A0C1E]">{formatPrice(grandTotal)}</span>
                   </div>
                 </div>
 

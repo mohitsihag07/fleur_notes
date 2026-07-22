@@ -1,98 +1,151 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
-import { ArrowRight, Heart } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ArrowRight, Heart, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/common/Button';
 import { Container } from '@/components/ui/Container';
-import { heroSlide } from '@/data/banners';
+import { heroSlides } from '@/data/banners';
 
 export function Hero() {
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentIndex((prevIndex) => (prevIndex + 1) % heroSlides.length);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const handlePrev = () => {
+    setCurrentIndex((prevIndex) => (prevIndex - 1 + heroSlides.length) % heroSlides.length);
+  };
+
+  const handleNext = () => {
+    setCurrentIndex((prevIndex) => (prevIndex + 1) % heroSlides.length);
+  };
+
+  const slide = heroSlides[currentIndex];
+
   return (
-    <section className="relative overflow-hidden bg-[#FAF5EF] py-12 md:py-20 border-b border-[#E8DACD]/40">
-      <Container>
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
-          {/* Left Text Content */}
+    <section className="relative overflow-hidden w-full h-[70vh] sm:h-[80vh] min-h-[580px] border-b border-[#E8DACD]/40 bg-[#FAF5EF] flex items-center">
+      {/* Background Banner Slideshow */}
+      <div className="absolute inset-0 z-0">
+        <AnimatePresence mode="wait">
           <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.7, ease: 'easeOut' }}
-            className="lg:col-span-6 flex flex-col items-start space-y-6"
+            key={currentIndex}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.8 }}
+            className="absolute inset-0"
           >
-            {/* Tagline */}
-            <div className="inline-flex items-center gap-2 text-xs font-semibold tracking-widest text-[#7A0C1E] uppercase">
-              <Heart className="w-3.5 h-3.5 fill-[#7A0C1E] text-[#7A0C1E]" />
-              <span>{heroSlide.tagline}</span>
-              <Heart className="w-3.5 h-3.5 fill-[#7A0C1E] text-[#7A0C1E]" />
-            </div>
-
-            {/* Title */}
-            <h1 className="font-serif-luxury text-4xl sm:text-5xl lg:text-6xl font-bold text-[#2B1B17] leading-[1.15] tracking-tight">
-              {heroSlide.title}
-            </h1>
-
-            {/* Subtitle */}
-            <p className="text-base sm:text-lg text-[#705B54] leading-relaxed max-w-xl font-normal">
-              {heroSlide.description}
-            </p>
-
-            {/* CTAs */}
-            <div className="flex flex-wrap items-center gap-4 pt-2">
-              <Link href="/shop">
-                <Button
-                  variant="primary"
-                  size="lg"
-                  icon={ArrowRight}
-                  iconPosition="right"
-                  className="rounded-md font-medium text-sm px-6 py-3 bg-[#7A0C1E] hover:bg-[#5F0917]"
-                >
-                  {heroSlide.primaryCta}
-                </Button>
-              </Link>
-
-              <Link href="/categories">
-                <Button
-                  variant="outline"
-                  size="lg"
-                  className="rounded-md font-medium text-sm px-6 py-3 border-[#7A0C1E] text-[#7A0C1E] hover:bg-[#7A0C1E] hover:text-white"
-                >
-                  {heroSlide.secondaryCta}
-                </Button>
-              </Link>
-            </div>
+            <Image
+              src={slide.image}
+              alt={slide.title}
+              fill
+              priority
+              quality={100}
+              className="object-cover"
+              sizes="100vw"
+            />
           </motion.div>
+        </AnimatePresence>
+      </div>
 
-          {/* Right Image Display */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="lg:col-span-6 relative flex justify-center"
-          >
-            <div className="relative w-full max-w-lg aspect-[4/3] rounded-2xl overflow-hidden shadow-2xl border border-[#E8DACD]">
-              <Image
-                src={heroSlide.image}
-                alt="Fleur Notes luxury artisanal homeware"
-                fill
-                priority
-                className="object-cover transition-transform duration-700 hover:scale-105"
-                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-60" />
-            </div>
+      {/* Hero Content (Layered directly over the banner) */}
+      <Container className="relative z-20 w-full flex justify-start items-center">
+        <div className="w-full max-w-xl md:max-w-2xl py-12 md:py-20">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentIndex}
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+              transition={{ duration: 0.5 }}
+              className="flex flex-col items-start space-y-6"
+            >
+              {/* Tagline */}
+              <div className="inline-flex items-center gap-2 text-xs font-semibold tracking-widest text-[#7A0C1E] uppercase">
+                <Heart className="w-3.5 h-3.5 fill-[#7A0C1E] text-[#7A0C1E]" />
+                <span>{slide.tagline}</span>
+                <Heart className="w-3.5 h-3.5 fill-[#7A0C1E] text-[#7A0C1E]" />
+              </div>
 
-            {/* Mobile Pagination Dots */}
-            <div className="flex items-center justify-center gap-1.5 mt-4 lg:hidden absolute -bottom-6">
-              <span className="w-2.5 h-2.5 rounded-full bg-[#7A0C1E]" />
-              <span className="w-2 h-2 rounded-full bg-gray-300" />
-              <span className="w-2 h-2 rounded-full bg-gray-300" />
-              <span className="w-2 h-2 rounded-full bg-gray-300" />
-            </div>
-          </motion.div>
+              {/* Title */}
+              <h1 className="font-serif-luxury text-4xl sm:text-5xl lg:text-6xl font-bold text-[#7A0C1E] leading-[1.15] tracking-tight">
+                {slide.title}
+              </h1>
+
+              {/* Subtitle */}
+              <p className="text-base sm:text-lg text-black font-medium leading-relaxed max-w-xl">
+                {slide.description}
+              </p>
+
+              {/* CTAs */}
+              <div className="flex flex-wrap items-center gap-4 pt-2">
+                <Link href="/shop">
+                  <Button
+                    variant="primary"
+                    size="lg"
+                    icon={ArrowRight}
+                    iconPosition="right"
+                    className="rounded-md font-medium text-sm px-6 py-3 bg-[#7A0C1E] hover:bg-[#5F0917]"
+                  >
+                    {slide.primaryCta}
+                  </Button>
+                </Link>
+
+                <Link href="/categories">
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    className="rounded-md font-medium text-sm px-6 py-3 border-[#7A0C1E] text-[#7A0C1E] hover:bg-[#7A0C1E] hover:text-white"
+                  >
+                    {slide.secondaryCta}
+                  </Button>
+                </Link>
+              </div>
+            </motion.div>
+          </AnimatePresence>
         </div>
       </Container>
+
+      {/* Manual Slide Controls - Left Arrow */}
+      <button
+        onClick={handlePrev}
+        className="hidden md:flex absolute left-6 top-1/2 -translate-y-1/2 z-30 w-11 h-11 items-center justify-center rounded-full bg-[#FAF5EF]/80 hover:bg-[#7A0C1E] text-[#7A0C1E] hover:text-white border border-[#E8DACD] shadow-md transition-all duration-300 cursor-pointer focus:outline-hidden hover:translate-x-[-2px]"
+        aria-label="Previous Slide"
+      >
+        <ChevronLeft className="w-6 h-6" />
+      </button>
+
+      {/* Manual Slide Controls - Right Arrow */}
+      <button
+        onClick={handleNext}
+        className="hidden md:flex absolute right-6 top-1/2 -translate-y-1/2 z-30 w-11 h-11 items-center justify-center rounded-full bg-[#FAF5EF]/80 hover:bg-[#7A0C1E] text-[#7A0C1E] hover:text-white border border-[#E8DACD] shadow-md transition-all duration-300 cursor-pointer focus:outline-hidden hover:translate-x-[2px]"
+        aria-label="Next Slide"
+      >
+        <ChevronRight className="w-6 h-6" />
+      </button>
+
+      {/* Dot Indicators */}
+      <div className="absolute bottom-6 left-0 right-0 z-30 flex items-center justify-center gap-2">
+        {heroSlides.map((_, index) => (
+          <button
+            key={index}
+            onClick={() => setCurrentIndex(index)}
+            className={`transition-all duration-300 cursor-pointer focus:outline-hidden ${
+              index === currentIndex
+                ? 'w-8 h-2 rounded-full bg-[#7A0C1E]'
+                : 'w-2 h-2 rounded-full bg-gray-400/50 hover:bg-[#7A0C1E]/50'
+            }`}
+            aria-label={`Go to slide ${index + 1}`}
+          />
+        ))}
+      </div>
     </section>
   );
 }

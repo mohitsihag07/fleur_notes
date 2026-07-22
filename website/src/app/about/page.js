@@ -41,38 +41,39 @@ export default function AboutPage() {
 
   return (
     <div className="bg-[#FAF5EF] min-h-screen">
-      {/* Hero Header Banner */}
-      <section className="relative bg-[#F2E6DA] py-12 lg:py-20 border-b border-[#E8DACD]">
-        <Container>
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
-            <div className="lg:col-span-6 space-y-4">
-              <div className="inline-flex items-center gap-2 text-xs font-semibold tracking-widest text-[#7A0C1E] uppercase">
-                <Sparkles className="w-3.5 h-3.5 fill-[#7A0C1E]" />
-                <span>OUR STORY</span>
-              </div>
-              <h1 className="font-serif-luxury text-4xl sm:text-5xl lg:text-6xl font-bold text-[#2B1B17] leading-[1.15]">
-                Crafted with love, chosen for you.
-              </h1>
-              <p className="text-sm sm:text-base text-[#705B54] leading-relaxed max-w-xl">
-                Fleur Notes was born from a simple idea — to bring beauty, warmth, and meaning into everyday life. We curate and create handcrafted products that tell a story and turn houses into homes.
-              </p>
-              <div className="pt-2">
-                <Link href="/shop">
-                  <Button variant="primary" icon={ArrowRight} iconPosition="right" className="rounded-xl px-6 py-3 bg-[#7A0C1E] hover:bg-[#5F0917]">
-                    Our Collection
-                  </Button>
-                </Link>
-              </div>
-            </div>
+      {/* Hero Header Banner (Full Screen Width) */}
+      <section className="relative overflow-hidden w-full h-[70vh] sm:h-[80vh] min-h-[580px] border-b border-[#E8DACD]/40 bg-[#FAF5EF] flex items-center">
+        {/* Background Image */}
+        <div className="absolute inset-0 z-0">
+          <Image
+            src="/images/banners/hero_banner.jpg"
+            alt="Crafted with love story"
+            fill
+            className="object-cover"
+            priority
+            quality={100}
+          />
+        </div>
 
-            <div className="lg:col-span-6 relative aspect-[4/3] rounded-2xl overflow-hidden shadow-lg border border-[#E8DACD]">
-              <Image
-                src="/images/banners/hero_banner.jpg"
-                alt="Crafted with love story"
-                fill
-                className="object-cover"
-                priority
-              />
+        {/* Hero Content (Layered directly over the banner) */}
+        <Container className="relative z-10 w-full">
+          <div className="max-w-xl md:max-w-2xl flex flex-col items-start space-y-4">
+            <div className="inline-flex items-center gap-2 text-xs font-bold tracking-widest text-[#7A0C1E] uppercase">
+              <Sparkles className="w-3.5 h-3.5 fill-[#7A0C1E]" />
+              <span>OUR STORY</span>
+            </div>
+            <h1 className="font-serif-luxury text-4xl sm:text-5xl lg:text-6xl font-bold text-[#7A0C1E] leading-[1.15] tracking-tight">
+              Crafted with love, chosen for you.
+            </h1>
+            <p className="text-base sm:text-lg text-black font-medium leading-relaxed max-w-xl">
+              Fleur Notes was born from a simple idea — to bring beauty, warmth, and meaning into everyday life. We curate and create handcrafted products that tell a story and turn houses into homes.
+            </p>
+            <div className="pt-2">
+              <Link href="/shop">
+                <Button variant="primary" icon={ArrowRight} iconPosition="right" className="rounded-xl px-6 py-3 bg-[#7A0C1E] hover:bg-[#5F0917]">
+                  Our Collection
+                </Button>
+              </Link>
             </div>
           </div>
         </Container>

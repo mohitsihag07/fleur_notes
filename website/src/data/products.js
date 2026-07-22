@@ -1,9 +1,9 @@
 export const featuredProducts = [
   {
     id: 'prod-1',
-    name: 'Minimal Ceramic Vase',
-    slug: 'minimal-ceramic-vase',
-    category: 'Home Decor',
+    name: 'Dried Eucalyptus Bouquet',
+    slug: 'dried-eucalyptus-bouquet',
+    category: 'Bouquets',
     price: 28.00,
     originalPrice: 35.00,
     rating: 5.0,
@@ -12,13 +12,13 @@ export const featuredProducts = [
     isNew: true,
     isBestSeller: true,
     inStock: true,
-    shortDescription: 'Elegant handcrafted ceramic vase with a warm matte beige finish, designed for eucalyptus and floral arrangements.'
+    shortDescription: 'Elegant handcrafted dried eucalyptus bouquet, perfect for bringing natural texture into your living space.'
   },
   {
     id: 'prod-2',
     name: 'Aromatherapy Soy Candle',
     slug: 'aromatherapy-soy-candle',
-    category: 'Candles & Fragrance',
+    category: 'Candles',
     price: 18.00,
     originalPrice: 22.00,
     rating: 5.0,
@@ -31,9 +31,9 @@ export const featuredProducts = [
   },
   {
     id: 'prod-3',
-    name: 'Handwoven Wall Hanging',
-    slug: 'handwoven-wall-hanging',
-    category: 'Accessories',
+    name: 'Rose & Lavender Candle Combo',
+    slug: 'rose-lavender-candle-combo',
+    category: 'Candle Combos',
     price: 42.00,
     originalPrice: 48.00,
     rating: 5.0,
@@ -42,13 +42,13 @@ export const featuredProducts = [
     isNew: true,
     isBestSeller: false,
     inStock: true,
-    shortDescription: 'Intricately knotted organic cotton macrame wall hanging mounted on reclaimed natural driftwood.'
+    shortDescription: 'Curated pairing of our signature Rose Otto and English Lavender soy wax candles.'
   },
   {
     id: 'prod-4',
     name: 'Luxury Gift Hamper',
     slug: 'luxury-gift-hamper',
-    category: 'Handmade Gifts',
+    category: 'Gift Hamper',
     price: 65.00,
     originalPrice: 75.00,
     rating: 5.0,
@@ -61,9 +61,9 @@ export const featuredProducts = [
   },
   {
     id: 'prod-5',
-    name: 'Wooden Decorative Tray',
-    slug: 'wooden-decorative-tray',
-    category: 'Kitchen & Dining',
+    name: 'Cotton Blossom Bouquet',
+    slug: 'cotton-blossom-bouquet',
+    category: 'Bouquets',
     price: 35.00,
     originalPrice: 40.00,
     rating: 5.0,
@@ -72,13 +72,13 @@ export const featuredProducts = [
     isNew: false,
     isBestSeller: false,
     inStock: true,
-    shortDescription: 'Handcrafted solid oak serving tray with carved side handles and warm natural oil finish.'
+    shortDescription: 'Handcrafted cotton blossom dried arrangement, bringing rustic charm and elegance.'
   },
   {
     id: 'prod-6',
     name: 'Scented Wax Tablet',
     slug: 'scented-wax-tablet',
-    category: 'Candles & Fragrance',
+    category: 'Candles',
     price: 12.00,
     originalPrice: 15.00,
     rating: 5.0,
@@ -91,9 +91,9 @@ export const featuredProducts = [
   },
   {
     id: 'prod-7',
-    name: 'Handmade Ceramic Mug',
-    slug: 'handmade-ceramic-mug',
-    category: 'Kitchen & Dining',
+    name: 'Vanilla & Caramel Candle Combo',
+    slug: 'vanilla-caramel-candle-combo',
+    category: 'Candle Combos',
     price: 16.00,
     originalPrice: 20.00,
     rating: 5.0,
@@ -102,13 +102,13 @@ export const featuredProducts = [
     isNew: false,
     isBestSeller: true,
     inStock: true,
-    shortDescription: 'Speckled cream stoneware coffee mug with ergonomic hand-pulled handle.'
+    shortDescription: 'Warm, sweet blend of organic French Vanilla and salted caramel hand-poured candles.'
   },
   {
     id: 'prod-8',
-    name: 'Boho Throw Pillow Cover',
-    slug: 'boho-throw-pillow-cover',
-    category: 'Home Decor',
+    name: 'Festive Celebration Gift Hamper',
+    slug: 'festive-celebration-gift-hamper',
+    category: 'Gift Hamper',
     price: 24.00,
     originalPrice: 30.00,
     rating: 5.0,
@@ -117,6 +117,6 @@ export const featuredProducts = [
     isNew: false,
     isBestSeller: false,
     inStock: true,
-    shortDescription: 'Textured woven cotton cushion cover with subtle geometric tufting and hidden zipper.'
+    shortDescription: 'Holiday celebration basket filled with natural fragrance delights, sweets, and ceramic essentials.'
   }
 ];
