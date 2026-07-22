@@ -1,14 +1,59 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import { Container } from '@/components/ui/Container';
-import { categories } from '@/data/categories';
+import { categories as staticCategories } from '@/data/categories';
+import { categoryService } from '@/services/categoryService';
+import { getBackendURL } from '@/services/api';
 
 export function Categories() {
+  const [categoriesList, setCategoriesList] = useState(staticCategories);
+
+  useEffect(() => {
+    async function loadCategories() {
+      try {
+        const cats = await categoryService.getCategories({ limit: 8 });
+        if (cats && cats.length > 0) {
+          const backendUrl = getBackendURL();
+          const formatted = cats.map((c) => {
+            let img = c.image || '';
+            if (!img) {
+              const nameLower = (c.name || '').toLowerCase();
+              if (nameLower.includes('bouquet') || nameLower.includes('flower')) img = '/images/categories/home_decor.jpg';
+              else if (nameLower.includes('combo')) img = '/images/categories/accessories.jpg';
+              else if (nameLower.includes('candle')) img = '/images/categories/candles.jpg';
+              else if (nameLower.includes('hamper') || nameLower.includes('gift')) img = '/images/categories/gifts.jpg';
+              else img = '/images/categories/home_decor.jpg';
+            } else if (!img.startsWith('http') && !img.startsWith('data:')) {
+              if (img.startsWith('/images/') || img.startsWith('images/')) {
+                const path = img.startsWith('/') ? img : `/${img}`;
+                img = `${backendUrl}${path}`;
+              } else {
+                const clean = img.startsWith('/') ? img.substring(1) : img;
+                img = `${backendUrl}/images/categories/${clean}`;
+              }
+            }
+            return {
+              id: c.id,
+              name: c.name,
+              slug: c.slug,
+              image: img,
+              linkText: 'Shop Now'
+            };
+          });
+          setCategoriesList(formatted);
+        }
+      } catch (err) {
+        console.error('Failed to load home categories:', err);
+      }
+    }
+    loadCategories();
+  }, []);
+
   return (
     <section className="py-16 md:py-24 bg-[#FAF5EF]">
       <Container>
@@ -24,7 +69,7 @@ export function Categories() {
 
         {/* Desktop Card Grid (Hidden on Mobile) */}
         <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {categories.map((cat, idx) => (
+          {categoriesList.map((cat, idx) => (
             <motion.div
               key={cat.id}
               initial={{ opacity: 0, y: 20 }}
@@ -39,6 +84,7 @@ export function Categories() {
                       src={cat.image}
                       alt={cat.name}
                       fill
+                      unoptimized
                       className="object-cover transition-transform duration-700 group-hover:scale-105"
                       sizes="(max-width: 1200px) 50vw, 300px"
                     />
@@ -60,13 +106,14 @@ export function Categories() {
 
         {/* Mobile Circular Avatars Grid (Visible only on Mobile) */}
         <div className="grid grid-cols-4 gap-3 sm:hidden">
-          {categories.map((cat) => (
+          {categoriesList.map((cat) => (
             <Link key={cat.id} href="/categories" className="flex flex-col items-center group">
               <div className="relative w-16 h-16 rounded-full overflow-hidden border-2 border-[#E8DACD] shadow-sm group-hover:border-[#7A0C1E] transition-colors">
                 <Image
                   src={cat.image}
                   alt={cat.name}
                   fill
+                  unoptimized
                   className="object-cover"
                 />
               </div>

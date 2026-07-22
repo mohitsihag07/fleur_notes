@@ -24,6 +24,7 @@ const getBannersList = async (req, res) => {
         const limit = parseInt(req.query.limit) || 10;
         const search = req.query.search || '';
         const status = req.query.status || '';
+        const type = req.query.type || '';
         const offset = (page - 1) * limit;
         const whereClause = {};
         
@@ -35,6 +36,9 @@ const getBannersList = async (req, res) => {
         if (status) {
             whereClause.status = status;
         }
+        if (type) {
+            whereClause.type = type;
+        }
         
         const { count, rows } = await Banner.findAndCountAll({
             where: whereClause,
@@ -43,6 +47,16 @@ const getBannersList = async (req, res) => {
             order: [
                 ['display_order', 'ASC']
             ]
+        });
+
+        // Calculate statistics
+        const totalBanners = await Banner.count();
+        const activeBanners = await Banner.count({ where: { status: 'active' } });
+        const homeBanners = await Banner.count({ where: { type: 'home' } });
+        const otherBanners = await Banner.count({
+            where: {
+                type: { [Op.ne]: 'home' }
+            }
         });
         
         await logActivity(req.user.id, 'VIEW_BANNERS', 'Banners list viewed', req);
@@ -53,7 +67,13 @@ const getBannersList = async (req, res) => {
                 totalItems: count, 
                 totalPages: Math.ceil(count / limit), 
                 currentPage: page, 
-                limit 
+                limit,
+                stats: {
+                    totalBanners,
+                    activeBanners,
+                    homeBanners,
+                    otherBanners
+                }
             } 
         });
     } catch (error) {
@@ -80,13 +100,25 @@ const getBanner = async (req, res) => {
 
 const addBanner = async (req, res) => {
     try {
-        const { title, subtitle, image, button_text, button_link, status, display_order } = req.body;
+        const { tagline, title, description, primary_cta_text, primary_cta_link, secondary_cta_text, secondary_cta_link, image, status, display_order, type } = req.body;
         
         if (!image) {
             return helper.error(res, "Banner image is required", 400);
         }
 
-        const banner = await Banner.create(req.body);
+        const banner = await Banner.create({
+            tagline,
+            title,
+            description,
+            primary_cta_text,
+            primary_cta_link,
+            secondary_cta_text,
+            secondary_cta_link,
+            image,
+            status,
+            display_order,
+            type: type || 'home'
+        });
         
         await logActivity(req.user.id, 'ADD_BANNER', `Banner '${title || 'Untitled'}' added successfully`, req);
         return helper.success(res, "Banner added successfully", banner);
@@ -105,7 +137,21 @@ const updateBanner = async (req, res) => {
             return helper.error(res, "Banner not found", 404);
         }
         
-        await banner.update(req.body);
+        const { tagline, title, description, primary_cta_text, primary_cta_link, secondary_cta_text, secondary_cta_link, image, status, display_order, type } = req.body;
+        
+        await banner.update({
+            tagline,
+            title,
+            description,
+            primary_cta_text,
+            primary_cta_link,
+            secondary_cta_text,
+            secondary_cta_link,
+            image,
+            status,
+            display_order,
+            type
+        });
         
         await logActivity(req.user.id, 'EDIT_BANNER', `Banner with ID ${req.params.id} updated successfully`, req);
         return helper.success(res, "Banner updated successfully", banner);

@@ -12,25 +12,37 @@ module.exports = (sequelize, DataTypes) => {
       autoIncrement: true,
       primaryKey: true,
     },
-    title: {
-      type: DataTypes.STRING(200),
+    tagline: {
+      type: DataTypes.STRING(255),
       allowNull: true,
     },
-    subtitle: {
-      type: DataTypes.STRING(300),
+    title: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+    },
+    description: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
+    primary_cta_text: {
+      type: DataTypes.STRING(100),
+      allowNull: true,
+    },
+    primary_cta_link: {
+      type: DataTypes.STRING(500),
+      allowNull: true,
+    },
+    secondary_cta_text: {
+      type: DataTypes.STRING(100),
+      allowNull: true,
+    },
+    secondary_cta_link: {
+      type: DataTypes.STRING(500),
       allowNull: true,
     },
     image: {
       type: DataTypes.STRING(255),
       allowNull: false,
-    },
-    button_text: {
-      type: DataTypes.STRING(80),
-      allowNull: true,
-    },
-    button_link: {
-      type: DataTypes.STRING(500),
-      allowNull: true,
     },
     display_order: {
       type: DataTypes.INTEGER.UNSIGNED,
@@ -39,6 +51,11 @@ module.exports = (sequelize, DataTypes) => {
     status: {
       type: DataTypes.ENUM('active', 'inactive'),
       defaultValue: 'active',
+    },
+    type: {
+      type: DataTypes.ENUM('home', 'shop', 'categories', 'about', 'contact'),
+      defaultValue: 'home',
+      allowNull: false,
     },
     deleted_at: {
       type: DataTypes.DATE,

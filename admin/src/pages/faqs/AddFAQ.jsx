@@ -63,7 +63,7 @@ const AddFAQ = () => {
         <div className="flex items-center gap-3">
           <button
             onClick={() => navigate('/faqs')}
-            className="p-2.5 rounded-2xl bg-white border border-gray-100 text-gray-700 hover:bg-[#EEF8CD] hover:text-[#2D252E] transition-all cursor-pointer shadow-2xs"
+            className="p-2.5 rounded-2xl bg-white border border-[#E8DACD] text-gray-700 hover:bg-[#FAF5EF] hover:text-[#2B1B17] transition-all cursor-pointer shadow-2xs"
           >
             <FiArrowLeft className="w-5 h-5" />
           </button>
@@ -79,9 +79,9 @@ const AddFAQ = () => {
       </div>
 
       {/* Form Card */}
-      <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100 space-y-6">
-        <div className="flex items-center gap-2 pb-4 border-b border-gray-100">
-          <FiHelpCircle className="w-5 h-5 text-[#FF9D9D]" />
+      <div className="bg-white rounded-3xl p-8 shadow-sm border border-[#E8DACD] space-y-6">
+        <div className="flex items-center gap-2 pb-4 border-b border-[#E8DACD]">
+          <FiHelpCircle className="w-5 h-5 text-[#7A0C1E]" />
           <h3 className="text-sm font-black text-gray-800 uppercase tracking-wider">
             FAQ Information
           </h3>
@@ -99,7 +99,7 @@ const AddFAQ = () => {
               placeholder="e.g. How long does shipping take?"
               value={formData.question}
               onChange={handleChange}
-              className="w-full px-4 py-3 rounded-2xl bg-[#FAF5F7] text-xs font-semibold text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#FF9D9D] transition-all"
+              className="w-full px-4 py-3 rounded-2xl bg-[#F2E6DA] text-xs font-semibold text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all"
             />
           </div>
 
@@ -114,7 +114,7 @@ const AddFAQ = () => {
               placeholder="Provide a detailed, clear answer to the question..."
               value={formData.answer}
               onChange={handleChange}
-              className="w-full px-4 py-3 rounded-2xl bg-[#FAF5F7] text-xs font-semibold text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#FF9D9D] transition-all resize-y"
+              className="w-full px-4 py-3 rounded-2xl bg-[#F2E6DA] text-xs font-semibold text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all resize-y"
             />
           </div>
 
@@ -129,7 +129,7 @@ const AddFAQ = () => {
                 name="category"
                 value={formData.category}
                 onChange={handleChange}
-                className="w-full px-4 py-3 rounded-2xl bg-[#FAF5F7] text-xs font-extrabold text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#FF9D9D] cursor-pointer"
+                className="w-full px-4 py-3 rounded-2xl bg-[#F2E6DA] text-xs font-extrabold text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] cursor-pointer"
               >
                 {categories.map((cat) => (
                   <option key={cat} value={cat}>
@@ -151,7 +151,7 @@ const AddFAQ = () => {
                 placeholder="0"
                 value={formData.sort_order}
                 onChange={handleChange}
-                className="w-full px-4 py-3 rounded-2xl bg-[#FAF5F7] text-xs font-semibold text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#FF9D9D] transition-all"
+                className="w-full px-4 py-3 rounded-2xl bg-[#F2E6DA] text-xs font-semibold text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all"
               />
             </div>
           </div>
@@ -169,7 +169,7 @@ const AddFAQ = () => {
                   value="active"
                   checked={formData.status === 'active'}
                   onChange={handleChange}
-                  className="w-4 h-4 text-[#FF9D9D] focus:ring-[#FF9D9D]"
+                  className="w-4 h-4 text-[#7A0C1E] focus:ring-[#7A0C1E]"
                 />
                 <span className="text-xs font-bold text-gray-800">Active</span>
               </label>
@@ -181,7 +181,7 @@ const AddFAQ = () => {
                   value="inactive"
                   checked={formData.status === 'inactive'}
                   onChange={handleChange}
-                  className="w-4 h-4 text-[#FF9D9D] focus:ring-[#FF9D9D]"
+                  className="w-4 h-4 text-[#7A0C1E] focus:ring-[#7A0C1E]"
                 />
                 <span className="text-xs font-bold text-gray-800">Inactive</span>
               </label>
@@ -189,11 +189,11 @@ const AddFAQ = () => {
           </div>
 
           {/* Form Actions */}
-          <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-100">
+          <div className="flex items-center justify-end gap-3 pt-4 border-t border-[#E8DACD]">
             <button
               type="button"
               onClick={() => navigate('/faqs')}
-              className="py-3 px-6 rounded-2xl bg-[#FAF5F7] text-xs font-black text-gray-700 hover:bg-gray-200 transition-all cursor-pointer"
+              className="py-3 px-6 rounded-2xl bg-[#F2E6DA] text-xs font-black text-gray-700 hover:bg-gray-200 transition-all cursor-pointer"
             >
               Cancel
             </button>

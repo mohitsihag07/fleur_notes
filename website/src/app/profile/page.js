@@ -22,6 +22,7 @@ import {
   MessageCircle
 } from 'lucide-react';
 import { Container } from '@/components/ui/Container';
+import { getBackendURL } from '@/services/api';
 
 export default function ProfilePage() {
   const [activeTab, setActiveTab] = useState('profile');
@@ -29,64 +30,123 @@ export default function ProfilePage() {
   const [orderUpdates, setOrderUpdates] = useState(true);
   const [promoOffers, setPromoOffers] = useState(true);
 
-  // Customer Support Chat State
-  const [messages, setMessages] = useState([
-    {
-      id: 1,
-      sender: 'support',
-      text: 'Hello Ananya! Welcome to Fleur Notes Support. 🌸 How can we assist you with your orders, returns, or gifts today?',
-      time: '12:00 PM'
-    }
-  ]);
+  // Dynamic Customer Support Live Chat State
+  const [conversation, setConversation] = useState(null);
+  const [messages, setMessages] = useState([]);
   const [inputText, setInputText] = useState('');
-  const [isTyping, setIsTyping] = useState(false);
+  const [isSending, setIsSending] = useState(false);
   const chatEndRef = useRef(null);
+
+  // Initialize or fetch support conversation on load or when Help tab opens
+  useEffect(() => {
+    async function initChat() {
+      try {
+        const backendUrl = getBackendURL ? getBackendURL() : 'http://localhost:3131';
+        const initRes = await fetch(`${backendUrl}/api/users/support-chat/init`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ user_name: 'Ananya Verma', user_email: 'ananya.verma@email.com' })
+        });
+        const initData = await initRes.json();
+        if (initData?.success && initData?.data) {
+          const conv = initData.data;
+          setConversation(conv);
+          fetchMessages(conv.id);
+        }
+      } catch (err) {
+        console.error('Failed to init support chat:', err);
+      }
+    }
+    if (activeTab === 'help') {
+      initChat();
+    }
+  }, [activeTab]);
+
+  // Fetch Message History
+  const fetchMessages = async (convId) => {
+    try {
+      const backendUrl = getBackendURL ? getBackendURL() : 'http://localhost:3131';
+      const res = await fetch(`${backendUrl}/api/users/support-chat/messages/${convId}`);
+      const data = await res.json();
+      if (data?.success) {
+        setMessages(data.data || []);
+      }
+    } catch (err) {
+      console.error('Error fetching chat messages:', err);
+    }
+  };
+
+  // Real-time EventSource / SSE & Polling fallback for live messages
+  useEffect(() => {
+    if (!conversation?.id || activeTab !== 'help') return;
+
+    const backendUrl = getBackendURL ? getBackendURL() : 'http://localhost:3131';
+    
+    // 1. SSE EventSource
+    let eventSource;
+    try {
+      eventSource = new EventSource(`${backendUrl}/api/users/support-chat/stream?conversation_id=${conversation.id}`);
+      eventSource.onmessage = (event) => {
+        try {
+          const payload = JSON.parse(event.data);
+          if (payload?.message) {
+            setMessages((prev) => {
+              if (prev.some((m) => m.id === payload.message.id)) return prev;
+              return [...prev, payload.message];
+            });
+          }
+        } catch (e) {
+          console.error('Error parsing SSE event:', e);
+        }
+      };
+    } catch (e) {
+      console.error('SSE initialization error:', e);
+    }
+
+    // 2. Poll every 3 seconds for backup real-time sync
+    const interval = setInterval(() => {
+      fetchMessages(conversation.id);
+    }, 3000);
+
+    return () => {
+      if (eventSource) eventSource.close();
+      clearInterval(interval);
+    };
+  }, [conversation?.id, activeTab]);
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages, isTyping]);
+  }, [messages]);
 
-  const handleSendMessage = (textToSend) => {
-    if (!textToSend || !textToSend.trim()) return;
+  // Send message
+  const handleSendMessage = async (textToSend) => {
+    if (!textToSend || !textToSend.trim() || !conversation?.id || isSending) return;
+    setIsSending(true);
 
-    const userMsg = {
-      id: Date.now(),
-      sender: 'user',
-      text: textToSend,
-      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-    };
-
-    setMessages((prev) => [...prev, userMsg]);
-    setInputText('');
-    setIsTyping(true);
-
-    setTimeout(() => {
-      let replyText = "Thank you for reaching out! A customer support representative will connect with you shortly.";
-      const query = textToSend.toLowerCase();
-
-      if (query.includes('track') || query.includes('order')) {
-        replyText = "Checking your orders... 📦 Your order #FLR1256 was delivered on May 18, 2024. Your order #FLR1189 is currently Shipped and is expected to arrive by tomorrow evening!";
-      } else if (query.includes('refund') || query.includes('return')) {
-        replyText = "We offer a 30-day hassle-free return policy. I see you don't have any active refund requests. If you'd like to start a return for order #FLR1256, please let me know!";
-      } else if (query.includes('coupon') || query.includes('discount')) {
-        replyText = "You have 2 available coupons! You can use code WELCOME15 for 15% off your first order, or FLEUR10 for 10% off storewide at checkout. 🎟️";
-      } else if (query.includes('hamper') || query.includes('gift')) {
-        replyText = "We specialize in custom hampers! 🎁 You can build your own hamper in our Hamper Builder section or choose from our curated Gifts category.";
-      } else if (query.includes('agent') || query.includes('human') || query.includes('talk')) {
-        replyText = "Connecting you to a live support agent... 🧑‍💻 Please hold on for a moment.";
+    try {
+      const backendUrl = getBackendURL ? getBackendURL() : 'http://localhost:3131';
+      const res = await fetch(`${backendUrl}/api/users/support-chat/send`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          conversation_id: conversation.id,
+          message: textToSend.trim(),
+          user_name: 'Ananya Verma'
+        })
+      });
+      const data = await res.json();
+      if (data?.success && data?.data) {
+        setMessages((prev) => {
+          if (prev.some((m) => m.id === data.data.id)) return prev;
+          return [...prev, data.data];
+        });
+        setInputText('');
       }
-
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: Date.now() + 1,
-          sender: 'support',
-          text: replyText,
-          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-        }
-      ]);
-      setIsTyping(false);
-    }, 1200);
+    } catch (err) {
+      console.error('Failed to send message:', err);
+    } finally {
+      setIsSending(false);
+    }
   };
 
   const menuItems = [
@@ -348,9 +408,24 @@ export default function ProfilePage() {
                   {/* Chat Messages Log */}
                   <div className="h-72 overflow-y-auto px-4 py-4 bg-[#FAF5EF]/20 space-y-4 scroll-smooth">
                     {messages.map((msg) => {
-                      const isSupport = msg.sender === 'support';
+                      const isSupport = msg.sender_type === 'admin' || msg.sender === 'support';
+                      const isSystem = msg.sender_type === 'system';
+                      const timeStr = msg.created_at
+                        ? new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                        : (msg.time || 'Just now');
+
+                      if (isSystem) {
+                        return (
+                          <div key={msg.id || Math.random()} className="text-center py-1">
+                            <span className="px-3 py-1 bg-[#F2E6DA] text-[#7A0C1E] rounded-full text-[10px] font-bold border border-[#E8DACD]">
+                              {msg.message || msg.text}
+                            </span>
+                          </div>
+                        );
+                      }
+
                       return (
-                        <div key={msg.id} className={`flex gap-2.5 ${isSupport ? 'justify-start items-start' : 'justify-end items-end'}`}>
+                        <div key={msg.id || Math.random()} className={`flex gap-2.5 ${isSupport ? 'justify-start items-start' : 'justify-end items-end'}`}>
                           {isSupport && (
                             <div className="w-7 h-7 rounded-full bg-[#7A0C1E]/10 border border-[#A87B39]/20 flex items-center justify-center text-[#7A0C1E] shrink-0 font-serif-luxury text-[10px] font-bold">
                               FN
@@ -363,9 +438,9 @@ export default function ProfilePage() {
                                 : 'bg-[#7A0C1E] text-white rounded-tr-none'
                             }`}
                           >
-                            <p>{msg.text}</p>
+                            <p>{msg.message || msg.text}</p>
                             <span className={`block text-[9px] text-right mt-1.5 ${isSupport ? 'text-gray-400' : 'text-white/70'}`}>
-                              {msg.time}
+                              {timeStr}
                             </span>
                           </div>
                         </div>

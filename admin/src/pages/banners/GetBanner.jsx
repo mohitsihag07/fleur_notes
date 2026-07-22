@@ -68,12 +68,12 @@ const GetBanner = () => {
 
   if (!banner) {
     return (
-      <div className="bg-white rounded-3xl p-12 text-center border border-gray-100 max-w-4xl mx-auto">
+      <div className="bg-white rounded-3xl p-12 text-center border border-[#E8DACD] max-w-4xl mx-auto">
         <h3 className="text-sm font-black text-gray-800">Banner Not Found</h3>
         <p className="text-xs text-gray-400 mt-1">The banner you requested does not exist or was removed.</p>
         <Link
           to="/banners"
-          className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#FF9D9D] text-[#2D252E] text-xs font-black uppercase"
+          className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#7A0C1E] text-white text-xs font-black uppercase"
         >
           <FiArrowLeft className="w-4 h-4" />
           <span>Back to Banners</span>
@@ -88,7 +88,7 @@ const GetBanner = () => {
       <div className="flex items-center justify-between">
         <Link
           to="/banners"
-          className="inline-flex items-center gap-2 text-xs font-black text-gray-600 hover:text-[#FF9D9D] transition-colors"
+          className="inline-flex items-center gap-2 text-xs font-black text-gray-600 hover:text-[#7A0C1E] transition-colors"
         >
           <FiArrowLeft className="w-4 h-4" />
           <span>Back to Banners</span>
@@ -97,9 +97,9 @@ const GetBanner = () => {
         <div className="flex items-center gap-3">
           <Link
             to={`/banners/edit/${banner.id}`}
-            className="px-4 py-2 rounded-2xl bg-[#FAF5F7] hover:bg-[#EEF8CD] text-gray-800 text-xs font-black flex items-center gap-2 transition-colors"
+            className="px-4 py-2 rounded-2xl bg-[#F2E6DA] hover:bg-[#FAF5EF] text-gray-800 text-xs font-black flex items-center gap-2 transition-colors"
           >
-            <FiEdit className="w-4 h-4 text-[#FF9D9D]" />
+            <FiEdit className="w-4 h-4 text-[#7A0C1E]" />
             <span>Edit Banner</span>
           </Link>
 
@@ -114,16 +114,16 @@ const GetBanner = () => {
       </div>
 
       {/* Hero Banner Preview Card */}
-      <div className="bg-white rounded-3xl border border-gray-100 overflow-hidden shadow-sm">
-        <div className="p-6 bg-[#FAF5F7] border-b border-gray-100 flex items-center justify-between">
+      <div className="bg-white rounded-3xl border border-[#E8DACD] overflow-hidden shadow-sm">
+        <div className="p-6 bg-[#F2E6DA] border-b border-[#E8DACD] flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <FiLayers className="w-5 h-5 text-[#FF9D9D]" />
+            <FiLayers className="w-5 h-5 text-[#7A0C1E]" />
             <h2 className="text-lg font-black text-gray-900">
               Live Banner Preview #{banner.id}
             </h2>
           </div>
           <span className={`px-3 py-1 rounded-full text-xs font-black uppercase flex items-center gap-1.5 ${
-            banner.status === 'active' ? 'bg-[#EEF8CD] text-[#2D252E]' : 'bg-gray-200 text-gray-600'
+            banner.status === 'active' ? 'bg-[#FAF5EF] text-[#2B1B17]' : 'bg-gray-200 text-gray-600'
           }`}>
             {banner.status === 'active' ? <FiCheckCircle className="w-3.5 h-3.5" /> : <FiXCircle className="w-3.5 h-3.5" />}
             <span>{banner.status}</span>
@@ -140,29 +140,45 @@ const GetBanner = () => {
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
 
           <div className="relative z-10 p-8 max-w-2xl text-center text-white space-y-3">
+            {banner.tagline && (
+              <div className="text-xs font-black text-[#7A0C1E] uppercase tracking-widest drop-shadow-md">
+                {banner.tagline}
+              </div>
+            )}
             {banner.title && (
               <h1 className="text-2xl md:text-3xl font-black tracking-tight drop-shadow-md">
                 {banner.title}
               </h1>
             )}
-            {banner.subtitle && (
+            {(banner.description || banner.subtitle) && (
               <p className="text-sm font-medium text-gray-200 leading-relaxed drop-shadow">
-                {banner.subtitle}
+                {banner.description || banner.subtitle}
               </p>
             )}
-            {banner.button_text && (
-              <div className="pt-2">
+            <div className="pt-2 flex flex-wrap items-center justify-center gap-3">
+              {(banner.primary_cta_text || banner.button_text) && (
                 <a
-                  href={banner.button_link || '#'}
+                  href={banner.primary_cta_link || banner.button_link || '#'}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#FF9D9D] text-[#2D252E] font-black text-xs uppercase tracking-wider shadow-lg hover:scale-105 transition-transform"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#7A0C1E] text-white font-black text-xs uppercase tracking-wider shadow-lg hover:scale-105 transition-transform animate-fade-in"
                 >
-                  <span>{banner.button_text}</span>
-                  <FiArrowUpRight className="w-4 h-4" />
+                  <span>{banner.primary_cta_text || banner.button_text}</span>
+                  <FiArrowUpRight className="w-3.5 h-3.5" />
                 </a>
-              </div>
-            )}
+              )}
+              {banner.secondary_cta_text && (
+                <a
+                  href={banner.secondary_cta_link || '#'}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/20 hover:bg-white/30 text-white font-black text-xs uppercase tracking-wider border border-white/30 shadow-lg hover:scale-105 transition-transform"
+                >
+                  <span>{banner.secondary_cta_text}</span>
+                  <FiArrowUpRight className="w-3.5 h-3.5" />
+                </a>
+              )}
+            </div>
           </div>
         </div>
 
@@ -170,41 +186,47 @@ const GetBanner = () => {
         <div className="p-8 grid grid-cols-1 md:grid-cols-2 gap-6 bg-white">
           <div className="space-y-4">
             <div>
+              <span className="text-[11px] font-black text-gray-400 uppercase tracking-wider block">Banner Tagline</span>
+              <p className="text-xs font-bold text-gray-800 mt-1">{banner.tagline || 'None'}</p>
+            </div>
+
+            <div>
               <span className="text-[11px] font-black text-gray-400 uppercase tracking-wider block">Banner Title</span>
               <p className="text-sm font-bold text-gray-900 mt-1">{banner.title || 'None'}</p>
             </div>
 
             <div>
-              <span className="text-[11px] font-black text-gray-400 uppercase tracking-wider block">Subtitle</span>
-              <p className="text-xs font-semibold text-gray-600 mt-1 leading-relaxed">{banner.subtitle || 'None'}</p>
+              <span className="text-[11px] font-black text-gray-400 uppercase tracking-wider block">Description</span>
+              <p className="text-xs font-semibold text-gray-600 mt-1 leading-relaxed">{banner.description || banner.subtitle || 'None'}</p>
             </div>
 
-            <div>
-              <span className="text-[11px] font-black text-gray-400 uppercase tracking-wider block">Button CTA & Link</span>
-              {banner.button_text || banner.button_link ? (
-                <div className="mt-1 space-y-1">
-                  <p className="text-xs font-bold text-gray-800">{banner.button_text || 'No Label'}</p>
-                  {banner.button_link && (
-                    <a
-                      href={banner.button_link}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="text-xs text-[#FF9D9D] font-bold hover:underline inline-flex items-center gap-1"
-                    >
-                      <span className="truncate max-w-sm">{banner.button_link}</span>
-                      <FiExternalLink className="w-3 h-3 shrink-0" />
-                    </a>
-                  )}
-                </div>
-              ) : (
-                <p className="text-xs text-gray-400 mt-1">No call to action specified</p>
-              )}
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <span className="text-[11px] font-black text-gray-400 uppercase tracking-wider block">Primary CTA</span>
+                <p className="text-xs font-bold text-gray-800 mt-1">{banner.primary_cta_text || banner.button_text || 'None'}</p>
+                <span className="text-[10px] text-gray-400 break-all">{banner.primary_cta_link || banner.button_link || 'None'}</span>
+              </div>
+              <div>
+                <span className="text-[11px] font-black text-gray-400 uppercase tracking-wider block">Secondary CTA</span>
+                <p className="text-xs font-bold text-gray-800 mt-1">{banner.secondary_cta_text || 'None'}</p>
+                <span className="text-[10px] text-gray-400 break-all">{banner.secondary_cta_link || 'None'}</span>
+              </div>
             </div>
           </div>
 
-          <div className="space-y-4 border-l border-gray-100 pl-0 md:pl-6">
+          <div className="space-y-4 border-l border-[#E8DACD] pl-0 md:pl-6">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-2xl bg-[#FAF5F7] text-[#FF9D9D] flex items-center justify-center font-black">
+              <div className="w-9 h-9 rounded-2xl bg-[#F2E6DA] text-[#7A0C1E] flex items-center justify-center font-black">
+                <FiLayers className="w-4 h-4" />
+              </div>
+              <div>
+                <span className="text-[10px] font-black text-gray-400 uppercase tracking-wider block">Banner Type / Page</span>
+                <span className="text-xs font-black text-gray-800 uppercase">{banner.type || 'home'}</span>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-2xl bg-[#F2E6DA] text-gray-600 flex items-center justify-center font-black">
                 <FiHash className="w-4 h-4" />
               </div>
               <div>
@@ -214,7 +236,7 @@ const GetBanner = () => {
             </div>
 
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-2xl bg-[#FAF5F7] text-gray-600 flex items-center justify-center font-black">
+              <div className="w-9 h-9 rounded-2xl bg-[#F2E6DA] text-gray-600 flex items-center justify-center font-black">
                 <FiCalendar className="w-4 h-4" />
               </div>
               <div>
@@ -226,7 +248,7 @@ const GetBanner = () => {
             </div>
 
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-2xl bg-[#FAF5F7] text-gray-600 flex items-center justify-center font-black">
+              <div className="w-9 h-9 rounded-2xl bg-[#F2E6DA] text-gray-600 flex items-center justify-center font-black">
                 <FiCalendar className="w-4 h-4" />
               </div>
               <div>

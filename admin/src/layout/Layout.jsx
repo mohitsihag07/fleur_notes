@@ -1,11 +1,13 @@
 import React from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import Navbar from './Navbar';
 import Sidebar from './Sidebar';
 
 const Layout = () => {
+  const location = useLocation();
+
   return (
-    <div className="flex h-screen overflow-hidden bg-[#EEF8CD] font-sans antialiased text-gray-800 transition-colors duration-300">
+    <div className="flex h-screen overflow-hidden bg-[#FAF5EF] font-sans antialiased text-gray-800 transition-colors duration-300">
       {/* Sidebar navigation */}
       <Sidebar />
 
@@ -16,7 +18,9 @@ const Layout = () => {
 
         {/* Dynamic Route Content */}
         <main className="flex-1 p-6 md:p-8 overflow-y-auto">
-          <Outlet />
+          <div key={location.pathname} className="animate-fade-in">
+            <Outlet />
+          </div>
         </main>
       </div>
     </div>

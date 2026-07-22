@@ -12,6 +12,15 @@ export function ProductCard({ product, layout = 'grid' }) {
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [isAdded, setIsAdded] = useState(false);
 
+  const fallbackImg = 'https://images.unsplash.com/photo-1603006905003-be475563bc59?auto=format&fit=crop&q=80&w=600';
+  const [imgSrc, setImgSrc] = useState(product?.image || fallbackImg);
+
+  React.useEffect(() => {
+    if (product?.image) {
+      setImgSrc(product.image);
+    }
+  }, [product?.image]);
+
   const handleAddToCart = (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -34,12 +43,13 @@ export function ProductCard({ product, layout = 'grid' }) {
       >
         {/* Product Image Container */}
         <Link href={`/product/${product.slug}`} className="relative aspect-square w-[110px] sm:w-[150px] shrink-0 overflow-hidden bg-[#FAF5EF] block">
-          <Image
-            src={product.image}
-            alt={product.name}
-            fill
-            className="object-cover transition-transform duration-700 group-hover:scale-105"
-            sizes="(max-width: 768px) 110px, 150px"
+          <img
+            src={imgSrc}
+            alt={product.name || 'Product Image'}
+            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+            onError={() => {
+              if (imgSrc !== fallbackImg) setImgSrc(fallbackImg);
+            }}
           />
 
           {/* Wishlist Button Overlay */}
@@ -129,12 +139,13 @@ export function ProductCard({ product, layout = 'grid' }) {
     >
       {/* Product Image Container */}
       <Link href={`/product/${product.slug}`} className="relative aspect-square overflow-hidden bg-[#FAF5EF] block">
-        <Image
-          src={product.image}
-          alt={product.name}
-          fill
-          className="object-cover transition-transform duration-700 group-hover:scale-105"
-          sizes="(max-width: 768px) 50vw, (max-width: 1200px) 25vw, 300px"
+        <img
+          src={imgSrc}
+          alt={product.name || 'Product Image'}
+          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+          onError={() => {
+            if (imgSrc !== fallbackImg) setImgSrc(fallbackImg);
+          }}
         />
 
         {/* Wishlist Button Overlay */}

@@ -114,7 +114,7 @@ const GetProduct = () => {
   if (isLoading) {
     return (
       <div className="flex h-[70vh] items-center justify-center">
-        <div className="flex items-center gap-3 font-black text-[#FF9D9D] text-base">
+        <div className="flex items-center gap-3 font-black text-[#7A0C1E] text-base">
           <FiLoader className="w-6 h-6 animate-spin" />
           <span>Loading Product Details...</span>
         </div>
@@ -144,7 +144,7 @@ const GetProduct = () => {
         <div className="flex items-center gap-3">
           <button
             onClick={() => navigate('/products')}
-            className="p-2.5 rounded-2xl bg-white text-gray-700 border border-gray-100 hover:bg-[#EEF8CD] hover:text-[#2D252E] shadow-sm transition-all cursor-pointer"
+            className="p-2.5 rounded-2xl bg-white text-gray-700 border border-[#E8DACD] hover:bg-[#FAF5EF] hover:text-[#2B1B17] shadow-sm transition-all cursor-pointer"
             title="Back to Products"
           >
             <FiArrowLeft className="w-5 h-5" />
@@ -163,7 +163,7 @@ const GetProduct = () => {
         <div className="flex items-center gap-3">
           <button
             onClick={() => navigate(`/products/edit/${product.id}`)}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-[#EEF8CD] hover:bg-[#E2F2AF] text-[#2D252E] font-black text-xs shadow-xs transition-all cursor-pointer"
+            className="flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-[#FAF5EF] hover:bg-[#E8DACD] text-[#2B1B17] font-black text-xs shadow-xs transition-all cursor-pointer"
           >
             <FiEdit2 className="w-4 h-4 text-[#88A626]" />
             <span>Edit Product</span>
@@ -180,11 +180,11 @@ const GetProduct = () => {
       </div>
 
       {/* Main Product Card */}
-      <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100 flex flex-col md:flex-row gap-8 items-start">
+      <div className="bg-white rounded-3xl p-8 shadow-sm border border-[#E8DACD] flex flex-col md:flex-row gap-8 items-start">
         {/* Cover Image Box & Gallery Thumbnails */}
         <div className="w-full md:w-80 shrink-0 space-y-4">
           {/* Main Featured Image Box */}
-          <div className="w-full h-72 rounded-3xl overflow-hidden bg-[#FAF5F7] border border-gray-100 flex items-center justify-center relative shadow-inner">
+          <div className="w-full h-72 rounded-3xl overflow-hidden bg-[#F2E6DA] border border-[#E8DACD] flex items-center justify-center relative shadow-inner">
             {activeImageUrl ? (
               <img
                 src={activeImageUrl}
@@ -197,7 +197,7 @@ const GetProduct = () => {
               />
             ) : (
               <div className="flex flex-col items-center gap-2 text-gray-400">
-                <div className="w-16 h-16 rounded-2xl bg-[#EEF8CD] text-[#2D252E] flex items-center justify-center font-black">
+                <div className="w-16 h-16 rounded-2xl bg-[#FAF5EF] text-[#2B1B17] flex items-center justify-center font-black">
                   <FiBox className="w-8 h-8 text-[#88A626]" />
                 </div>
                 <span className="text-xs font-bold text-gray-400">No Image Uploaded</span>
@@ -218,8 +218,8 @@ const GetProduct = () => {
                     onClick={() => setSelectedImageIndex(idx)}
                     className={`h-16 rounded-xl overflow-hidden border-2 transition-all cursor-pointer ${
                       isSelected
-                        ? 'border-[#FF9D9D] ring-2 ring-[#FF9D9D]/30 scale-105'
-                        : 'border-gray-200 opacity-70 hover:opacity-100'
+                        ? 'border-[#7A0C1E] ring-2 ring-[#7A0C1E]/30 scale-105'
+                        : 'border-[#E8DACD] opacity-70 hover:opacity-100'
                     }`}
                   >
                     <img
@@ -237,7 +237,7 @@ const GetProduct = () => {
         {/* Details Column */}
         <div className="flex-1 space-y-6">
           {/* Header row: Name, Category, Status */}
-          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-gray-100 pb-4">
+          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#E8DACD] pb-4">
             <div>
               <div className="flex items-center gap-3">
                 <h1 className="text-2xl font-black text-gray-900 tracking-tight">
@@ -246,7 +246,7 @@ const GetProduct = () => {
                 <span
                   className={`px-3 py-1 rounded-full text-xs font-black ${
                     isActive
-                      ? 'bg-[#BBF1D2]/60 text-[#1E7741]'
+                      ? 'bg-[#E8DACD]/60 text-[#1E7741]'
                       : 'bg-red-100 text-red-600'
                   }`}
                 >
@@ -263,7 +263,7 @@ const GetProduct = () => {
 
             {/* Category Tag Pill */}
             {product.category?.name && (
-              <div className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-[#EEF8CD] text-[#2D252E] font-black text-xs">
+              <div className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-[#FAF5EF] text-[#2B1B17] font-black text-xs">
                 <FiLayers className="w-4 h-4 text-[#88A626]" />
                 <span>{product.category.name}</span>
               </div>
@@ -279,7 +279,7 @@ const GetProduct = () => {
               {product.tags.map((tag) => (
                 <span
                   key={tag.id}
-                  className="px-3 py-1 rounded-full bg-[#FAF5F7] text-gray-700 text-xs font-extrabold border border-gray-100"
+                  className="px-3 py-1 rounded-full bg-[#F2E6DA] text-gray-700 text-xs font-extrabold border border-[#E8DACD]"
                 >
                   #{tag.name}
                 </span>
@@ -290,7 +290,7 @@ const GetProduct = () => {
           {/* Pricing & Inventory Cards Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {/* Regular Price */}
-            <div className="p-4 rounded-2xl bg-[#FAF5F7] border border-gray-100">
+            <div className="p-4 rounded-2xl bg-[#F2E6DA] border border-[#E8DACD]">
               <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider block mb-1">
                 Regular Price
               </span>
@@ -300,7 +300,7 @@ const GetProduct = () => {
             </div>
 
             {/* Sale Price */}
-            <div className="p-4 rounded-2xl bg-[#FAF5F7] border border-gray-100">
+            <div className="p-4 rounded-2xl bg-[#F2E6DA] border border-[#E8DACD]">
               <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider block mb-1">
                 Sale Price
               </span>
@@ -310,7 +310,7 @@ const GetProduct = () => {
             </div>
 
             {/* Stock Quantity */}
-            <div className="p-4 rounded-2xl bg-[#FAF5F7] border border-gray-100">
+            <div className="p-4 rounded-2xl bg-[#F2E6DA] border border-[#E8DACD]">
               <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider block mb-1">
                 Available Stock
               </span>
@@ -320,12 +320,54 @@ const GetProduct = () => {
             </div>
           </div>
 
+          {/* Physical Specifications & Badges */}
+          <div>
+            <span className="text-xs font-bold text-gray-400 block mb-2 uppercase tracking-wider">
+              Physical Specifications & Flags
+            </span>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-gray-50/70 p-4 rounded-2xl border border-[#E8DACD] text-xs">
+              <div>
+                <span className="text-gray-400 font-medium block">Color</span>
+                <span className="font-extrabold text-gray-900">{product.color || 'N/A'}</span>
+              </div>
+              <div>
+                <span className="text-gray-400 font-medium block">Weight</span>
+                <span className="font-extrabold text-gray-900">{product.weight ? `${product.weight} kg` : 'N/A'}</span>
+              </div>
+              <div>
+                <span className="text-gray-400 font-medium block">Dimensions (L×W×H)</span>
+                <span className="font-extrabold text-gray-900">
+                  {(product.length || product.width || product.height)
+                    ? `${product.length || '-'} × ${product.width || '-'} × ${product.height || '-'} cm`
+                    : 'N/A'}
+                </span>
+              </div>
+              <div>
+                <span className="text-gray-400 font-medium block">Special Flags</span>
+                <div className="flex flex-wrap gap-1 mt-0.5">
+                  {(product.is_new_arrival || product.is_new) && (
+                    <span className="bg-amber-100 text-amber-800 text-[10px] font-extrabold px-2 py-0.5 rounded-full">New</span>
+                  )}
+                  {(product.is_best_seller || product.is_bestseller) && (
+                    <span className="bg-rose-100 text-rose-800 text-[10px] font-extrabold px-2 py-0.5 rounded-full">Bestseller</span>
+                  )}
+                  {product.is_featured && (
+                    <span className="bg-purple-100 text-purple-800 text-[10px] font-extrabold px-2 py-0.5 rounded-full">Featured</span>
+                  )}
+                  {!product.is_new_arrival && !product.is_new && !product.is_best_seller && !product.is_bestseller && !product.is_featured && (
+                    <span className="text-gray-400 font-semibold">Standard</span>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+
           {/* Description */}
           <div>
             <span className="text-xs font-bold text-gray-400 block mb-1">
               Description
             </span>
-            <p className="text-sm font-medium text-gray-700 bg-gray-50/70 p-4 rounded-2xl border border-gray-100 leading-relaxed whitespace-pre-line">
+            <p className="text-sm font-medium text-gray-700 bg-gray-50/70 p-4 rounded-2xl border border-[#E8DACD] leading-relaxed whitespace-pre-line">
               {product.description || 'No description available for this product.'}
             </p>
           </div>
@@ -333,11 +375,11 @@ const GetProduct = () => {
           {/* Metadata Timestamps */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs font-semibold text-gray-500 pt-1">
             <div className="flex items-center gap-2">
-              <FiCalendar className="w-4 h-4 text-[#FF9D9D]" />
+              <FiCalendar className="w-4 h-4 text-[#7A0C1E]" />
               <span>Created: {formatDate(product.created_at || product.createdAt)}</span>
             </div>
             <div className="flex items-center gap-2">
-              <FiClock className="w-4 h-4 text-[#FFC5AA]" />
+              <FiClock className="w-4 h-4 text-[#5F0917]" />
               <span>Last Updated: {formatDate(product.updated_at || product.updatedAt)}</span>
             </div>
           </div>
@@ -345,10 +387,10 @@ const GetProduct = () => {
       </div>
 
       {/* Customer Reviews Section */}
-      <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100 space-y-6">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-100 pb-5">
+      <div className="bg-white rounded-3xl p-8 shadow-sm border border-[#E8DACD] space-y-6">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#E8DACD] pb-5">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-[#EEF8CD] text-[#2D252E] flex items-center justify-center font-black">
+            <div className="w-10 h-10 rounded-2xl bg-[#FAF5EF] text-[#2B1B17] flex items-center justify-center font-black">
               <FiMessageSquare className="w-5 h-5 text-[#88A626]" />
             </div>
             <div>
@@ -363,7 +405,7 @@ const GetProduct = () => {
 
           {/* Rating Summary Badge */}
           {totalReviews > 0 && (
-            <div className="flex items-center gap-3 bg-[#FAF5F7] px-4 py-2.5 rounded-2xl border border-gray-100">
+            <div className="flex items-center gap-3 bg-[#F2E6DA] px-4 py-2.5 rounded-2xl border border-[#E8DACD]">
               <span className="text-2xl font-black text-amber-500">{avgRating}</span>
               <div>
                 {renderStars(Math.round(avgRating))}
@@ -388,10 +430,10 @@ const GetProduct = () => {
               const reviewerEmail = rev.user?.email || 'N/A';
 
               return (
-                <div key={rev.id} className="p-5 rounded-2xl bg-[#FAF5F7]/60 border border-gray-100 space-y-3">
+                <div key={rev.id} className="p-5 rounded-2xl bg-[#F2E6DA]/60 border border-[#E8DACD] space-y-3">
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-xl bg-white text-gray-700 flex items-center justify-center font-black shadow-xs border border-gray-100">
+                      <div className="w-9 h-9 rounded-xl bg-white text-gray-700 flex items-center justify-center font-black shadow-xs border border-[#E8DACD]">
                         <FiUser className="w-4 h-4 text-gray-500" />
                       </div>
                       <div>
@@ -408,7 +450,7 @@ const GetProduct = () => {
                       {renderStars(rev.rating)}
                       <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase ${
                         rev.status === 'approved'
-                          ? 'bg-[#BBF1D2]/60 text-[#1E7741]'
+                          ? 'bg-[#E8DACD]/60 text-[#1E7741]'
                           : rev.status === 'rejected'
                           ? 'bg-red-100 text-red-600'
                           : 'bg-amber-100 text-amber-700'
@@ -424,7 +466,7 @@ const GetProduct = () => {
 
                   {/* Admin Reply if present */}
                   {rev.admin_reply && (
-                    <div className="mt-2 pl-4 border-l-2 border-[#FF9D9D] py-1 text-xs font-medium text-gray-600 bg-white/70 rounded-r-xl p-3">
+                    <div className="mt-2 pl-4 border-l-2 border-[#7A0C1E] py-1 text-xs font-medium text-gray-600 bg-white/70 rounded-r-xl p-3">
                       <strong className="text-gray-900 block mb-0.5">Admin Response:</strong>
                       {rev.admin_reply}
                     </div>

@@ -20,6 +20,7 @@ const paymentRouter = require('./admin/payment.routes');
 const reviewRouter = require('./admin/reviews.routes');
 const shipmentRouter = require('./admin/shipments.routes');
 const wishlistRouter = require('./admin/wishlist.routes');
+const supportChatRouter = require('./admin/supportChat.routes');
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
@@ -46,5 +47,6 @@ router.use('/reviews', reviewRouter);
 router.use('/settings', settingRouter);
 router.use('/shipments', shipmentRouter);
 router.use('/wishlists', wishlistRouter);
+router.use('/support-chat', supportChatRouter);
 
 module.exports = router;

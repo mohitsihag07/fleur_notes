@@ -14,6 +14,7 @@ import {
   FiSettings,
   FiShield,
   FiBox,
+  FiImage,
   FiUsers,
   FiShoppingBag,
   FiTag,
@@ -30,6 +31,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 
 const ALL_NAVIGATION_PAGES = [
   { name: 'Dashboard Overview', path: '/dashboard', icon: FiGrid, category: 'Page Navigation' },
+  { name: 'Banners Management', path: '/banners', icon: FiImage, category: 'Page Navigation' },
   { name: 'Users Management', path: '/users', icon: FiUsers, category: 'Page Navigation' },
   { name: 'Categories Management', path: '/categories', icon: FiBox, category: 'Page Navigation' },
   { name: 'Products Catalog', path: '/products', icon: FiShoppingBag, category: 'Page Navigation' },
@@ -81,7 +83,7 @@ const Navbar = () => {
   const profileRef = useRef(null);
   const searchRef = useRef(null);
 
-  // Fetch Navbar Notifications & Support Messages from Backend
+  // Fetch Navbar Notifications & Live Support Chat Conversations from Backend
   const fetchNavbarData = async () => {
     try {
       const notifRes = await ApiInstance.get('/notifications', { params: { page: 1, limit: 5 } });
@@ -91,12 +93,13 @@ const Navbar = () => {
         setNotifCount(notifRes.data.data?.pagination?.totalItems || list.length);
       }
 
-      const msgRes = await ApiInstance.get('/contacts', { params: { page: 1, limit: 5 } });
+      const msgRes = await ApiInstance.get('/support-chat/conversations', { params: { page: 1, limit: 5 } });
       if (msgRes.data?.success) {
-        const list = msgRes.data.data?.data || [];
+        const payload = msgRes.data.data;
+        const list = payload?.data || [];
         setMessages(list);
-        const pendingCount = list.filter(m => m.status === 'pending').length || list.length;
-        setMsgCount(pendingCount);
+        const unreadTotal = payload?.stats?.unreadCount ?? list.filter(m => (m.unread_admin || 0) > 0).length;
+        setMsgCount(unreadTotal);
       }
     } catch (error) {
       console.error('Error fetching navbar popover data:', error);
@@ -105,6 +108,8 @@ const Navbar = () => {
 
   useEffect(() => {
     fetchNavbarData();
+    const interval = setInterval(fetchNavbarData, 5000);
+    return () => clearInterval(interval);
   }, [location.pathname]);
 
   // Global Search Handler (Debounced)
@@ -176,21 +181,26 @@ const Navbar = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Dynamic Page Title
+  // Dynamic Page Title Mapper
   const getPageTitle = () => {
     const path = location.pathname;
-    if (path.includes('dashboard')) return 'Dashboard';
-    if (path.includes('users')) return 'Users';
-    if (path.includes('categories')) return 'Categories';
-    if (path.includes('products')) return 'Products';
-    if (path.includes('orders')) return 'Orders';
-    if (path.includes('cms')) return 'CMS';
-    if (path.includes('notifications')) return 'Notifications';
-    if (path.includes('reviews')) return 'Reviews';
-    if (path.includes('faqs')) return 'FAQs';
-    if (path.includes('contact-support')) return 'Contact Support';
-    if (path.includes('profile')) return 'Admin Profile';
-    if (path.includes('settings')) return 'Settings';
+    if (path.includes('/support/chat')) return 'Live Support Chat';
+    if (path.includes('/contact-support')) return 'Contact Support';
+    if (path.includes('/dashboard')) return 'Dashboard';
+    if (path.includes('/banners')) return 'Banners & Promotions';
+    if (path.includes('/categories')) return 'Categories';
+    if (path.includes('/products')) return 'Products Catalog';
+    if (path.includes('/orders')) return 'Orders';
+    if (path.includes('/coupons')) return 'Coupons & Discounts';
+    if (path.includes('/payment') || path.includes('/payments')) return 'Payments & Transactions';
+    if (path.includes('/notifications')) return 'Notifications';
+    if (path.includes('/reviews')) return 'Reviews';
+    if (path.includes('/faqs')) return 'FAQs';
+    if (path.includes('/cms')) return 'CMS Pages';
+    if (path.includes('/users')) return 'Users Management';
+    if (path.includes('/profile')) return 'Admin Profile';
+    if (path.includes('/settings')) return 'System Settings';
+    if (path.includes('/reported-users')) return 'Reported Users';
     return 'Dashboard';
   };
 
@@ -214,7 +224,7 @@ const Navbar = () => {
 
   return (
     <>
-      <header className="pt-6 px-8 bg-[#EEF8CD] transition-all duration-300 shrink-0">
+      <header className="pt-6 px-8 bg-[#FAF5EF] transition-all duration-300 shrink-0">
         {/* Floating Card Navbar Container */}
         <div className="bg-white rounded-3xl px-6 py-3.5 shadow-sm border border-white/80 flex items-center justify-between">
           
@@ -222,7 +232,7 @@ const Navbar = () => {
           <div className="flex items-center gap-5">
             <button 
               onClick={toggleSidebar}
-              className="w-10 h-10 rounded-2xl bg-[#EEF8CD] text-[#2D252E] flex items-center justify-center hover:scale-105 active:scale-95 shadow-sm transition-all cursor-pointer"
+              className="w-10 h-10 rounded-2xl bg-[#FAF5EF] text-[#2B1B17] flex items-center justify-center hover:scale-105 active:scale-95 shadow-sm transition-all cursor-pointer"
               title={isSidebarOpen ? "Collapse sidebar" : "Expand sidebar"}
             >
               <FiAlignLeft className={`w-5 h-5 transition-transform duration-300 ${isSidebarOpen ? '' : 'rotate-180'}`} />
@@ -237,7 +247,7 @@ const Navbar = () => {
             <div className="relative w-full">
               <span className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
                 {isSearching ? (
-                  <FiLoader className="h-4 w-4 text-[#FF9D9D] animate-spin" />
+                  <FiLoader className="h-4 w-4 text-[#7A0C1E] animate-spin" />
                 ) : (
                   <FiSearch className="h-4 w-4 text-gray-400" />
                 )}
@@ -250,7 +260,7 @@ const Navbar = () => {
                   if (searchQuery.trim()) setShowSearchDropdown(true);
                 }}
                 placeholder="Search products, users, orders, categories..."
-                className="w-full bg-[#FAF5F7] text-gray-800 border-none rounded-full pl-11 pr-10 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF9D9D] hover:bg-[#EEF8CD] hover:text-[#2D252E] transition-all placeholder:text-gray-400"
+                className="w-full bg-[#F2E6DA] text-gray-800 border-none rounded-full pl-11 pr-10 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] hover:bg-[#FAF5EF] hover:text-[#2B1B17] transition-all placeholder:text-gray-400"
               />
               {searchQuery && (
                 <button
@@ -267,10 +277,10 @@ const Navbar = () => {
 
             {/* Global Search Results Dropdown Popover */}
             {showSearchDropdown && (
-              <div className="absolute top-full left-0 right-0 mt-3 bg-white rounded-3xl shadow-2xl border border-gray-100 z-50 overflow-hidden animate-fadeIn max-h-[460px] overflow-y-auto">
+              <div className="absolute top-full left-0 right-0 mt-3 bg-white rounded-3xl shadow-2xl border border-[#E8DACD] z-50 overflow-hidden animate-fadeIn max-h-[460px] overflow-y-auto">
                 {isSearching ? (
                   <div className="p-6 text-center text-xs font-bold text-gray-400 flex items-center justify-center gap-2">
-                    <FiLoader className="w-4 h-4 text-[#FF9D9D] animate-spin" />
+                    <FiLoader className="w-4 h-4 text-[#7A0C1E] animate-spin" />
                     <span>Searching records...</span>
                   </div>
                 ) : !hasAnyResults ? (
@@ -278,7 +288,7 @@ const Navbar = () => {
                     No results found for "<span className="text-gray-700">{searchQuery}</span>". Try another search term.
                   </div>
                 ) : (
-                  <div className="divide-y divide-gray-100">
+                  <div className="divide-y divide-[#E8DACD]">
                     
                     {/* Quick Pages Navigation */}
                     {searchResults.pages.length > 0 && (
@@ -292,10 +302,10 @@ const Navbar = () => {
                             <div
                               key={p.path}
                               onClick={() => handleResultClick(p.path)}
-                              className="px-3 py-2 rounded-2xl hover:bg-[#FAF5F7] flex items-center justify-between cursor-pointer transition-colors"
+                              className="px-3 py-2 rounded-2xl hover:bg-[#F2E6DA] flex items-center justify-between cursor-pointer transition-colors"
                             >
                               <div className="flex items-center gap-2.5">
-                                <IconComp className="w-4 h-4 text-[#FF9D9D]" />
+                                <IconComp className="w-4 h-4 text-[#7A0C1E]" />
                                 <span className="text-xs font-black text-gray-800">{p.name}</span>
                               </div>
                               <FiNavigation className="w-3.5 h-3.5 text-gray-300" />
@@ -315,15 +325,15 @@ const Navbar = () => {
                           <div
                             key={prod.id}
                             onClick={() => handleResultClick(`/products/${prod.id}`)}
-                            className="px-3 py-2 rounded-2xl hover:bg-[#FAF5F7] flex items-center justify-between cursor-pointer transition-colors"
+                            className="px-3 py-2 rounded-2xl hover:bg-[#F2E6DA] flex items-center justify-between cursor-pointer transition-colors"
                           >
                             <div className="flex items-center gap-3">
-                              <div className="w-8 h-8 rounded-xl bg-gray-100 flex items-center justify-center shrink-0 text-[#FF9D9D]">
+                              <div className="w-8 h-8 rounded-xl bg-gray-100 flex items-center justify-center shrink-0 text-[#7A0C1E]">
                                 <FiShoppingBag className="w-4 h-4" />
                               </div>
                               <div>
                                 <p className="text-xs font-black text-gray-800 line-clamp-1">{prod.title || prod.name}</p>
-                                <p className="text-[10px] font-bold text-[#FF9D9D]">₹{prod.selling_price || prod.price || '0'}</p>
+                                <p className="text-[10px] font-bold text-[#7A0C1E]">₹{prod.selling_price || prod.price || '0'}</p>
                               </div>
                             </div>
                             <span className="text-[10px] font-bold text-gray-400 uppercase">View Product</span>
@@ -342,10 +352,10 @@ const Navbar = () => {
                           <div
                             key={u.id}
                             onClick={() => handleResultClick(`/users/${u.id}`)}
-                            className="px-3 py-2 rounded-2xl hover:bg-[#FAF5F7] flex items-center justify-between cursor-pointer transition-colors"
+                            className="px-3 py-2 rounded-2xl hover:bg-[#F2E6DA] flex items-center justify-between cursor-pointer transition-colors"
                           >
                             <div className="flex items-center gap-3">
-                              <div className="w-8 h-8 rounded-xl bg-[#EEF8CD] text-[#2D252E] font-black text-xs flex items-center justify-center shrink-0">
+                              <div className="w-8 h-8 rounded-xl bg-[#FAF5EF] text-[#2B1B17] font-black text-xs flex items-center justify-center shrink-0">
                                 {u.name ? u.name[0].toUpperCase() : 'U'}
                               </div>
                               <div>
@@ -369,15 +379,15 @@ const Navbar = () => {
                           <div
                             key={ord.id}
                             onClick={() => handleResultClick(`/orders/${ord.id}`)}
-                            className="px-3 py-2 rounded-2xl hover:bg-[#FAF5F7] flex items-center justify-between cursor-pointer transition-colors"
+                            className="px-3 py-2 rounded-2xl hover:bg-[#F2E6DA] flex items-center justify-between cursor-pointer transition-colors"
                           >
                             <div className="flex items-center gap-3">
-                              <div className="w-8 h-8 rounded-xl bg-[#FF9D9D]/20 text-[#D94545] flex items-center justify-center shrink-0">
+                              <div className="w-8 h-8 rounded-xl bg-[#7A0C1E]/20 text-[#D94545] flex items-center justify-center shrink-0">
                                 <FiFileText className="w-4 h-4" />
                               </div>
                               <div>
                                 <p className="text-xs font-black text-gray-800">Order #{ord.order_number || ord.id}</p>
-                                <p className="text-[10px] font-bold text-[#FF9D9D]">₹{ord.total_amount || ord.grand_total || '0'}</p>
+                                <p className="text-[10px] font-bold text-[#7A0C1E]">₹{ord.total_amount || ord.grand_total || '0'}</p>
                               </div>
                             </div>
                             <span className="text-[10px] font-bold text-gray-400 uppercase">View Order</span>
@@ -396,7 +406,7 @@ const Navbar = () => {
                           <div
                             key={cat.id}
                             onClick={() => handleResultClick(`/categories/${cat.id}`)}
-                            className="px-3 py-2 rounded-2xl hover:bg-[#FAF5F7] flex items-center justify-between cursor-pointer transition-colors"
+                            className="px-3 py-2 rounded-2xl hover:bg-[#F2E6DA] flex items-center justify-between cursor-pointer transition-colors"
                           >
                             <div className="flex items-center gap-3">
                               <div className="w-8 h-8 rounded-xl bg-gray-100 flex items-center justify-center shrink-0 text-gray-600">
@@ -431,13 +441,13 @@ const Navbar = () => {
                   setShowProfileDropdown(false);
                 }}
                 className={`relative p-2.5 rounded-full transition-all cursor-pointer ${
-                  showMsgPopover ? 'bg-[#EEF8CD] text-[#2D252E]' : 'bg-[#FAF5F7] text-gray-600 hover:bg-[#EEF8CD] hover:text-[#2D252E]'
+                  showMsgPopover ? 'bg-[#FAF5EF] text-[#2B1B17]' : 'bg-[#F2E6DA] text-gray-600 hover:bg-[#FAF5EF] hover:text-[#2B1B17]'
                 }`}
                 title="Support Messages"
               >
                 <FiMessageSquare className="w-5 h-5" />
                 {msgCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-[#FF9D9D] text-[#2D252E] font-black text-[10px] min-w-[20px] h-5 px-1 rounded-full flex items-center justify-center border-2 border-white shadow-sm">
+                  <span className="absolute -top-1 -right-1 bg-[#7A0C1E] text-white font-black text-[10px] min-w-[20px] h-5 px-1 rounded-full flex items-center justify-center border-2 border-white shadow-sm">
                     {msgCount > 99 ? '99+' : msgCount}
                   </span>
                 )}
@@ -445,10 +455,10 @@ const Navbar = () => {
 
               {/* Messages Floating Dropdown Popover */}
               {showMsgPopover && (
-                <div className="absolute right-0 mt-3 w-80 sm:w-96 bg-white rounded-3xl shadow-2xl border border-gray-100 z-50 overflow-hidden animate-fadeIn">
-                  <div className="p-4 bg-[#FAF5F7] border-b border-gray-100 flex items-center justify-between">
+                <div className="absolute right-0 mt-3 w-80 sm:w-96 bg-white rounded-3xl shadow-2xl border border-[#E8DACD] z-50 overflow-hidden animate-fadeIn">
+                  <div className="p-4 bg-[#F2E6DA] border-b border-[#E8DACD] flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <FiMessageSquare className="w-4 h-4 text-[#FF9D9D]" />
+                      <FiMessageSquare className="w-4 h-4 text-[#7A0C1E]" />
                       <h3 className="text-xs font-black text-gray-900 uppercase tracking-wider">
                         Support Inquiries ({messages.length})
                       </h3>
@@ -456,15 +466,15 @@ const Navbar = () => {
                     <button
                       onClick={() => {
                         setShowMsgPopover(false);
-                        navigate('/contact-support');
+                        navigate('/support/chat');
                       }}
-                      className="text-[11px] font-black text-[#FF9D9D] hover:underline"
+                      className="text-[11px] font-black text-[#7A0C1E] hover:underline cursor-pointer"
                     >
                       View All
                     </button>
                   </div>
 
-                  <div className="max-h-80 overflow-y-auto divide-y divide-gray-100">
+                  <div className="max-h-80 overflow-y-auto divide-y divide-[#E8DACD]">
                     {messages.length === 0 ? (
                       <div className="p-6 text-center text-xs text-gray-400 font-bold">
                         No support messages recorded yet.
@@ -475,30 +485,34 @@ const Navbar = () => {
                           key={m.id}
                           onClick={() => {
                             setShowMsgPopover(false);
-                            navigate('/contact-support');
+                            navigate('/support/chat');
                           }}
-                          className="p-4 hover:bg-[#FAF5F7] transition-colors cursor-pointer text-left space-y-1"
+                          className="p-4 hover:bg-[#F2E6DA] transition-colors cursor-pointer text-left space-y-1"
                         >
                           <div className="flex items-center justify-between">
-                            <span className="text-xs font-black text-gray-900">{m.name || 'Anonymous User'}</span>
+                            <span className="text-xs font-black text-gray-900">{m.user_name || m.name || 'Customer'}</span>
                             <span className="text-[10px] text-gray-400 font-medium">
-                              {m.created_at ? new Date(m.created_at).toLocaleDateString() : ''}
+                              {m.last_message_at ? new Date(m.last_message_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : (m.created_at ? new Date(m.created_at).toLocaleDateString() : '')}
                             </span>
                           </div>
-                          <p className="text-xs font-bold text-gray-700 truncate">{m.subject || 'Support Request'}</p>
-                          <p className="text-[11px] text-gray-500 line-clamp-1">{m.message}</p>
+                          <p className="text-xs font-bold text-gray-700 truncate">{m.last_message || m.message || 'Live chat request'}</p>
+                          {(m.unread_admin || 0) > 0 && (
+                            <span className="inline-block px-2 py-0.5 rounded-full bg-rose-600 text-white font-black text-[9px]">
+                              {m.unread_admin} UNREAD
+                            </span>
+                          )}
                         </div>
                       ))
                     )}
                   </div>
 
-                  <div className="p-3 bg-gray-50 text-center border-t border-gray-100">
+                  <div className="p-3 bg-gray-50 text-center border-t border-[#E8DACD]">
                     <button
                       onClick={() => {
                         setShowMsgPopover(false);
-                        navigate('/contact-support');
+                        navigate('/support/chat');
                       }}
-                      className="text-xs font-black text-[#2D252E] hover:text-[#FF9D9D] transition-colors inline-flex items-center gap-1"
+                      className="text-xs font-black text-[#2B1B17] hover:text-[#7A0C1E] transition-colors inline-flex items-center gap-1 cursor-pointer"
                     >
                       <span>Open Customer Support Center</span>
                       <FiExternalLink className="w-3.5 h-3.5" />
@@ -517,13 +531,13 @@ const Navbar = () => {
                   setShowProfileDropdown(false);
                 }}
                 className={`relative p-2.5 rounded-full transition-all cursor-pointer ${
-                  showNotifPopover ? 'bg-[#EEF8CD] text-[#2D252E]' : 'bg-[#FAF5F7] text-gray-600 hover:bg-[#EEF8CD] hover:text-[#2D252E]'
+                  showNotifPopover ? 'bg-[#FAF5EF] text-[#2B1B17]' : 'bg-[#F2E6DA] text-gray-600 hover:bg-[#FAF5EF] hover:text-[#2B1B17]'
                 }`}
                 title="Notifications"
               >
                 <FiBell className="w-5 h-5" />
                 {notifCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-[#FFC5AA] text-[#2D252E] font-black text-[10px] min-w-[20px] h-5 px-1 rounded-full flex items-center justify-center border-2 border-white shadow-sm">
+                  <span className="absolute -top-1 -right-1 bg-[#5F0917] text-[#2B1B17] font-black text-[10px] min-w-[20px] h-5 px-1 rounded-full flex items-center justify-center border-2 border-white shadow-sm">
                     {notifCount > 99 ? '99+' : notifCount}
                   </span>
                 )}
@@ -531,10 +545,10 @@ const Navbar = () => {
 
               {/* Notifications Floating Dropdown Popover */}
               {showNotifPopover && (
-                <div className="absolute right-0 mt-3 w-80 sm:w-96 bg-white rounded-3xl shadow-2xl border border-gray-100 z-50 overflow-hidden animate-fadeIn">
-                  <div className="p-4 bg-[#FAF5F7] border-b border-gray-100 flex items-center justify-between">
+                <div className="absolute right-0 mt-3 w-80 sm:w-96 bg-white rounded-3xl shadow-2xl border border-[#E8DACD] z-50 overflow-hidden animate-fadeIn">
+                  <div className="p-4 bg-[#F2E6DA] border-b border-[#E8DACD] flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <FiBell className="w-4 h-4 text-[#FF9D9D]" />
+                      <FiBell className="w-4 h-4 text-[#7A0C1E]" />
                       <h3 className="text-xs font-black text-gray-900 uppercase tracking-wider">
                         Notifications ({notifications.length})
                       </h3>
@@ -544,13 +558,13 @@ const Navbar = () => {
                         setShowNotifPopover(false);
                         navigate('/notifications');
                       }}
-                      className="text-[11px] font-black text-[#FF9D9D] hover:underline"
+                      className="text-[11px] font-black text-[#7A0C1E] hover:underline"
                     >
                       View All
                     </button>
                   </div>
 
-                  <div className="max-h-80 overflow-y-auto divide-y divide-gray-100">
+                  <div className="max-h-80 overflow-y-auto divide-y divide-[#E8DACD]">
                     {notifications.length === 0 ? (
                       <div className="p-6 text-center text-xs text-gray-400 font-bold">
                         No recent notifications.
@@ -563,11 +577,11 @@ const Navbar = () => {
                             setShowNotifPopover(false);
                             navigate('/notifications');
                           }}
-                          className="p-4 hover:bg-[#FAF5F7] transition-colors cursor-pointer text-left space-y-1"
+                          className="p-4 hover:bg-[#F2E6DA] transition-colors cursor-pointer text-left space-y-1"
                         >
                           <div className="flex items-center justify-between">
                             <span className="text-xs font-black text-gray-900 truncate max-w-[200px]">{n.title}</span>
-                            <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-[#FF9D9D]/20 text-[#D94545] uppercase">
+                            <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-[#7A0C1E]/20 text-[#D94545] uppercase">
                               {n.type || 'system'}
                             </span>
                           </div>
@@ -580,13 +594,13 @@ const Navbar = () => {
                     )}
                   </div>
 
-                  <div className="p-3 bg-gray-50 text-center border-t border-gray-100">
+                  <div className="p-3 bg-gray-50 text-center border-t border-[#E8DACD]">
                     <button
                       onClick={() => {
                         setShowNotifPopover(false);
                         navigate('/notifications');
                       }}
-                      className="text-xs font-black text-[#2D252E] hover:text-[#FF9D9D] transition-colors inline-flex items-center gap-1"
+                      className="text-xs font-black text-[#2B1B17] hover:text-[#7A0C1E] transition-colors inline-flex items-center gap-1"
                     >
                       <span>Go to Notification Center</span>
                       <FiExternalLink className="w-3.5 h-3.5" />
@@ -597,7 +611,7 @@ const Navbar = () => {
             </div>
 
             {/* 3. Interactive Profile Card & Menu Dropdown */}
-            <div className="relative pl-3 border-l border-gray-100" ref={profileRef}>
+            <div className="relative pl-3 border-l border-[#E8DACD]" ref={profileRef}>
               <button
                 onClick={() => {
                   setShowProfileDropdown(!showProfileDropdown);
@@ -610,15 +624,15 @@ const Navbar = () => {
                   <img
                     src={user.profile_picture.startsWith('http') ? user.profile_picture : `http://localhost:3131${user.profile_picture.startsWith('/') ? '' : '/'}${user.profile_picture}`}
                     alt={user?.name || 'Fleur Admin'}
-                    className="w-10 h-10 rounded-full object-cover border-2 border-[#FF9D9D] shadow-sm group-hover:scale-105 transition-all"
+                    className="w-10 h-10 rounded-full object-cover border-2 border-[#7A0C1E] shadow-sm group-hover:scale-105 transition-all"
                   />
                 ) : (
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-[#FF9D9D] to-[#FFC5AA] text-[#2D252E] flex items-center justify-center font-black text-sm border-2 border-[#FF9D9D] shadow-sm group-hover:scale-105 transition-all">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-[#7A0C1E] to-[#5F0917] text-white flex items-center justify-center font-black text-sm border-2 border-[#7A0C1E] shadow-sm group-hover:scale-105 transition-all">
                     {user?.name ? user.name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2) : 'FA'}
                   </div>
                 )}
                 <div className="hidden lg:flex flex-col text-left">
-                  <span className="text-sm font-black text-gray-800 leading-snug group-hover:text-[#FF9D9D] transition-colors">
+                  <span className="text-sm font-black text-gray-800 leading-snug group-hover:text-[#7A0C1E] transition-colors">
                     {user?.name || 'Fleur Admin'}
                   </span>
                   <span className="text-xs text-gray-500 capitalize font-medium">
@@ -630,13 +644,13 @@ const Navbar = () => {
 
               {/* Profile Dropdown Menu */}
               {showProfileDropdown && (
-                <div className="absolute right-0 mt-3 w-64 bg-white rounded-3xl shadow-2xl border border-gray-100 z-50 overflow-hidden animate-fadeIn py-2">
+                <div className="absolute right-0 mt-3 w-64 bg-white rounded-3xl shadow-2xl border border-[#E8DACD] z-50 overflow-hidden animate-fadeIn py-2">
                   
                   {/* Dropdown Header Info */}
-                  <div className="px-5 py-3 border-b border-gray-100 bg-[#FAF5F7]">
+                  <div className="px-5 py-3 border-b border-[#E8DACD] bg-[#F2E6DA]">
                     <p className="text-xs font-black text-gray-900 truncate">{user?.name || 'Fleur Admin'}</p>
                     <p className="text-[11px] font-semibold text-gray-500 truncate mt-0.5">{user?.email || 'admin@fleur.com'}</p>
-                    <div className="mt-2 inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#FF9D9D]/20 text-[#D94545] text-[10px] font-black uppercase">
+                    <div className="mt-2 inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#7A0C1E]/20 text-[#D94545] text-[10px] font-black uppercase">
                       <FiShield className="w-3 h-3" />
                       <span>{user?.role || 'Super Admin'}</span>
                     </div>
@@ -649,9 +663,9 @@ const Navbar = () => {
                         setShowProfileDropdown(false);
                         navigate('/profile');
                       }}
-                      className="w-full text-left px-5 py-2.5 text-xs font-bold text-gray-700 hover:bg-[#EEF8CD] hover:text-[#2D252E] flex items-center gap-3 transition-colors cursor-pointer"
+                      className="w-full text-left px-5 py-2.5 text-xs font-bold text-gray-700 hover:bg-[#FAF5EF] hover:text-[#2B1B17] flex items-center gap-3 transition-colors cursor-pointer"
                     >
-                      <FiUser className="w-4 h-4 text-[#FF9D9D]" />
+                      <FiUser className="w-4 h-4 text-[#7A0C1E]" />
                       <span>My Profile</span>
                     </button>
 
@@ -660,14 +674,14 @@ const Navbar = () => {
                         setShowProfileDropdown(false);
                         navigate('/settings');
                       }}
-                      className="w-full text-left px-5 py-2.5 text-xs font-bold text-gray-700 hover:bg-[#EEF8CD] hover:text-[#2D252E] flex items-center gap-3 transition-colors cursor-pointer"
+                      className="w-full text-left px-5 py-2.5 text-xs font-bold text-gray-700 hover:bg-[#FAF5EF] hover:text-[#2B1B17] flex items-center gap-3 transition-colors cursor-pointer"
                     >
-                      <FiSettings className="w-4 h-4 text-[#FF9D9D]" />
+                      <FiSettings className="w-4 h-4 text-[#7A0C1E]" />
                       <span>Account Settings</span>
                     </button>
                   </div>
 
-                  <div className="border-t border-gray-100 pt-1">
+                  <div className="border-t border-[#E8DACD] pt-1">
                     <button
                       onClick={() => {
                         setShowProfileDropdown(false);

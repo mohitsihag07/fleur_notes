@@ -100,20 +100,20 @@ const GetUsers = () => {
   const getStatusColorClass = (status) => {
     switch (status) {
       case 'active':
-        return 'bg-[#BBF1D2]/50 text-[#1E7741] border-[#BBF1D2]';
+        return 'bg-[#E8DACD]/50 text-[#1E7741] border-[#E8DACD]';
       case 'blocked':
         return 'bg-red-100 text-red-700 border-red-200';
       case 'inactive':
-        return 'bg-gray-200 text-gray-700 border-gray-300';
+        return 'bg-gray-200 text-gray-700 border-[#E8DACD]';
       default:
-        return 'bg-[#FFC5AA]/50 text-[#D96B3B] border-[#FFC5AA]';
+        return 'bg-[#5F0917]/50 text-[#D96B3B] border-[#5F0917]';
     }
   };
 
   if (isLoading) {
     return (
       <div className="flex h-[70vh] items-center justify-center">
-        <div className="flex items-center gap-3 font-black text-[#FF9D9D] text-base">
+        <div className="flex items-center gap-3 font-black text-[#7A0C1E] text-base">
           <FiLoader className="w-6 h-6 animate-spin" />
           <span>Fetching User Details...</span>
         </div>
@@ -132,7 +132,7 @@ const GetUsers = () => {
         <div className="flex items-center gap-3">
           <button
             onClick={() => navigate('/users')}
-            className="p-2.5 rounded-2xl bg-white text-gray-700 border border-gray-100 hover:bg-[#EEF8CD] hover:text-[#2D252E] shadow-sm transition-all cursor-pointer"
+            className="p-2.5 rounded-2xl bg-white text-gray-700 border border-[#E8DACD] hover:bg-[#FAF5EF] hover:text-[#2B1B17] shadow-sm transition-all cursor-pointer"
             title="Back to Users"
           >
             <FiArrowLeft className="w-5 h-5" />
@@ -160,12 +160,12 @@ const GetUsers = () => {
       </div>
 
       {/* Main Profile Header Card */}
-      <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-gray-100 flex flex-col md:flex-row items-center justify-between gap-6">
+      <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-[#E8DACD] flex flex-col md:flex-row items-center justify-between gap-6">
         <div className="flex flex-col sm:flex-row items-center gap-6 text-center sm:text-left">
           <img
             src={avatarUrl}
             alt={user.name}
-            className="w-24 h-24 rounded-3xl object-cover p-1 ring-4 ring-[#FF9D9D] shadow-md shrink-0"
+            className="w-24 h-24 rounded-3xl object-cover p-1 ring-4 ring-[#7A0C1E] shadow-md shrink-0"
             onError={(e) => {
               e.target.onerror = null;
               e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || 'User')}&background=FF9D9D&color=2D252E&size=128`;
@@ -177,7 +177,7 @@ const GetUsers = () => {
                 {user.name || 'Unnamed User'}
               </h3>
               {user.is_email_verified ? (
-                <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-[11px] font-black bg-[#BBF1D2]/40 text-[#249454]">
+                <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-[11px] font-black bg-[#E8DACD]/40 text-[#249454]">
                   <FiCheckCircle className="w-3.5 h-3.5" />
                   Verified
                 </span>
@@ -190,7 +190,7 @@ const GetUsers = () => {
             </div>
 
             <p className="text-sm font-semibold text-gray-500 flex items-center justify-center sm:justify-start gap-2">
-              <FiMail className="w-4 h-4 text-[#FF9D9D]" />
+              <FiMail className="w-4 h-4 text-[#7A0C1E]" />
               <span>{user.email}</span>
             </p>
 
@@ -202,7 +202,7 @@ const GetUsers = () => {
         </div>
 
         {/* Change Status Dropdown Widget */}
-        <div className="bg-[#FAF5F7] p-4 rounded-2xl flex flex-col items-center gap-2 border border-gray-100 shrink-0 w-full md:w-auto">
+        <div className="bg-[#F2E6DA] p-4 rounded-2xl flex flex-col items-center gap-2 border border-[#E8DACD] shrink-0 w-full md:w-auto">
           <span className="text-[11px] font-black uppercase text-gray-400 tracking-wider">
             Account Status
           </span>
@@ -211,7 +211,7 @@ const GetUsers = () => {
               value={user.status || 'active'}
               disabled={isUpdatingStatus}
               onChange={(e) => handleStatusChange(e.target.value)}
-              className={`w-full appearance-none px-4 py-2 pr-8 rounded-full text-xs font-black tracking-wide border uppercase focus:outline-none focus:ring-2 focus:ring-[#FF9D9D] cursor-pointer transition-all ${getStatusColorClass(user.status || 'active')}`}
+              className={`w-full appearance-none px-4 py-2 pr-8 rounded-full text-xs font-black tracking-wide border uppercase focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] cursor-pointer transition-all ${getStatusColorClass(user.status || 'active')}`}
             >
               <option value="active" className="bg-white text-gray-800">Active</option>
               <option value="inactive" className="bg-white text-gray-800">Inactive</option>
@@ -227,33 +227,33 @@ const GetUsers = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         
         {/* Account Details Card */}
-        <div className="bg-white rounded-3xl p-7 shadow-sm border border-gray-100 space-y-5">
-          <h4 className="text-base font-black text-gray-900 flex items-center gap-2.5 border-b border-gray-100 pb-4">
-            <FiUser className="w-5 h-5 text-[#FF9D9D]" />
+        <div className="bg-white rounded-3xl p-7 shadow-sm border border-[#E8DACD] space-y-5">
+          <h4 className="text-base font-black text-gray-900 flex items-center gap-2.5 border-b border-[#E8DACD] pb-4">
+            <FiUser className="w-5 h-5 text-[#7A0C1E]" />
             <span>Account Details</span>
           </h4>
 
           <div className="space-y-4 text-xs font-semibold">
-            <div className="flex items-center justify-between py-2 border-b border-gray-50">
+            <div className="flex items-center justify-between py-2 border-b border-[#E8DACD]/50">
               <span className="text-gray-400">User ID</span>
               <span className="font-extrabold text-gray-800">#{user.id}</span>
             </div>
 
-            <div className="flex items-center justify-between py-2 border-b border-gray-50">
+            <div className="flex items-center justify-between py-2 border-b border-[#E8DACD]/50">
               <span className="text-gray-400">Role</span>
               <span className="font-extrabold text-gray-800 uppercase px-2.5 py-0.5 rounded-full bg-gray-100 text-[10px]">
                 {user.role || 'user'}
               </span>
             </div>
 
-            <div className="flex items-center justify-between py-2 border-b border-gray-50">
+            <div className="flex items-center justify-between py-2 border-b border-[#E8DACD]/50">
               <span className="text-gray-400">Phone Number</span>
               <span className="font-extrabold text-gray-800">
                 {user.phone ? `${user.country_code || ''} ${user.phone}` : 'Not provided'}
               </span>
             </div>
 
-            <div className="flex items-center justify-between py-2 border-b border-gray-50">
+            <div className="flex items-center justify-between py-2 border-b border-[#E8DACD]/50">
               <span className="text-gray-400">Gender</span>
               <span className="font-extrabold text-gray-800 capitalize">
                 {user.profile?.gender || 'Not specified'}
@@ -270,28 +270,28 @@ const GetUsers = () => {
         </div>
 
         {/* System & Metadata Card */}
-        <div className="bg-white rounded-3xl p-7 shadow-sm border border-gray-100 space-y-5">
-          <h4 className="text-base font-black text-gray-900 flex items-center gap-2.5 border-b border-gray-100 pb-4">
-            <FiShield className="w-5 h-5 text-[#FFC5AA]" />
+        <div className="bg-white rounded-3xl p-7 shadow-sm border border-[#E8DACD] space-y-5">
+          <h4 className="text-base font-black text-gray-900 flex items-center gap-2.5 border-b border-[#E8DACD] pb-4">
+            <FiShield className="w-5 h-5 text-[#5F0917]" />
             <span>Security & Timestamps</span>
           </h4>
 
           <div className="space-y-4 text-xs font-semibold">
-            <div className="flex items-center justify-between py-2 border-b border-gray-50">
+            <div className="flex items-center justify-between py-2 border-b border-[#E8DACD]/50">
               <span className="text-gray-400">Email Verification</span>
               <span className={`font-black text-[11px] ${user.is_email_verified ? 'text-[#249454]' : 'text-amber-600'}`}>
                 {user.is_email_verified ? 'Verified Account' : 'Pending Verification'}
               </span>
             </div>
 
-            <div className="flex items-center justify-between py-2 border-b border-gray-50">
+            <div className="flex items-center justify-between py-2 border-b border-[#E8DACD]/50">
               <span className="text-gray-400">Phone Verification</span>
               <span className={`font-black text-[11px] ${user.is_phone_verified ? 'text-[#249454]' : 'text-gray-400'}`}>
                 {user.is_phone_verified ? 'Verified Phone' : 'Not Verified'}
               </span>
             </div>
 
-            <div className="flex items-center justify-between py-2 border-b border-gray-50">
+            <div className="flex items-center justify-between py-2 border-b border-[#E8DACD]/50">
               <span className="text-gray-400">Created At</span>
               <span className="font-extrabold text-gray-800">
                 {formatDate(user.createdAt)}
@@ -308,8 +308,8 @@ const GetUsers = () => {
         </div>
 
         {/* Addresses Section (Full Width) */}
-        <div className="md:col-span-2 bg-white rounded-3xl p-7 shadow-sm border border-gray-100 space-y-5">
-          <h4 className="text-base font-black text-gray-900 flex items-center gap-2.5 border-b border-gray-100 pb-4">
+        <div className="md:col-span-2 bg-white rounded-3xl p-7 shadow-sm border border-[#E8DACD] space-y-5">
+          <h4 className="text-base font-black text-gray-900 flex items-center gap-2.5 border-b border-[#E8DACD] pb-4">
             <FiMapPin className="w-5 h-5 text-[#56D896]" />
             <span>Saved Shipping & Billing Addresses</span>
           </h4>
@@ -319,14 +319,14 @@ const GetUsers = () => {
               {user.addresses.map((addr, idx) => (
                 <div 
                   key={addr.id || idx} 
-                  className="bg-[#FAF5F7] p-5 rounded-2xl border border-gray-100 space-y-2 relative"
+                  className="bg-[#F2E6DA] p-5 rounded-2xl border border-[#E8DACD] space-y-2 relative"
                 >
                   <div className="flex items-center justify-between">
                     <span className="font-black text-xs text-gray-900 uppercase tracking-wider">
                       Address #{idx + 1}
                     </span>
                     {addr.is_default && (
-                      <span className="px-2.5 py-0.5 rounded-full bg-[#BBF1D2] text-[#2D252E] font-black text-[10px]">
+                      <span className="px-2.5 py-0.5 rounded-full bg-[#E8DACD] text-[#2B1B17] font-black text-[10px]">
                         Default Address
                       </span>
                     )}
@@ -341,7 +341,7 @@ const GetUsers = () => {
               ))}
             </div>
           ) : (
-            <div className="py-8 text-center text-gray-400 text-xs font-bold bg-[#FAF5F7] rounded-2xl">
+            <div className="py-8 text-center text-gray-400 text-xs font-bold bg-[#F2E6DA] rounded-2xl">
               No saved addresses found for this user.
             </div>
           )}

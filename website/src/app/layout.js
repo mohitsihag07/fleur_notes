@@ -2,6 +2,7 @@ import './globals.css';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { MobileBottomNav } from '@/components/layout/MobileBottomNav';
+import { FloatingSupportChat } from '@/components/layout/FloatingSupportChat';
 
 export const metadata = {
   title: 'Fleur Notes | Beautiful Handmade Things For Every Moment',
@@ -16,6 +17,7 @@ export default function RootLayout({ children }) {
         <main className="flex-1 pb-16 lg:pb-0">{children}</main>
         <Footer />
         <MobileBottomNav />
+        <FloatingSupportChat />
       </body>
     </html>
   );

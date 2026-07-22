@@ -56,6 +56,12 @@ if (alter) {
       console.error('❌ Failed to sync database on startup:', err);
     });
 } else {
+  db.sequelize.query('ALTER TABLE products ADD COLUMN IF NOT EXISTS color VARCHAR(100) NULL;')
+    .catch(() => {
+      // Fallback for MySQL versions without IF NOT EXISTS in ALTER TABLE
+      db.sequelize.query('ALTER TABLE products ADD COLUMN color VARCHAR(100) NULL;').catch(() => {});
+    });
+
   app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
   });

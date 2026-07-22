@@ -135,8 +135,8 @@ const Settings = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-2xl bg-[#FF9D9D]/20 text-[#2D252E]">
-              <FiSettings className="w-6 h-6 text-[#FF9D9D]" />
+            <div className="p-2.5 rounded-2xl bg-[#7A0C1E]/20 text-[#2B1B17]">
+              <FiSettings className="w-6 h-6 text-[#7A0C1E]" />
             </div>
             <h2 className="text-2xl font-black text-gray-900 tracking-tight">
               Store & System Settings
@@ -168,7 +168,7 @@ const Settings = () => {
       </div>
 
       {/* Tabs Navigation Bar */}
-      <div className="bg-white rounded-3xl p-3 shadow-xs border border-gray-100 flex items-center gap-2 overflow-x-auto no-scrollbar">
+      <div className="bg-white rounded-3xl p-3 shadow-xs border border-[#E8DACD] flex items-center gap-2 overflow-x-auto no-scrollbar">
         {settingTabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -178,8 +178,8 @@ const Settings = () => {
               onClick={() => setActiveTab(tab.id)}
               className={`flex items-center gap-3 px-6 py-3.5 rounded-2xl font-black text-xs transition-all cursor-pointer whitespace-nowrap ${
                 isActive
-                  ? 'bg-[#EEF8CD] text-[#2D252E] shadow-sm scale-[1.01]'
-                  : 'bg-[#FAF5F7] text-gray-600 hover:bg-gray-200'
+                  ? 'bg-[#FAF5EF] text-[#2B1B17] shadow-sm scale-[1.01]'
+                  : 'bg-[#F2E6DA] text-gray-600 hover:bg-gray-200'
               }`}
             >
               <Icon className="w-4 h-4" />
@@ -190,10 +190,10 @@ const Settings = () => {
       </div>
 
       {/* Settings Form Card */}
-      <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 relative min-h-[450px]">
+      <div className="bg-white rounded-3xl shadow-sm border border-[#E8DACD] p-8 relative min-h-[450px]">
         {isLoading ? (
           <div className="absolute inset-0 bg-white/80 backdrop-blur-xs flex items-center justify-center z-20 rounded-3xl">
-            <div className="flex items-center gap-3 font-black text-[#FF9D9D] text-sm">
+            <div className="flex items-center gap-3 font-black text-[#7A0C1E] text-sm">
               <FiLoader className="w-6 h-6 animate-spin" />
               <span>Loading System Settings...</span>
             </div>
@@ -203,8 +203,8 @@ const Settings = () => {
             {/* 1. GENERAL STORE SETTINGS */}
             {activeTab === 'general' && (
               <div className="space-y-6">
-                <div className="flex items-center gap-2 pb-3 border-b border-gray-100">
-                  <FiShoppingBag className="w-5 h-5 text-[#FF9D9D]" />
+                <div className="flex items-center gap-2 pb-3 border-b border-[#E8DACD]">
+                  <FiShoppingBag className="w-5 h-5 text-[#7A0C1E]" />
                   <h3 className="text-sm font-black text-gray-800 uppercase tracking-wider">
                     General Store Preferences
                   </h3>
@@ -220,7 +220,7 @@ const Settings = () => {
                       name="site_name"
                       value={formData.site_name}
                       onChange={handleChange}
-                      className="w-full px-4 py-3 rounded-2xl bg-[#FAF5F7] text-xs font-semibold text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#FF9D9D]"
+                      className="w-full px-4 py-3 rounded-2xl bg-[#F2E6DA] text-xs font-semibold text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E]"
                     />
                   </div>
 
@@ -233,7 +233,7 @@ const Settings = () => {
                       name="site_tagline"
                       value={formData.site_tagline}
                       onChange={handleChange}
-                      className="w-full px-4 py-3 rounded-2xl bg-[#FAF5F7] text-xs font-semibold text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#FF9D9D]"
+                      className="w-full px-4 py-3 rounded-2xl bg-[#F2E6DA] text-xs font-semibold text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E]"
                     />
                   </div>
                 </div>
@@ -250,7 +250,7 @@ const Settings = () => {
                         name="contact_email"
                         value={formData.contact_email}
                         onChange={handleChange}
-                        className="w-full pl-11 pr-4 py-3 rounded-2xl bg-[#FAF5F7] text-xs font-semibold text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#FF9D9D]"
+                        className="w-full pl-11 pr-4 py-3 rounded-2xl bg-[#F2E6DA] text-xs font-semibold text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E]"
                       />
                     </div>
                   </div>
@@ -266,7 +266,7 @@ const Settings = () => {
                         name="contact_phone"
                         value={formData.contact_phone}
                         onChange={handleChange}
-                        className="w-full pl-11 pr-4 py-3 rounded-2xl bg-[#FAF5F7] text-xs font-semibold text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#FF9D9D]"
+                        className="w-full pl-11 pr-4 py-3 rounded-2xl bg-[#F2E6DA] text-xs font-semibold text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E]"
                       />
                     </div>
                   </div>
@@ -283,7 +283,7 @@ const Settings = () => {
                       name="store_address"
                       value={formData.store_address}
                       onChange={handleChange}
-                      className="w-full pl-11 pr-4 py-3 rounded-2xl bg-[#FAF5F7] text-xs font-semibold text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#FF9D9D] resize-y"
+                      className="w-full pl-11 pr-4 py-3 rounded-2xl bg-[#F2E6DA] text-xs font-semibold text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] resize-y"
                     />
                   </div>
                 </div>
@@ -296,7 +296,7 @@ const Settings = () => {
                     name="currency"
                     value={formData.currency}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 rounded-2xl bg-[#FAF5F7] text-xs font-extrabold text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#FF9D9D] cursor-pointer"
+                    className="w-full px-4 py-3 rounded-2xl bg-[#F2E6DA] text-xs font-extrabold text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] cursor-pointer"
                   >
                     <option value="USD ($)">USD ($) - US Dollar</option>
                     <option value="EUR (€)">EUR (€) - Euro</option>
@@ -310,8 +310,8 @@ const Settings = () => {
             {/* 2. SHIPPING SETTINGS */}
             {activeTab === 'shipping' && (
               <div className="space-y-6">
-                <div className="flex items-center gap-2 pb-3 border-b border-gray-100">
-                  <FiTruck className="w-5 h-5 text-[#FF9D9D]" />
+                <div className="flex items-center gap-2 pb-3 border-b border-[#E8DACD]">
+                  <FiTruck className="w-5 h-5 text-[#7A0C1E]" />
                   <h3 className="text-sm font-black text-gray-800 uppercase tracking-wider">
                     Shipping & Delivery Configuration
                   </h3>
@@ -330,7 +330,7 @@ const Settings = () => {
                         name="flat_shipping_rate"
                         value={formData.flat_shipping_rate}
                         onChange={handleChange}
-                        className="w-full pl-11 pr-4 py-3 rounded-2xl bg-[#FAF5F7] text-xs font-semibold text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#FF9D9D]"
+                        className="w-full pl-11 pr-4 py-3 rounded-2xl bg-[#F2E6DA] text-xs font-semibold text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E]"
                       />
                     </div>
                   </div>
@@ -347,13 +347,13 @@ const Settings = () => {
                         name="free_shipping_threshold"
                         value={formData.free_shipping_threshold}
                         onChange={handleChange}
-                        className="w-full pl-11 pr-4 py-3 rounded-2xl bg-[#FAF5F7] text-xs font-semibold text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#FF9D9D]"
+                        className="w-full pl-11 pr-4 py-3 rounded-2xl bg-[#F2E6DA] text-xs font-semibold text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E]"
                       />
                     </div>
                   </div>
                 </div>
 
-                <div className="p-4 rounded-2xl bg-[#FAF5F7] border border-gray-100 flex items-center justify-between">
+                <div className="p-4 rounded-2xl bg-[#F2E6DA] border border-[#E8DACD] flex items-center justify-between">
                   <div>
                     <h4 className="font-extrabold text-gray-900 text-xs">Enable Free Shipping Rule</h4>
                     <p className="text-[11px] text-gray-500 font-medium">Automatically waive delivery fee when order total exceeds threshold.</p>
@@ -366,7 +366,7 @@ const Settings = () => {
                       onChange={handleChange}
                       className="sr-only peer"
                     />
-                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#FF9D9D]"></div>
+                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-[#E8DACD] after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#7A0C1E]"></div>
                   </label>
                 </div>
               </div>
@@ -375,8 +375,8 @@ const Settings = () => {
             {/* 3. PAYMENT & TAX SETTINGS */}
             {activeTab === 'payment' && (
               <div className="space-y-6">
-                <div className="flex items-center gap-2 pb-3 border-b border-gray-100">
-                  <FiCreditCard className="w-5 h-5 text-[#FF9D9D]" />
+                <div className="flex items-center gap-2 pb-3 border-b border-[#E8DACD]">
+                  <FiCreditCard className="w-5 h-5 text-[#7A0C1E]" />
                   <h3 className="text-sm font-black text-gray-800 uppercase tracking-wider">
                     Payment Gateway & Tax Rules
                   </h3>
@@ -394,12 +394,12 @@ const Settings = () => {
                       name="tax_rate"
                       value={formData.tax_rate}
                       onChange={handleChange}
-                      className="w-full pl-11 pr-4 py-3 rounded-2xl bg-[#FAF5F7] text-xs font-semibold text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#FF9D9D]"
+                      className="w-full pl-11 pr-4 py-3 rounded-2xl bg-[#F2E6DA] text-xs font-semibold text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E]"
                     />
                   </div>
                 </div>
 
-                <div className="p-4 rounded-2xl bg-[#FAF5F7] border border-gray-100 flex items-center justify-between">
+                <div className="p-4 rounded-2xl bg-[#F2E6DA] border border-[#E8DACD] flex items-center justify-between">
                   <div>
                     <h4 className="font-extrabold text-gray-900 text-xs">Enable Cash on Delivery (COD)</h4>
                     <p className="text-[11px] text-gray-500 font-medium">Allow customers to pay in cash upon product delivery.</p>
@@ -412,11 +412,11 @@ const Settings = () => {
                       onChange={handleChange}
                       className="sr-only peer"
                     />
-                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#FF9D9D]"></div>
+                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-[#E8DACD] after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#7A0C1E]"></div>
                   </label>
                 </div>
 
-                <div className="p-4 rounded-2xl bg-[#FAF5F7] border border-gray-100 flex items-center justify-between">
+                <div className="p-4 rounded-2xl bg-[#F2E6DA] border border-[#E8DACD] flex items-center justify-between">
                   <div>
                     <h4 className="font-extrabold text-gray-900 text-xs">Enable Online Credit/Debit Card Checkout</h4>
                     <p className="text-[11px] text-gray-500 font-medium">Accept online payments securely via Stripe gateway.</p>
@@ -429,7 +429,7 @@ const Settings = () => {
                       onChange={handleChange}
                       className="sr-only peer"
                     />
-                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#FF9D9D]"></div>
+                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-[#E8DACD] after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#7A0C1E]"></div>
                   </label>
                 </div>
 
@@ -442,7 +442,7 @@ const Settings = () => {
                     name="stripe_public_key"
                     value={formData.stripe_public_key}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 rounded-2xl bg-[#FAF5F7] text-xs font-mono font-bold text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#FF9D9D]"
+                    className="w-full px-4 py-3 rounded-2xl bg-[#F2E6DA] text-xs font-mono font-bold text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E]"
                   />
                 </div>
               </div>
@@ -451,8 +451,8 @@ const Settings = () => {
             {/* 4. SOCIAL & BRANDING */}
             {activeTab === 'social' && (
               <div className="space-y-6">
-                <div className="flex items-center gap-2 pb-3 border-b border-gray-100">
-                  <FiGlobe className="w-5 h-5 text-[#FF9D9D]" />
+                <div className="flex items-center gap-2 pb-3 border-b border-[#E8DACD]">
+                  <FiGlobe className="w-5 h-5 text-[#7A0C1E]" />
                   <h3 className="text-sm font-black text-gray-800 uppercase tracking-wider">
                     Social Links & Branding Logo
                   </h3>
@@ -465,11 +465,11 @@ const Settings = () => {
                   </label>
                   <div className="flex items-center gap-4">
                     {logoPreview ? (
-                      <div className="w-16 h-16 rounded-2xl border border-gray-200 overflow-hidden bg-gray-50 flex items-center justify-center p-2">
+                      <div className="w-16 h-16 rounded-2xl border border-[#E8DACD] overflow-hidden bg-gray-50 flex items-center justify-center p-2">
                         <img src={logoPreview} alt="Store Logo" className="w-full h-full object-contain" />
                       </div>
                     ) : (
-                      <div className="w-16 h-16 rounded-2xl bg-[#FF9D9D] text-white font-black text-xl flex items-center justify-center">
+                      <div className="w-16 h-16 rounded-2xl bg-[#7A0C1E] text-white font-black text-xl flex items-center justify-center">
                         FN
                       </div>
                     )}
@@ -496,7 +496,7 @@ const Settings = () => {
                       name="instagram_url"
                       value={formData.instagram_url}
                       onChange={handleChange}
-                      className="w-full px-4 py-3 rounded-2xl bg-[#FAF5F7] text-xs font-semibold text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#FF9D9D]"
+                      className="w-full px-4 py-3 rounded-2xl bg-[#F2E6DA] text-xs font-semibold text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E]"
                     />
                   </div>
 
@@ -509,7 +509,7 @@ const Settings = () => {
                       name="facebook_url"
                       value={formData.facebook_url}
                       onChange={handleChange}
-                      className="w-full px-4 py-3 rounded-2xl bg-[#FAF5F7] text-xs font-semibold text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#FF9D9D]"
+                      className="w-full px-4 py-3 rounded-2xl bg-[#F2E6DA] text-xs font-semibold text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E]"
                     />
                   </div>
 
@@ -522,7 +522,7 @@ const Settings = () => {
                       name="pinterest_url"
                       value={formData.pinterest_url}
                       onChange={handleChange}
-                      className="w-full px-4 py-3 rounded-2xl bg-[#FAF5F7] text-xs font-semibold text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#FF9D9D]"
+                      className="w-full px-4 py-3 rounded-2xl bg-[#F2E6DA] text-xs font-semibold text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E]"
                     />
                   </div>
                 </div>
@@ -530,7 +530,7 @@ const Settings = () => {
             )}
 
             {/* Bottom Form Action */}
-            <div className="pt-6 border-t border-gray-100 flex items-center justify-end">
+            <div className="pt-6 border-t border-[#E8DACD] flex items-center justify-end">
               <button
                 type="submit"
                 disabled={isSubmitting}

@@ -11,7 +11,8 @@ import {
   FiShield,
   FiCheckCircle,
   FiXCircle,
-  FiChevronDown
+  FiChevronDown,
+  FiUsers
 } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import ApiInstance from '../../utils/ApiInstance';
@@ -20,6 +21,12 @@ import ConfirmModal from '../../components/ConfirmModal';
 const Users = () => {
   const navigate = useNavigate();
   const [users, setUsers] = useState([]);
+  const [stats, setStats] = useState({
+    totalUsers: 0,
+    activeUsers: 0,
+    verifiedUsers: 0,
+    blockedUsers: 0
+  });
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
@@ -57,6 +64,9 @@ const Users = () => {
         setTotalItems(responseData.meta?.totalItems || 0);
         setTotalPages(responseData.meta?.totalPages || 1);
         setCurrentPage(responseData.meta?.currentPage || 1);
+        if (responseData.meta?.stats) {
+          setStats(responseData.meta.stats);
+        }
       }
     } catch (error) {
       console.error('Error fetching users:', error);
@@ -139,13 +149,13 @@ const Users = () => {
   const getStatusColorClass = (status) => {
     switch (status) {
       case 'active':
-        return 'bg-[#BBF1D2]/50 text-[#1E7741] border-[#BBF1D2]';
+        return 'bg-[#E8DACD]/50 text-[#1E7741] border-[#E8DACD]';
       case 'blocked':
         return 'bg-red-100 text-red-700 border-red-200';
       case 'inactive':
-        return 'bg-gray-200 text-gray-700 border-gray-300';
+        return 'bg-gray-200 text-gray-700 border-[#E8DACD]';
       default:
-        return 'bg-[#FFC5AA]/50 text-[#D96B3B] border-[#FFC5AA]';
+        return 'bg-[#5F0917]/50 text-[#D96B3B] border-[#5F0917]';
     }
   };
 
@@ -161,18 +171,57 @@ const Users = () => {
             Manage customer accounts, verify credentials, and view details.
           </p>
         </div>
-        
-        {/* Total Users Pill */}
-        <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-full border border-gray-100 shadow-sm w-fit">
-          <FiShield className="w-4 h-4 text-[#FF9D9D]" />
-          <span className="text-xs font-black text-gray-800">
-            {totalItems} Registered Users
-          </span>
+      </div>
+
+      {/* 4 Stat Overview Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Total Users */}
+        <div className="bg-white rounded-3xl p-5 shadow-xs border border-[#E8DACD] flex items-center justify-between transition-all hover:shadow-md">
+          <div>
+            <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Total Users</p>
+            <h3 className="text-2xl font-black text-gray-900 mt-1">{stats.totalUsers}</h3>
+          </div>
+          <div className="p-3 rounded-2xl bg-purple-50 text-purple-600">
+            <FiUsers className="w-5 h-5" />
+          </div>
+        </div>
+
+        {/* Active Users */}
+        <div className="bg-white rounded-3xl p-5 shadow-xs border border-[#E8DACD] flex items-center justify-between transition-all hover:shadow-md">
+          <div>
+            <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Active Users</p>
+            <h3 className="text-2xl font-black text-gray-900 mt-1">{stats.activeUsers}</h3>
+          </div>
+          <div className="p-3 rounded-2xl bg-[#E8DACD]/50 text-[#1E7741]">
+            <FiCheckCircle className="w-5 h-5" />
+          </div>
+        </div>
+
+        {/* Verified Users */}
+        <div className="bg-white rounded-3xl p-5 shadow-xs border border-[#E8DACD] flex items-center justify-between transition-all hover:shadow-md">
+          <div>
+            <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Verified Users</p>
+            <h3 className="text-2xl font-black text-gray-900 mt-1">{stats.verifiedUsers}</h3>
+          </div>
+          <div className="p-3 rounded-2xl bg-blue-50 text-blue-600">
+            <FiShield className="w-5 h-5" />
+          </div>
+        </div>
+
+        {/* Blocked/Inactive Users */}
+        <div className="bg-white rounded-3xl p-5 shadow-xs border border-[#E8DACD] flex items-center justify-between transition-all hover:shadow-md">
+          <div>
+            <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Blocked & Inactive</p>
+            <h3 className="text-2xl font-black text-gray-900 mt-1">{stats.blockedUsers}</h3>
+          </div>
+          <div className="p-3 rounded-2xl bg-red-50 text-red-600">
+            <FiXCircle className="w-5 h-5" />
+          </div>
         </div>
       </div>
 
       {/* Filter & Search Bar */}
-      <div className="bg-white rounded-3xl p-5 shadow-sm border border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div className="bg-white rounded-3xl p-5 shadow-sm border border-[#E8DACD] flex flex-col sm:flex-row items-center justify-between gap-4">
         {/* Search input */}
         <div className="relative w-full sm:w-80">
           <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -184,13 +233,13 @@ const Users = () => {
               setSearchTerm(e.target.value);
               setCurrentPage(1);
             }}
-            className="w-full pl-11 pr-4 py-2.5 rounded-full bg-[#FAF5F7] text-sm font-semibold text-gray-700 border-none focus:outline-none focus:ring-2 focus:ring-[#FF9D9D] transition-all"
+            className="w-full pl-11 pr-4 py-2.5 rounded-full bg-[#F2E6DA] text-sm font-semibold text-gray-700 border-none focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all"
           />
         </div>
 
         {/* Status Filter Dropdown */}
         <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
-          <div className="relative flex items-center gap-2 bg-[#FAF5F7] px-4 py-2.5 rounded-full text-xs font-bold text-gray-600">
+          <div className="relative flex items-center gap-2 bg-[#F2E6DA] px-4 py-2.5 rounded-full text-xs font-bold text-gray-600">
             <FiFilter className="w-3.5 h-3.5 text-gray-400" />
             <span>Filter Status:</span>
             <select
@@ -212,10 +261,10 @@ const Users = () => {
       </div>
 
       {/* Users Table Card */}
-      <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden relative">
+      <div className="bg-white rounded-3xl shadow-sm border border-[#E8DACD] overflow-hidden relative">
         {isLoading && (
           <div className="absolute inset-0 bg-white/70 backdrop-blur-xs flex items-center justify-center z-20">
-            <div className="flex items-center gap-3 font-black text-[#FF9D9D] text-sm">
+            <div className="flex items-center gap-3 font-black text-[#7A0C1E] text-sm">
               <FiLoader className="w-5 h-5 animate-spin" />
               <span>Loading Users...</span>
             </div>
@@ -224,7 +273,7 @@ const Users = () => {
 
         <div className="overflow-x-auto min-h-[350px]">
           <table className="w-full text-left text-sm">
-            <thead className="bg-[#FAF5F7] text-gray-400 font-bold text-xs uppercase tracking-wider">
+            <thead className="bg-[#F2E6DA] text-gray-400 font-bold text-xs uppercase tracking-wider">
               <tr>
                 <th className="py-4 px-6">User Info</th>
                 <th className="py-4 px-6">Phone / Address</th>
@@ -234,7 +283,7 @@ const Users = () => {
                 <th className="py-4 px-6 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100 font-medium text-gray-700">
+            <tbody className="divide-y divide-[#E8DACD] font-medium text-gray-700">
               {!isLoading && users.length === 0 ? (
                 <tr>
                   <td colSpan="6" className="py-12 text-center text-gray-400 font-bold">
@@ -255,7 +304,7 @@ const Users = () => {
                           <img 
                             src={avatarUrl} 
                             alt={user.name} 
-                            className="w-10 h-10 rounded-full object-cover border-2 border-[#FF9D9D]/60 shadow-xs"
+                            className="w-10 h-10 rounded-full object-cover border-2 border-[#7A0C1E]/60 shadow-xs"
                             onError={(e) => {
                               e.target.onerror = null;
                               e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || 'User')}&background=FF9D9D&color=2D252E`;
@@ -287,7 +336,7 @@ const Users = () => {
                       {/* Verification Badge */}
                       <td className="py-4 px-6">
                         {user.is_email_verified ? (
-                          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-black bg-[#BBF1D2]/40 text-[#249454]">
+                          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-black bg-[#E8DACD]/40 text-[#249454]">
                             <FiCheckCircle className="w-3.5 h-3.5" />
                             <span>Verified</span>
                           </span>
@@ -310,7 +359,7 @@ const Users = () => {
                           <select
                             value={currentStatus}
                             onChange={(e) => handleStatusChange(user.id, e.target.value)}
-                            className={`appearance-none px-3 py-1.5 pr-7 rounded-full text-xs font-black tracking-wide border uppercase focus:outline-none focus:ring-2 focus:ring-[#FF9D9D] cursor-pointer transition-all ${getStatusColorClass(currentStatus)}`}
+                            className={`appearance-none px-3 py-1.5 pr-7 rounded-full text-xs font-black tracking-wide border uppercase focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] cursor-pointer transition-all ${getStatusColorClass(currentStatus)}`}
                           >
                             <option value="active" className="bg-white text-gray-800">Active</option>
                             <option value="inactive" className="bg-white text-gray-800">Inactive</option>
@@ -328,7 +377,7 @@ const Users = () => {
                           <button
                             onClick={() => handleViewUser(user.id)}
                             title="View User Details Page"
-                            className="p-2 rounded-xl bg-gray-100 text-gray-600 hover:bg-[#EEF8CD] hover:text-[#2D252E] transition-all cursor-pointer shadow-2xs"
+                            className="p-2 rounded-xl bg-gray-100 text-gray-600 hover:bg-[#FAF5EF] hover:text-[#2B1B17] transition-all cursor-pointer shadow-2xs"
                           >
                             <FiEye className="w-4 h-4" />
                           </button>
@@ -353,7 +402,7 @@ const Users = () => {
 
         {/* Pagination Footer */}
         {totalPages > 1 && (
-          <div className="px-6 py-4 bg-[#FAF5F7] flex items-center justify-between border-t border-gray-100 text-xs font-bold text-gray-500">
+          <div className="px-6 py-4 bg-[#F2E6DA] flex items-center justify-between border-t border-[#E8DACD] text-xs font-bold text-gray-500">
             <span>
               Showing page {currentPage} of {totalPages} ({totalItems} total users)
             </span>
@@ -361,7 +410,7 @@ const Users = () => {
               <button
                 disabled={currentPage === 1}
                 onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                className="p-2 rounded-xl bg-white text-gray-700 disabled:opacity-40 shadow-xs hover:bg-[#EEF8CD] hover:text-[#2D252E] transition-all cursor-pointer"
+                className="p-2 rounded-xl bg-white text-gray-700 disabled:opacity-40 shadow-xs hover:bg-[#FAF5EF] hover:text-[#2B1B17] transition-all cursor-pointer"
               >
                 <FiChevronLeft className="w-4 h-4" />
               </button>
@@ -371,7 +420,7 @@ const Users = () => {
               <button
                 disabled={currentPage === totalPages}
                 onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-                className="p-2 rounded-xl bg-white text-gray-700 disabled:opacity-40 shadow-xs hover:bg-[#EEF8CD] hover:text-[#2D252E] transition-all cursor-pointer"
+                className="p-2 rounded-xl bg-white text-gray-700 disabled:opacity-40 shadow-xs hover:bg-[#FAF5EF] hover:text-[#2B1B17] transition-all cursor-pointer"
               >
                 <FiChevronRight className="w-4 h-4" />
               </button>

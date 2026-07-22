@@ -1,14 +1,49 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Sparkles, Heart, Leaf, ShieldCheck, Star, CheckCircle, ArrowRight } from 'lucide-react';
 import { Container } from '@/components/ui/Container';
 import { Button } from '@/components/common/Button';
 import { Newsletter } from '@/components/home/Newsletter';
+import { bannerService } from '@/services/bannerService';
+import { getBackendURL } from '@/services/api';
 
 export default function AboutPage() {
+  const [banner, setBanner] = useState({
+    title: 'Crafted with love, chosen for you.',
+    description: 'Fleur Notes was born from a simple idea — to bring beauty, warmth, and meaning into everyday life. We curate and create handcrafted products that tell a story and turn houses into homes.',
+    tagline: 'OUR STORY',
+    image: '/images/banners/hero_banner.jpg'
+  });
+
+  useEffect(() => {
+    async function loadBanner() {
+      try {
+        const fetchedBanners = await bannerService.getBanners({ limit: 1, type: 'about' });
+        if (fetchedBanners && fetchedBanners.length > 0) {
+          const b = fetchedBanners[0];
+          const backendUrl = getBackendURL();
+          let imgUrl = b.image || '/images/banners/hero_banner.jpg';
+          if (imgUrl && !imgUrl.startsWith('http') && !imgUrl.startsWith('data:')) {
+            const path = imgUrl.startsWith('/') ? imgUrl : `/${imgUrl}`;
+            imgUrl = `${backendUrl}${path}`;
+          }
+          setBanner({
+            title: b.title || 'Crafted with love, chosen for you.',
+            description: b.description || 'Fleur Notes was born from a simple idea — to bring beauty, warmth, and meaning into everyday life. We curate and create handcrafted products that tell a story and turn houses into homes.',
+            tagline: b.tagline || 'OUR STORY',
+            image: imgUrl
+          });
+        }
+      } catch (error) {
+        console.error('Failed to load about banner:', error);
+      }
+    }
+    loadBanner();
+  }, []);
+
   const values = [
     'Timeless designs that inspire',
     'Handpicked materials, always',
@@ -46,12 +81,12 @@ export default function AboutPage() {
         {/* Background Image */}
         <div className="absolute inset-0 z-0">
           <Image
-            src="/images/banners/hero_banner.jpg"
-            alt="Crafted with love story"
+            src={banner.image}
+            alt={banner.title}
             fill
+            unoptimized
             className="object-cover"
             priority
-            quality={100}
           />
         </div>
 
@@ -60,13 +95,13 @@ export default function AboutPage() {
           <div className="max-w-xl md:max-w-2xl flex flex-col items-start space-y-4">
             <div className="inline-flex items-center gap-2 text-xs font-bold tracking-widest text-[#7A0C1E] uppercase">
               <Sparkles className="w-3.5 h-3.5 fill-[#7A0C1E]" />
-              <span>OUR STORY</span>
+              <span>{banner.tagline}</span>
             </div>
             <h1 className="font-serif-luxury text-4xl sm:text-5xl lg:text-6xl font-bold text-[#7A0C1E] leading-[1.15] tracking-tight">
-              Crafted with love, chosen for you.
+              {banner.title}
             </h1>
             <p className="text-base sm:text-lg text-black font-medium leading-relaxed max-w-xl">
-              Fleur Notes was born from a simple idea — to bring beauty, warmth, and meaning into everyday life. We curate and create handcrafted products that tell a story and turn houses into homes.
+              {banner.description}
             </p>
             <div className="pt-2">
               <Link href="/shop">

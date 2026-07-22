@@ -45,6 +45,12 @@ const getCategoriesList = async (req, res) => {
       attributes: ['id', 'name', 'slug', 'image', 'description', 'status', 'created_at', 'updated_at'],
     });
     
+    // Calculate category statistics
+    const totalCategories = await Category.count();
+    const activeCategories = await Category.count({ where: { status: 'active' } });
+    const inactiveCategories = await Category.count({ where: { status: 'inactive' } });
+    const totalProducts = await Product.count();
+
     await logActivity(req.user.id, 'VIEW_CATEGORIES', 'Categories list viewed', req);
     
     return helper.success(res, `Successfully fetched list of categories`, {
@@ -53,7 +59,13 @@ const getCategoriesList = async (req, res) => {
         totalItems: count,
         totalPages: Math.ceil(count / limit),
         currentPage: page,
-        limit
+        limit,
+        stats: {
+          totalCategories,
+          activeCategories,
+          inactiveCategories,
+          totalProducts
+        }
       }
     });
   } catch (error) {

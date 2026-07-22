@@ -1,12 +1,14 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { MapPin, Mail, Phone, Clock, Send, ChevronRight, Sparkles } from 'lucide-react';
 import { Container } from '@/components/ui/Container';
 import { Button } from '@/components/common/Button';
 import { ValueProps } from '@/components/home/ValueProps';
+import { bannerService } from '@/services/bannerService';
+import { getBackendURL } from '@/services/api';
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -16,6 +18,39 @@ export default function ContactPage() {
     message: ''
   });
   const [submitted, setSubmitted] = useState(false);
+
+  const [banner, setBanner] = useState({
+    title: "Let's Create Something Beautiful Together",
+    description: "Have a question, need help, or just want to say hello? We're here for you.",
+    tagline: "WE'D LOVE TO HEAR FROM YOU",
+    image: '/images/banners/hero_banner.jpg'
+  });
+
+  useEffect(() => {
+    async function loadBanner() {
+      try {
+        const fetchedBanners = await bannerService.getBanners({ limit: 1, type: 'contact' });
+        if (fetchedBanners && fetchedBanners.length > 0) {
+          const b = fetchedBanners[0];
+          const backendUrl = getBackendURL();
+          let imgUrl = b.image || '/images/banners/hero_banner.jpg';
+          if (imgUrl && !imgUrl.startsWith('http') && !imgUrl.startsWith('data:')) {
+            const path = imgUrl.startsWith('/') ? imgUrl : `/${imgUrl}`;
+            imgUrl = `${backendUrl}${path}`;
+          }
+          setBanner({
+            title: b.title || "Let's Create Something Beautiful Together",
+            description: b.description || "Have a question, need help, or just want to say hello? We're here for you.",
+            tagline: b.tagline || "WE'D LOVE TO HEAR FROM YOU",
+            image: imgUrl
+          });
+        }
+      } catch (error) {
+        console.error('Failed to load contact banner:', error);
+      }
+    }
+    loadBanner();
+  }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -60,12 +95,12 @@ export default function ContactPage() {
         {/* Background Image */}
         <div className="absolute inset-0 z-0">
           <Image
-            src="/images/banners/hero_banner.jpg"
-            alt="Fleur Notes Contact Us"
+            src={banner.image}
+            alt={banner.title}
             fill
+            unoptimized
             className="object-cover"
             priority
-            quality={100}
           />
         </div>
 
@@ -74,13 +109,13 @@ export default function ContactPage() {
           <div className="max-w-xl md:max-w-2xl flex flex-col items-start space-y-4">
             <div className="inline-flex items-center gap-2 text-xs font-bold tracking-widest text-[#7A0C1E] uppercase">
               <Sparkles className="w-3.5 h-3.5 fill-[#7A0C1E]" />
-              <span>WE'D LOVE TO HEAR FROM YOU</span>
+              <span>{banner.tagline}</span>
             </div>
             <h1 className="font-serif-luxury text-4xl sm:text-5xl font-bold text-[#7A0C1E] leading-tight tracking-tight">
-              Let's Create Something Beautiful Together
+              {banner.title}
             </h1>
             <p className="text-base sm:text-lg text-black font-medium leading-relaxed max-w-lg">
-              Have a question, need help, or just want to say hello? We're here for you.
+              {banner.description}
             </p>
             <div className="pt-2">
               <a href="#contact-form">

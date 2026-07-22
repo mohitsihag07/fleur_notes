@@ -18,7 +18,7 @@ const ConfirmModal = ({
     switch (type) {
       case 'logout':
         return (
-          <div className="w-14 h-14 rounded-2xl bg-[#FF9D9D]/20 text-[#2D252E] flex items-center justify-center shrink-0 shadow-sm">
+          <div className="w-14 h-14 rounded-2xl bg-[#7A0C1E]/20 text-[#2B1B17] flex items-center justify-center shrink-0 shadow-sm">
             <FiLogOut className="w-7 h-7 text-[#F57070]" />
           </div>
         );
@@ -40,7 +40,7 @@ const ConfirmModal = ({
   const getConfirmButtonStyle = () => {
     switch (type) {
       case 'logout':
-        return 'bg-[#FF9D9D] hover:bg-[#FFC5AA] text-[#2D252E] shadow-md shadow-[#FF9D9D]/20';
+        return 'bg-[#7A0C1E] hover:bg-[#5F0917] text-[#2B1B17] shadow-md shadow-[#7A0C1E]/20';
       case 'danger':
         return 'bg-red-500 hover:bg-red-600 text-white shadow-md shadow-red-500/20';
       default:
@@ -51,7 +51,7 @@ const ConfirmModal = ({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs animate-fadeIn">
       <div 
-        className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-gray-100 relative space-y-6 transform transition-all scale-100"
+        className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-[#E8DACD] relative space-y-6 transform transition-all scale-100"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Top Close Button */}
@@ -83,7 +83,7 @@ const ConfirmModal = ({
             type="button"
             disabled={isLoading}
             onClick={onClose}
-            className="flex-1 py-3 px-5 rounded-2xl bg-[#FAF5F7] font-black text-xs text-gray-700 hover:bg-gray-200 transition-all cursor-pointer"
+            className="flex-1 py-3 px-5 rounded-2xl bg-[#F2E6DA] font-black text-xs text-gray-700 hover:bg-gray-200 transition-all cursor-pointer"
           >
             {cancelText}
           </button>

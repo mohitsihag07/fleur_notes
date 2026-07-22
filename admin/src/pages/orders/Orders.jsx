@@ -99,7 +99,7 @@ const Orders = () => {
   const getStatusBadgeStyle = (status) => {
     switch (status?.toLowerCase()) {
       case 'delivered':
-        return 'bg-[#BBF1D2]/50 text-[#1E7741] border-[#BBF1D2]';
+        return 'bg-[#E8DACD]/50 text-[#1E7741] border-[#E8DACD]';
       case 'shipped':
       case 'out_for_delivery':
       case 'confirmed':
@@ -110,7 +110,7 @@ const Orders = () => {
         return 'bg-red-100 text-red-700 border-red-200';
       case 'pending':
       default:
-        return 'bg-[#FFC5AA]/40 text-[#D96B3B] border-[#FFC5AA]';
+        return 'bg-[#5F0917]/40 text-[#D96B3B] border-[#5F0917]';
     }
   };
 
@@ -118,7 +118,7 @@ const Orders = () => {
   const getPaymentBadgeStyle = (pStatus) => {
     switch (pStatus?.toLowerCase()) {
       case 'paid':
-        return 'bg-[#EEF8CD] text-[#2D252E] font-black';
+        return 'bg-[#FAF5EF] text-[#2B1B17] font-black';
       case 'failed':
       case 'refunded':
         return 'bg-red-50 text-red-600 font-bold';
@@ -144,8 +144,8 @@ const Orders = () => {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-2xl bg-[#FF9D9D]/20 text-[#2D252E]">
-              <FiShoppingBag className="w-6 h-6 text-[#FF9D9D]" />
+            <div className="p-2.5 rounded-2xl bg-[#7A0C1E]/20 text-[#2B1B17]">
+              <FiShoppingBag className="w-6 h-6 text-[#7A0C1E]" />
             </div>
             <h2 className="text-2xl font-black text-gray-900 tracking-tight">
               Orders Management
@@ -160,7 +160,7 @@ const Orders = () => {
       {/* 4 Stat Overview Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Total Orders */}
-        <div className="bg-white rounded-3xl p-5 shadow-xs border border-gray-100 flex items-center justify-between transition-all hover:shadow-md">
+        <div className="bg-white rounded-3xl p-5 shadow-xs border border-[#E8DACD] flex items-center justify-between transition-all hover:shadow-md">
           <div>
             <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Total Orders</p>
             <h3 className="text-2xl font-black text-gray-900 mt-1">{stats.totalOrders || 0}</h3>
@@ -171,18 +171,18 @@ const Orders = () => {
         </div>
 
         {/* Pending Orders */}
-        <div className="bg-white rounded-3xl p-5 shadow-xs border border-gray-100 flex items-center justify-between transition-all hover:shadow-md">
+        <div className="bg-white rounded-3xl p-5 shadow-xs border border-[#E8DACD] flex items-center justify-between transition-all hover:shadow-md">
           <div>
             <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Pending Orders</p>
             <h3 className="text-2xl font-black text-gray-900 mt-1">{stats.pendingCount || 0}</h3>
           </div>
-          <div className="p-3 rounded-2xl bg-[#FFC5AA]/30 text-[#D96B3B]">
+          <div className="p-3 rounded-2xl bg-[#5F0917]/30 text-[#D96B3B]">
             <FiClock className="w-5 h-5" />
           </div>
         </div>
 
         {/* In Transit / Processing */}
-        <div className="bg-white rounded-3xl p-5 shadow-xs border border-gray-100 flex items-center justify-between transition-all hover:shadow-md">
+        <div className="bg-white rounded-3xl p-5 shadow-xs border border-[#E8DACD] flex items-center justify-between transition-all hover:shadow-md">
           <div>
             <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Processing & Shipped</p>
             <h3 className="text-2xl font-black text-gray-900 mt-1">{stats.processingCount || 0}</h3>
@@ -193,19 +193,19 @@ const Orders = () => {
         </div>
 
         {/* Total Revenue (Rupee Sign) */}
-        <div className="bg-white rounded-3xl p-5 shadow-xs border border-gray-100 flex items-center justify-between transition-all hover:shadow-md">
+        <div className="bg-white rounded-3xl p-5 shadow-xs border border-[#E8DACD] flex items-center justify-between transition-all hover:shadow-md">
           <div>
             <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Total Revenue</p>
             <h3 className="text-2xl font-black text-gray-900 mt-1">₹{parseFloat(stats.totalRevenue || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</h3>
           </div>
-          <div className="p-3 rounded-2xl bg-[#BBF1D2]/40 text-[#1E7741]">
+          <div className="p-3 rounded-2xl bg-[#E8DACD]/40 text-[#1E7741]">
             <span className="font-black text-lg">₹</span>
           </div>
         </div>
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="bg-white rounded-3xl p-5 shadow-sm border border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div className="bg-white rounded-3xl p-5 shadow-sm border border-[#E8DACD] flex flex-col sm:flex-row items-center justify-between gap-4">
         {/* Search Input */}
         <div className="relative w-full sm:w-80">
           <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -217,13 +217,13 @@ const Orders = () => {
               setSearchTerm(e.target.value);
               setCurrentPage(1);
             }}
-            className="w-full pl-11 pr-4 py-2.5 rounded-full bg-[#FAF5F7] text-xs font-semibold text-gray-700 border-none focus:outline-none focus:ring-2 focus:ring-[#FF9D9D] transition-all"
+            className="w-full pl-11 pr-4 py-2.5 rounded-full bg-[#F2E6DA] text-xs font-semibold text-gray-700 border-none focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all"
           />
         </div>
 
         {/* Status Filter */}
         <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
-          <div className="flex items-center gap-2 bg-[#FAF5F7] px-4 py-2.5 rounded-full text-xs font-bold text-gray-600">
+          <div className="flex items-center gap-2 bg-[#F2E6DA] px-4 py-2.5 rounded-full text-xs font-bold text-gray-600">
             <FiFilter className="w-3.5 h-3.5 text-gray-400" />
             <span>Order Status:</span>
             <select
@@ -246,10 +246,10 @@ const Orders = () => {
       </div>
 
       {/* Orders Table */}
-      <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden relative">
+      <div className="bg-white rounded-3xl shadow-sm border border-[#E8DACD] overflow-hidden relative">
         {isLoading && (
           <div className="absolute inset-0 bg-white/70 backdrop-blur-xs flex items-center justify-center z-20">
-            <div className="flex items-center gap-3 font-black text-[#FF9D9D] text-xs">
+            <div className="flex items-center gap-3 font-black text-[#7A0C1E] text-xs">
               <FiLoader className="w-5 h-5 animate-spin" />
               <span>Loading Orders Data...</span>
             </div>
@@ -258,7 +258,7 @@ const Orders = () => {
 
         <div className="overflow-x-auto min-h-[380px]">
           <table className="w-full text-left text-xs">
-            <thead className="bg-[#FAF5F7] text-gray-400 font-extrabold text-xs uppercase tracking-wider">
+            <thead className="bg-[#F2E6DA] text-gray-400 font-extrabold text-xs uppercase tracking-wider">
               <tr>
                 <th className="py-4 px-6">Order ID & Date</th>
                 <th className="py-4 px-6">Customer</th>
@@ -268,7 +268,7 @@ const Orders = () => {
                 <th className="py-4 px-6 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100 font-medium text-gray-700">
+            <tbody className="divide-y divide-[#E8DACD] font-medium text-gray-700">
               {!isLoading && orders.length === 0 ? (
                 <tr>
                   <td colSpan="6" className="py-12 text-center text-gray-400 font-bold">
@@ -338,7 +338,7 @@ const Orders = () => {
                         <button
                           onClick={() => navigate(`/orders/${order.id}`)}
                           title="View Order Details"
-                          className="p-2.5 rounded-2xl bg-[#EEF8CD] text-[#2D252E] hover:bg-[#FF9D9D] transition-all cursor-pointer shadow-2xs font-bold text-xs inline-flex items-center gap-1.5"
+                          className="p-2.5 rounded-2xl bg-[#FAF5EF] text-[#2B1B17] hover:bg-[#7A0C1E] transition-all cursor-pointer shadow-2xs font-bold text-xs inline-flex items-center gap-1.5"
                         >
                           <FiEye className="w-4 h-4" />
                           <span>View Details</span>
@@ -354,7 +354,7 @@ const Orders = () => {
 
         {/* Pagination Footer */}
         {totalPages > 1 && (
-          <div className="px-6 py-4 bg-[#FAF5F7] flex items-center justify-between border-t border-gray-100 text-xs font-bold text-gray-500">
+          <div className="px-6 py-4 bg-[#F2E6DA] flex items-center justify-between border-t border-[#E8DACD] text-xs font-bold text-gray-500">
             <span>
               Showing page {currentPage} of {totalPages} ({totalItems} total orders)
             </span>
@@ -362,7 +362,7 @@ const Orders = () => {
               <button
                 disabled={currentPage === 1}
                 onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                className="p-2 rounded-xl bg-white text-gray-700 disabled:opacity-40 shadow-xs hover:bg-[#EEF8CD] hover:text-[#2D252E] transition-all cursor-pointer"
+                className="p-2 rounded-xl bg-white text-gray-700 disabled:opacity-40 shadow-xs hover:bg-[#FAF5EF] hover:text-[#2B1B17] transition-all cursor-pointer"
               >
                 <FiChevronLeft className="w-4 h-4" />
               </button>
@@ -372,7 +372,7 @@ const Orders = () => {
               <button
                 disabled={currentPage === totalPages}
                 onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-                className="p-2 rounded-xl bg-white text-gray-700 disabled:opacity-40 shadow-xs hover:bg-[#EEF8CD] hover:text-[#2D252E] transition-all cursor-pointer"
+                className="p-2 rounded-xl bg-white text-gray-700 disabled:opacity-40 shadow-xs hover:bg-[#FAF5EF] hover:text-[#2B1B17] transition-all cursor-pointer"
               >
                 <FiChevronRight className="w-4 h-4" />
               </button>

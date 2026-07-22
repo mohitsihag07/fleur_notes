@@ -3,36 +3,36 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --color-brand-primary: #FF9D9D;
-  --color-brand-secondary: #FFC5AA;
-  --color-brand-hover: #EEF8CD;
-  --color-brand-mint: #BBF1D2;
+  --color-brand-primary: #7A0C1E;
+  --color-brand-secondary: #5F0917;
+  --color-brand-hover: #FAF5EF;
+  --color-brand-mint: #E8DACD;
 
-  --color-app-bg: #EEF8CD;
+  --color-app-bg: #FAF5EF;
   --color-app-card: #FFFFFF;
-  --color-app-border: #EFECE8;
-  --color-app-text: #2D252E;
-  --color-app-text-muted: #7A6F7B;
+  --color-app-border: #E8DACD;
+  --color-app-text: #2B1B17;
+  --color-app-text-muted: #705B54;
 }
 
 /* Base Theme Variables (Light Theme) */
 :root {
-  --coral: #FF9D9D;
-  --peach: #FFC5AA;
-  --lime: #EEF8CD;
-  --mint: #BBF1D2;
+  --coral: #7A0C1E;
+  --peach: #5F0917;
+  --lime: #FAF5EF;
+  --mint: #E8DACD;
 
-  --background: #EEF8CD;
+  --background: #FAF5EF;
   --card: #FFFFFF;
-  --border: #EFECE8;
-  --text: #2D252E;
-  --text-muted: #7A6F7B;
+  --border: #E8DACD;
+  --text: #2B1B17;
+  --text-muted: #705B54;
 
-  --primary: #FF9D9D;
-  --secondary: #FFC5AA;
-  --hover-bg: #FFC5AA;
-  --sidebar-bg: #FF9D9D;
-  --sidebar-text: #2D252E;
+  --primary: #7A0C1E;
+  --secondary: #5F0917;
+  --hover-bg: #5F0917;
+  --sidebar-bg: #7A0C1E;
+  --sidebar-text: #2B1B17;
   --sidebar-text-muted: #61434B;
 }
 
@@ -45,8 +45,8 @@
   --text: #F8F5F9;
   --text-muted: #A396A6;
 
-  --primary: #FF9D9D;
-  --secondary: #FFC5AA;
+  --primary: #7A0C1E;
+  --secondary: #5F0917;
   --hover-bg: #3D3524;
   --sidebar-bg: #1E1622;
   --sidebar-text: #FFFFFF;
@@ -85,12 +85,12 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #FFC5AA;
+  background: #5F0917;
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #FF9D9D;
+  background: #7A0C1E;
 }
 
 /* Card Styling */
@@ -109,30 +109,30 @@ body {
 
 /* 4-Color Stat Header Cards */
 .stat-card-coral {
-  background: linear-gradient(135deg, #FF9D9D 0%, #F58383 100%);
-  color: #2D252E;
+  background: linear-gradient(135deg, #7A0C1E 0%, #5F0917 100%);
+  color: #2B1B17;
 }
 
 .stat-card-peach {
-  background: linear-gradient(135deg, #FFC5AA 0%, #F8B091 100%);
-  color: #2D252E;
+  background: linear-gradient(135deg, #5F0917 0%, #5F0917 100%);
+  color: #2B1B17;
 }
 
 .stat-card-lime {
-  background: linear-gradient(135deg, #EEF8CD 0%, #DEEEA9 100%);
-  color: #2D252E;
+  background: linear-gradient(135deg, #FAF5EF 0%, #E8DACD 100%);
+  color: #2B1B17;
 }
 
 .stat-card-mint {
-  background: linear-gradient(135deg, #BBF1D2 0%, #9DE3B9 100%);
-  color: #2D252E;
+  background: linear-gradient(135deg, #E8DACD 0%, #E8DACD 100%);
+  color: #2B1B17;
 }
 
 /* Primary Button */
 .btn-purple,
 .btn-primary {
-  background-color: #FF9D9D;
-  color: #2D252E;
+  background-color: #7A0C1E;
+  color: #2B1B17;
   font-weight: 800;
   border-radius: 0.75rem;
   padding: 0.625rem 1.25rem;
@@ -142,7 +142,23 @@ body {
 
 .btn-purple:hover,
 .btn-primary:hover {
-  background-color: #FFC5AA;
-  color: #2D252E;
+  background-color: #5F0917;
+  color: #2B1B17;
   transform: translateY(-1px);
+}
+
+/* Page transition animation */
+@utility animate-fade-in {
+  animation: fadeIn 0.25s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

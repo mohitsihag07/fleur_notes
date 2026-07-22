@@ -81,7 +81,7 @@ const GetOrder = () => {
   if (isLoading) {
     return (
       <div className="min-h-[400px] flex items-center justify-center">
-        <div className="flex items-center gap-3 font-black text-[#FF9D9D] text-sm">
+        <div className="flex items-center gap-3 font-black text-[#7A0C1E] text-sm">
           <FiLoader className="w-6 h-6 animate-spin" />
           <span>Loading Order Information...</span>
         </div>
@@ -91,7 +91,7 @@ const GetOrder = () => {
 
   if (!order) {
     return (
-      <div className="text-center py-16 bg-white rounded-3xl border border-gray-100 p-8 space-y-4">
+      <div className="text-center py-16 bg-white rounded-3xl border border-[#E8DACD] p-8 space-y-4">
         <h3 className="text-lg font-black text-gray-800">Order Not Found</h3>
         <p className="text-xs font-semibold text-gray-400">The requested order ID does not exist.</p>
         <button
@@ -115,7 +115,7 @@ const GetOrder = () => {
         <div className="flex items-center gap-4">
           <button
             onClick={() => navigate('/orders')}
-            className="p-3 rounded-2xl bg-white border border-gray-200 text-gray-700 hover:bg-[#EEF8CD] hover:text-[#2D252E] transition-all cursor-pointer shadow-2xs"
+            className="p-3 rounded-2xl bg-white border border-[#E8DACD] text-gray-700 hover:bg-[#FAF5EF] hover:text-[#2B1B17] transition-all cursor-pointer shadow-2xs"
           >
             <FiArrowLeft className="w-5 h-5" />
           </button>
@@ -124,7 +124,7 @@ const GetOrder = () => {
               <h2 className="text-2xl font-black text-gray-900 tracking-tight">
                 Order #{order.order_number || `ORD-${order.id}`}
               </h2>
-              <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-[#EEF8CD] text-[#2D252E]">
+              <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-[#FAF5EF] text-[#2B1B17]">
                 {order.status || 'pending'}
               </span>
             </div>
@@ -138,9 +138,9 @@ const GetOrder = () => {
       {/* 3 Summary Information Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
         {/* Customer Information */}
-        <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 space-y-4">
-          <div className="flex items-center gap-3 text-gray-900 font-extrabold text-sm pb-3 border-b border-gray-100">
-            <FiUser className="w-4 h-4 text-[#FF9D9D]" />
+        <div className="bg-white rounded-3xl p-6 shadow-sm border border-[#E8DACD] space-y-4">
+          <div className="flex items-center gap-3 text-gray-900 font-extrabold text-sm pb-3 border-b border-[#E8DACD]">
+            <FiUser className="w-4 h-4 text-[#7A0C1E]" />
             <span>Customer Details</span>
           </div>
           <div className="space-y-2 text-xs">
@@ -157,9 +157,9 @@ const GetOrder = () => {
         </div>
 
         {/* Shipping Address */}
-        <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 space-y-4">
-          <div className="flex items-center gap-3 text-gray-900 font-extrabold text-sm pb-3 border-b border-gray-100">
-            <FiMapPin className="w-4 h-4 text-[#FF9D9D]" />
+        <div className="bg-white rounded-3xl p-6 shadow-sm border border-[#E8DACD] space-y-4">
+          <div className="flex items-center gap-3 text-gray-900 font-extrabold text-sm pb-3 border-b border-[#E8DACD]">
+            <FiMapPin className="w-4 h-4 text-[#7A0C1E]" />
             <span>Shipping Address</span>
           </div>
           <div className="space-y-1.5 text-xs text-gray-700 font-semibold leading-relaxed">
@@ -178,9 +178,9 @@ const GetOrder = () => {
         </div>
 
         {/* Payment & Order Status Changer */}
-        <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 space-y-4">
-          <div className="flex items-center gap-3 text-gray-900 font-extrabold text-sm pb-3 border-b border-gray-100">
-            <FiCreditCard className="w-4 h-4 text-[#FF9D9D]" />
+        <div className="bg-white rounded-3xl p-6 shadow-sm border border-[#E8DACD] space-y-4">
+          <div className="flex items-center gap-3 text-gray-900 font-extrabold text-sm pb-3 border-b border-[#E8DACD]">
+            <FiCreditCard className="w-4 h-4 text-[#7A0C1E]" />
             <span>Payment & Status</span>
           </div>
 
@@ -192,7 +192,7 @@ const GetOrder = () => {
               <select
                 value={selectedStatus}
                 onChange={(e) => setSelectedStatus(e.target.value)}
-                className="w-full mt-1 p-2.5 rounded-xl bg-[#FAF5F7] text-xs font-black text-gray-800 border-none focus:outline-none focus:ring-2 focus:ring-[#FF9D9D] cursor-pointer"
+                className="w-full mt-1 p-2.5 rounded-xl bg-[#F2E6DA] text-xs font-black text-gray-800 border-none focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] cursor-pointer"
               >
                 <option value="pending">Pending</option>
                 <option value="confirmed">Confirmed</option>
@@ -211,7 +211,7 @@ const GetOrder = () => {
               <select
                 value={selectedPaymentStatus}
                 onChange={(e) => setSelectedPaymentStatus(e.target.value)}
-                className="w-full mt-1 p-2.5 rounded-xl bg-[#FAF5F7] text-xs font-black text-gray-800 border-none focus:outline-none focus:ring-2 focus:ring-[#FF9D9D] cursor-pointer"
+                className="w-full mt-1 p-2.5 rounded-xl bg-[#F2E6DA] text-xs font-black text-gray-800 border-none focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] cursor-pointer"
               >
                 <option value="pending">Pending</option>
                 <option value="paid">Paid</option>
@@ -223,7 +223,7 @@ const GetOrder = () => {
             <button
               type="submit"
               disabled={isUpdating}
-              className="w-full py-2.5 px-4 rounded-xl bg-[#EEF8CD] text-[#2D252E] font-black text-xs uppercase tracking-wider hover:bg-[#FF9D9D] transition-all cursor-pointer flex items-center justify-center gap-2 shadow-2xs mt-2"
+              className="w-full py-2.5 px-4 rounded-xl bg-[#FAF5EF] text-[#2B1B17] font-black text-xs uppercase tracking-wider hover:bg-[#7A0C1E] transition-all cursor-pointer flex items-center justify-center gap-2 shadow-2xs mt-2"
             >
               {isUpdating ? <FiLoader className="w-4 h-4 animate-spin" /> : <FiSave className="w-4 h-4" />}
               <span>Save Changes</span>
@@ -233,9 +233,9 @@ const GetOrder = () => {
       </div>
 
       {/* Ordered Products Table */}
-      <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 space-y-4">
-        <div className="flex items-center gap-3 pb-3 border-b border-gray-100">
-          <FiPackage className="w-5 h-5 text-[#FF9D9D]" />
+      <div className="bg-white rounded-3xl shadow-sm border border-[#E8DACD] p-6 space-y-4">
+        <div className="flex items-center gap-3 pb-3 border-b border-[#E8DACD]">
+          <FiPackage className="w-5 h-5 text-[#7A0C1E]" />
           <h3 className="text-sm font-black text-gray-900 uppercase tracking-wider">
             Ordered Products ({items.length} Items)
           </h3>
@@ -243,7 +243,7 @@ const GetOrder = () => {
 
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-[#FAF5F7] text-gray-400 font-extrabold text-xs uppercase tracking-wider">
+            <thead className="bg-[#F2E6DA] text-gray-400 font-extrabold text-xs uppercase tracking-wider">
               <tr>
                 <th className="py-3 px-4">Item</th>
                 <th className="py-3 px-4">Price</th>
@@ -251,7 +251,7 @@ const GetOrder = () => {
                 <th className="py-3 px-4 text-right">Total</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100 font-medium text-gray-700">
+            <tbody className="divide-y divide-[#E8DACD] font-medium text-gray-700">
               {items.length === 0 ? (
                 <tr>
                   <td colSpan="4" className="py-8 text-center text-gray-400 font-bold">
@@ -288,8 +288,8 @@ const GetOrder = () => {
         </div>
 
         {/* Order Totals Summary */}
-        <div className="pt-4 border-t border-gray-100 flex justify-end">
-          <div className="w-full sm:w-72 bg-[#FAF5F7] p-5 rounded-2xl space-y-3 text-xs">
+        <div className="pt-4 border-t border-[#E8DACD] flex justify-end">
+          <div className="w-full sm:w-72 bg-[#F2E6DA] p-5 rounded-2xl space-y-3 text-xs">
             <div className="flex items-center justify-between text-gray-600 font-semibold">
               <span>Subtotal:</span>
               <span>₹{parseFloat(order.subtotal || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
@@ -304,9 +304,9 @@ const GetOrder = () => {
                 <span>-₹{parseFloat(order.discount_amount || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
               </div>
             )}
-            <div className="flex items-center justify-between text-gray-900 font-black text-sm pt-2 border-t border-gray-200">
+            <div className="flex items-center justify-between text-gray-900 font-black text-sm pt-2 border-t border-[#E8DACD]">
               <span>Grand Total:</span>
-              <span className="text-[#FF9D9D]">₹{parseFloat(order.grand_total || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
+              <span className="text-[#7A0C1E]">₹{parseFloat(order.grand_total || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
             </div>
           </div>
         </div>

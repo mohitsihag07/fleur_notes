@@ -23,9 +23,9 @@ import ApiInstance from '../../utils/ApiInstance';
 const CMSPage = () => {
   // Available Slugs config
   const cmsTabs = [
-    { slug: 'about-us', label: 'About Us', icon: FiInfo, color: 'bg-[#EEF8CD] text-[#2D252E]' },
-    { slug: 'terms-and-conditions', label: 'Terms & Conditions', icon: FiBookOpen, color: 'bg-[#FFC5AA]/40 text-[#D96B3B]' },
-    { slug: 'privacy-policy', label: 'Privacy Policy', icon: FiShield, color: 'bg-[#BBF1D2]/50 text-[#1E7741]' }
+    { slug: 'about-us', label: 'About Us', icon: FiInfo, color: 'bg-[#FAF5EF] text-[#2B1B17]' },
+    { slug: 'terms-and-conditions', label: 'Terms & Conditions', icon: FiBookOpen, color: 'bg-[#5F0917]/40 text-[#D96B3B]' },
+    { slug: 'privacy-policy', label: 'Privacy Policy', icon: FiShield, color: 'bg-[#E8DACD]/50 text-[#1E7741]' }
   ];
 
   const [activeSlug, setActiveSlug] = useState('about-us');
@@ -149,8 +149,8 @@ const CMSPage = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-2xl bg-[#FF9D9D]/20 text-[#2D252E]">
-              <FiFileText className="w-6 h-6 text-[#FF9D9D]" />
+            <div className="p-2.5 rounded-2xl bg-[#7A0C1E]/20 text-[#2B1B17]">
+              <FiFileText className="w-6 h-6 text-[#7A0C1E]" />
             </div>
             <h2 className="text-2xl font-black text-gray-900 tracking-tight">
               Content Management System (CMS)
@@ -162,13 +162,13 @@ const CMSPage = () => {
         </div>
 
         {/* View Mode Switcher (Edit vs Live Preview) */}
-        <div className="flex items-center gap-1.5 p-1 bg-white rounded-2xl border border-gray-100 shadow-2xs self-start sm:self-center">
+        <div className="flex items-center gap-1.5 p-1 bg-white rounded-2xl border border-[#E8DACD] shadow-2xs self-start sm:self-center">
           <button
             type="button"
             onClick={() => setActiveViewMode('edit')}
             className={`px-4 py-2 rounded-xl text-xs font-black flex items-center gap-2 transition-all cursor-pointer ${
               activeViewMode === 'edit'
-                ? 'bg-[#EEF8CD] text-[#2D252E] shadow-2xs'
+                ? 'bg-[#FAF5EF] text-[#2B1B17] shadow-2xs'
                 : 'text-gray-500 hover:text-gray-900'
             }`}
           >
@@ -181,7 +181,7 @@ const CMSPage = () => {
             onClick={() => setActiveViewMode('preview')}
             className={`px-4 py-2 rounded-xl text-xs font-black flex items-center gap-2 transition-all cursor-pointer ${
               activeViewMode === 'preview'
-                ? 'bg-[#EEF8CD] text-[#2D252E] shadow-2xs'
+                ? 'bg-[#FAF5EF] text-[#2B1B17] shadow-2xs'
                 : 'text-gray-500 hover:text-gray-900'
             }`}
           >
@@ -192,7 +192,7 @@ const CMSPage = () => {
       </div>
 
       {/* Single CMS Page Tabs (About Us, Terms & Conditions, Privacy Policy) */}
-      <div className="bg-white rounded-3xl p-3 shadow-xs border border-gray-100 flex items-center gap-2 overflow-x-auto no-scrollbar">
+      <div className="bg-white rounded-3xl p-3 shadow-xs border border-[#E8DACD] flex items-center gap-2 overflow-x-auto no-scrollbar">
         {cmsTabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeSlug === tab.slug;
@@ -202,8 +202,8 @@ const CMSPage = () => {
               onClick={() => handleTabChange(tab.slug)}
               className={`flex items-center gap-3 px-6 py-3.5 rounded-2xl font-black text-xs transition-all cursor-pointer whitespace-nowrap ${
                 isActive
-                  ? 'bg-[#FF9D9D] text-[#2D252E] shadow-md scale-[1.01]'
-                  : 'bg-[#FAF5F7] text-gray-600 hover:bg-gray-200'
+                  ? 'bg-[#7A0C1E] text-white shadow-md scale-[1.01]'
+                  : 'bg-[#F2E6DA] text-gray-600 hover:bg-gray-200'
               }`}
             >
               <Icon className="w-4 h-4" />
@@ -214,10 +214,10 @@ const CMSPage = () => {
       </div>
 
       {/* Main CMS Editor Body */}
-      <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 relative min-h-[500px]">
+      <div className="bg-white rounded-3xl shadow-sm border border-[#E8DACD] p-8 relative min-h-[500px]">
         {isLoading ? (
           <div className="absolute inset-0 bg-white/80 backdrop-blur-xs flex items-center justify-center z-20 rounded-3xl">
-            <div className="flex items-center gap-3 font-black text-[#FF9D9D] text-sm">
+            <div className="flex items-center gap-3 font-black text-[#7A0C1E] text-sm">
               <FiLoader className="w-6 h-6 animate-spin" />
               <span>Loading {currentTabInfo?.label} Content...</span>
             </div>
@@ -226,10 +226,10 @@ const CMSPage = () => {
           /* EDIT MODE FORM */
           <form onSubmit={handleSubmit} className="space-y-8">
             {/* Slug Info Banner */}
-            <div className="flex items-center justify-between p-4 rounded-2xl bg-[#FAF5F7] border border-gray-100 text-xs">
+            <div className="flex items-center justify-between p-4 rounded-2xl bg-[#F2E6DA] border border-[#E8DACD] text-xs">
               <div className="flex items-center gap-2 font-bold text-gray-700">
                 <span className="text-gray-400">Editing Slug:</span>
-                <code className="px-2.5 py-1 rounded-lg bg-white border border-gray-200 text-[#FF9D9D] font-mono font-black">
+                <code className="px-2.5 py-1 rounded-lg bg-white border border-[#E8DACD] text-[#7A0C1E] font-mono font-black">
                   /page/{activeSlug}
                 </code>
               </div>
@@ -248,7 +248,7 @@ const CMSPage = () => {
                 placeholder="e.g. About Fleur Notes"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="w-full px-5 py-3.5 rounded-2xl bg-[#FAF5F7] text-sm font-extrabold text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#FF9D9D] transition-all border-none"
+                className="w-full px-5 py-3.5 rounded-2xl bg-[#F2E6DA] text-sm font-extrabold text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all border-none"
               />
             </div>
 
@@ -260,14 +260,14 @@ const CMSPage = () => {
               </label>
 
               {imagePreview || existingImageUrl ? (
-                <div className="relative rounded-3xl overflow-hidden border border-gray-200 bg-gray-50 max-h-64 flex items-center justify-center group">
+                <div className="relative rounded-3xl overflow-hidden border border-[#E8DACD] bg-gray-50 max-h-64 flex items-center justify-center group">
                   <img
                     src={imagePreview || existingImageUrl}
                     alt="CMS Header Banner"
                     className="w-full h-56 object-cover"
                   />
                   <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
-                    <label className="p-3 rounded-2xl bg-white text-gray-800 hover:bg-[#EEF8CD] font-bold text-xs cursor-pointer shadow-lg flex items-center gap-2">
+                    <label className="p-3 rounded-2xl bg-white text-gray-800 hover:bg-[#FAF5EF] font-bold text-xs cursor-pointer shadow-lg flex items-center gap-2">
                       <FiUpload className="w-4 h-4" />
                       <span>Replace Image</span>
                       <input
@@ -288,9 +288,9 @@ const CMSPage = () => {
                   </div>
                 </div>
               ) : (
-                <label className="flex flex-col items-center justify-center w-full h-44 border-2 border-dashed border-gray-200 rounded-3xl bg-[#FAF5F7] hover:bg-gray-100 transition-all cursor-pointer group">
+                <label className="flex flex-col items-center justify-center w-full h-44 border-2 border-dashed border-[#E8DACD] rounded-3xl bg-[#F2E6DA] hover:bg-gray-100 transition-all cursor-pointer group">
                   <div className="flex flex-col items-center justify-center pt-5 pb-6 text-center">
-                    <div className="p-3 rounded-2xl bg-white text-[#FF9D9D] shadow-xs mb-3 group-hover:scale-110 transition-transform">
+                    <div className="p-3 rounded-2xl bg-white text-[#7A0C1E] shadow-xs mb-3 group-hover:scale-110 transition-transform">
                       <FiImage className="w-6 h-6" />
                     </div>
                     <p className="text-xs font-black text-gray-700">
@@ -318,7 +318,7 @@ const CMSPage = () => {
                 </label>
 
                 {/* Quick Formatting Toolbar */}
-                <div className="flex items-center gap-1 bg-[#FAF5F7] p-1 rounded-xl border border-gray-200">
+                <div className="flex items-center gap-1 bg-[#F2E6DA] p-1 rounded-xl border border-[#E8DACD]">
                   <button
                     type="button"
                     title="Bold"
@@ -368,7 +368,7 @@ const CMSPage = () => {
                 placeholder={`Write the comprehensive content for ${currentTabInfo?.label}...`}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                className="w-full p-5 rounded-3xl bg-[#FAF5F7] text-xs font-medium text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#FF9D9D] transition-all resize-y leading-relaxed font-sans border-none"
+                className="w-full p-5 rounded-3xl bg-[#F2E6DA] text-xs font-medium text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all resize-y leading-relaxed font-sans border-none"
               />
 
               <div className="flex items-center justify-between text-[11px] font-semibold text-gray-400 px-2">
@@ -378,7 +378,7 @@ const CMSPage = () => {
             </div>
 
             {/* Form Action Buttons */}
-            <div className="flex items-center justify-end gap-4 pt-6 border-t border-gray-100">
+            <div className="flex items-center justify-end gap-4 pt-6 border-t border-[#E8DACD]">
               <button
                 type="submit"
                 disabled={isSubmitting}
@@ -401,7 +401,7 @@ const CMSPage = () => {
         ) : (
           /* LIVE PREVIEW MODE */
           <div className="space-y-6 max-w-3xl mx-auto py-4">
-            <div className="p-3 bg-[#EEF8CD] rounded-2xl text-xs font-bold text-[#2D252E] flex items-center justify-between">
+            <div className="p-3 bg-[#FAF5EF] rounded-2xl text-xs font-bold text-[#2B1B17] flex items-center justify-between">
               <span>Customer Storefront Preview Mode</span>
               <span className="font-mono text-[11px]">slug: /{activeSlug}</span>
             </div>
@@ -423,7 +423,7 @@ const CMSPage = () => {
             </h1>
 
             {/* Page Body Preview */}
-            <div className="prose max-w-none text-gray-700 text-xs font-normal leading-relaxed whitespace-pre-line bg-[#FAF5F7] p-8 rounded-3xl border border-gray-100">
+            <div className="prose max-w-none text-gray-700 text-xs font-normal leading-relaxed whitespace-pre-line bg-[#F2E6DA] p-8 rounded-3xl border border-[#E8DACD]">
               {description || <span className="italic text-gray-400">No content entered for this page yet.</span>}
             </div>
           </div>

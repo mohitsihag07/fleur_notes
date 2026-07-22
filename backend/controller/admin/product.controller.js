@@ -48,8 +48,7 @@ const getProductsList = async (req, res) => {
       include: [
         { model: Category, as: 'category', attributes: ['id', 'name', 'slug'] },
         { model: ProductImage, as: 'images', required: false, attributes: ['id', 'image', 'is_thumbnail', 'sort_order'] },
-        { model: ProductInventory, as: 'inventory', required: false, attributes: ['quantity', 'reserved_quantity'] },
-        { model: ProductTag, as: 'tags', required: false, attributes: ['id', 'name', 'slug'], through: { attributes: [] } }
+        { model: ProductInventory, as: 'inventory', required: false, attributes: ['quantity', 'reserved_quantity'] }
       ],
       distinct: true,
       limit,
@@ -57,7 +56,15 @@ const getProductsList = async (req, res) => {
       order: [['id', 'DESC']]
     });
     
-    await logActivity(req.user.id, 'VIEW_PRODUCTS', 'Fetched list of products', req);
+    // Calculate product statistics
+    const totalProducts = await Product.count();
+    const activeProducts = await Product.count({ where: { status: 'active' } });
+    const inactiveProducts = await Product.count({ where: { status: 'inactive' } });
+    const lowStockProducts = await ProductInventory.count({ where: { quantity: { [Op.lte]: 5 } } });
+
+    if (req.user) {
+      await logActivity(req.user.id, 'VIEW_PRODUCTS', 'Fetched list of products', req);
+    }
     
     return helper.success(res, 'Successfully fetched list of products', {
       data: rows,
@@ -65,7 +72,13 @@ const getProductsList = async (req, res) => {
         totalItems: count,
         totalPages: Math.ceil(count / limit),
         currentPage: page,
-        limit
+        limit,
+        stats: {
+          totalProducts,
+          activeProducts,
+          inactiveProducts,
+          lowStockProducts
+        }
       }
     });
   } catch (error) {
@@ -81,23 +94,15 @@ const getProduct = async (req, res) => {
             include: [
                 { model: Category, as: 'category', attributes: ['id', 'name', 'slug'] },
                 { model: ProductImage, as: 'images', required: false, attributes: ['id', 'image', 'is_thumbnail', 'sort_order'] },
-                { model: ProductInventory, as: 'inventory', required: false, attributes: ['quantity', 'reserved_quantity', 'low_stock_limit'] },
-                { model: ProductTag, as: 'tags', required: false, attributes: ['id', 'name', 'slug'], through: { attributes: [] } },
-                { 
-                  model: Review, 
-                  as: 'reviews', 
-                  required: false, 
-                  attributes: ['id', 'rating', 'review', 'images', 'status', 'admin_reply', 'created_at'],
-                  include: [
-                    { model: User, as: 'user', attributes: ['id', 'name', 'email'] }
-                  ]
-                }
+                { model: ProductInventory, as: 'inventory', required: false, attributes: ['quantity', 'reserved_quantity'] }
             ]
         });
         if (!product) {
             return helper.error(res, "Product not found", 404);
         }
-        await logActivity(req.user.id, 'VIEW_PRODUCT', `Product details viewed for ID ${req.params.id}`, req);
+        if (req.user) {
+          await logActivity(req.user.id, 'VIEW_PRODUCT', `Product details viewed for ID ${req.params.id}`, req);
+        }
         return helper.success(res, "Product found", product, 200);
     } catch (error) {
         console.error("Error loading product:", error);
@@ -108,7 +113,9 @@ const getProduct = async (req, res) => {
 const addProduct = async (req, res) => {
   try {
     const { 
-      name, category_id, sku, price, sale_price, slug, description, short_description, status, quantity
+      name, category_id, sku, price, sale_price, slug, description, short_description, status, quantity,
+      is_new_arrival, is_best_seller, is_featured, is_new, is_bestseller,
+      weight, length, width, height, color
     } = req.body;
 
     if (!name || !category_id || price === undefined) {
@@ -141,6 +148,8 @@ const addProduct = async (req, res) => {
       suffix++;
     }
 
+    const parseBool = (val) => val === 'true' || val === true || val === 1 || val === '1';
+
     const product = await Product.create({
       name,
       category_id,
@@ -150,7 +159,15 @@ const addProduct = async (req, res) => {
       sale_price: sale_price ? parseFloat(sale_price) : null,
       description: description || '',
       short_description: short_description || '',
-      status: status || 'active'
+      status: status || 'active',
+      is_new_arrival: is_new_arrival !== undefined ? parseBool(is_new_arrival) : (is_new !== undefined ? parseBool(is_new) : false),
+      is_best_seller: is_best_seller !== undefined ? parseBool(is_best_seller) : (is_bestseller !== undefined ? parseBool(is_bestseller) : false),
+      is_featured: is_featured !== undefined ? parseBool(is_featured) : false,
+      weight: weight ? parseFloat(weight) : null,
+      length: length ? parseFloat(length) : null,
+      width: width ? parseFloat(width) : null,
+      height: height ? parseFloat(height) : null,
+      color: color || null
     });
 
     // Handle Multiple Images Upload (up to 4)
@@ -189,7 +206,9 @@ const updateProduct = async (req, res) => {
     }
 
     const { 
-      name, category_id, sku, price, sale_price, slug, description, short_description, status, quantity
+      name, category_id, sku, price, sale_price, slug, description, short_description, status, quantity,
+      is_new_arrival, is_best_seller, is_featured, is_new, is_bestseller,
+      weight, length, width, height, color
     } = req.body;
 
     if (category_id !== undefined) {
@@ -221,6 +240,8 @@ const updateProduct = async (req, res) => {
       finalSlug = uniqueSlug;
     }
 
+    const parseBool = (val) => val === 'true' || val === true || val === 1 || val === '1';
+
     await product.update({
       ...(name && { name }),
       ...(category_id && { category_id }),
@@ -230,7 +251,17 @@ const updateProduct = async (req, res) => {
       ...(sale_price !== undefined && { sale_price: sale_price ? parseFloat(sale_price) : null }),
       ...(description !== undefined && { description }),
       ...(short_description !== undefined && { short_description }),
-      ...(status && { status })
+      ...(status && { status }),
+      ...(is_new_arrival !== undefined && { is_new_arrival: parseBool(is_new_arrival) }),
+      ...(is_new !== undefined && { is_new_arrival: parseBool(is_new) }),
+      ...(is_best_seller !== undefined && { is_best_seller: parseBool(is_best_seller) }),
+      ...(is_bestseller !== undefined && { is_best_seller: parseBool(is_bestseller) }),
+      ...(is_featured !== undefined && { is_featured: parseBool(is_featured) }),
+      ...(weight !== undefined && { weight: weight ? parseFloat(weight) : null }),
+      ...(length !== undefined && { length: length ? parseFloat(length) : null }),
+      ...(width !== undefined && { width: width ? parseFloat(width) : null }),
+      ...(height !== undefined && { height: height ? parseFloat(height) : null }),
+      ...(color !== undefined && { color: color || null })
     });
 
     // Handle Multiple Product Images (up to 4)
@@ -320,7 +351,7 @@ const updateProductStatus = async (req, res) => {
     let newStatus;
     if (req.body.status !== undefined) {
       newStatus = req.body.status;
-      if (!['active', 'inactive', 'draft'].includes(newStatus)) {
+      if (!['active', 'inactive'].includes(newStatus)) {
         return helper.error(res, "Invalid status value", 400);
       }
     } else {

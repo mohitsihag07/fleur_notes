@@ -80,6 +80,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.DECIMAL(8, 2),
       allowNull: true,
     },
+    color: {
+      type: DataTypes.STRING(100),
+      allowNull: true,
+    },
     is_featured: {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
@@ -93,7 +97,7 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: false,
     },
     status: {
-      type: DataTypes.ENUM('active', 'inactive', 'draft'),
+      type: DataTypes.ENUM('active', 'inactive'),
       defaultValue: 'active',
     },
     deleted_at: {

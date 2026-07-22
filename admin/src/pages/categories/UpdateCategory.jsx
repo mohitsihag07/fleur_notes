@@ -140,7 +140,7 @@ const UpdateCategory = () => {
   if (isLoading) {
     return (
       <div className="flex h-[70vh] items-center justify-center">
-        <div className="flex items-center gap-3 font-black text-[#FF9D9D] text-base">
+        <div className="flex items-center gap-3 font-black text-[#7A0C1E] text-base">
           <FiLoader className="w-6 h-6 animate-spin" />
           <span>Loading Category Details...</span>
         </div>
@@ -155,7 +155,7 @@ const UpdateCategory = () => {
         <div className="flex items-center gap-3">
           <button
             onClick={() => navigate('/categories')}
-            className="p-2.5 rounded-2xl bg-white text-gray-700 border border-gray-100 hover:bg-[#EEF8CD] hover:text-[#2D252E] shadow-sm transition-all cursor-pointer"
+            className="p-2.5 rounded-2xl bg-white text-gray-700 border border-[#E8DACD] hover:bg-[#FAF5EF] hover:text-[#2B1B17] shadow-sm transition-all cursor-pointer"
             title="Back to Categories"
           >
             <FiArrowLeft className="w-5 h-5" />
@@ -172,12 +172,12 @@ const UpdateCategory = () => {
       </div>
 
       {/* Main Form Card */}
-      <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100 relative">
+      <div className="bg-white rounded-3xl p-8 shadow-sm border border-[#E8DACD] relative">
         <form onSubmit={handleSubmit} className="space-y-6">
           
           {/* Card Header Tag */}
-          <div className="flex items-center gap-3 border-b border-gray-100 pb-5">
-            <div className="w-10 h-10 rounded-2xl bg-[#EEF8CD] text-[#2D252E] flex items-center justify-center font-black">
+          <div className="flex items-center gap-3 border-b border-[#E8DACD] pb-5">
+            <div className="w-10 h-10 rounded-2xl bg-[#FAF5EF] text-[#2B1B17] flex items-center justify-center font-black">
               <FiTag className="w-5 h-5 text-[#88A626]" />
             </div>
             <div>
@@ -193,12 +193,12 @@ const UpdateCategory = () => {
           {/* Image Upload Box */}
           <div>
             <label className="block text-xs font-bold text-gray-700 mb-2 flex items-center gap-1.5">
-              <FiImage className="w-3.5 h-3.5 text-[#FF9D9D]" />
+              <FiImage className="w-3.5 h-3.5 text-[#7A0C1E]" />
               <span>Category Cover Image</span>
             </label>
 
             {imagePreview ? (
-              <div className="relative w-full sm:w-72 h-44 rounded-2xl overflow-hidden border-2 border-[#FF9D9D]/50 shadow-md group">
+              <div className="relative w-full sm:w-72 h-44 rounded-2xl overflow-hidden border-2 border-[#7A0C1E]/50 shadow-md group">
                 <img
                   src={imagePreview}
                   alt="Category Preview"
@@ -217,8 +217,8 @@ const UpdateCategory = () => {
                 </div>
               </div>
             ) : (
-              <label className="border-2 border-dashed border-gray-200 hover:border-[#FF9D9D] bg-[#FAF5F7] hover:bg-[#EEF8CD]/40 rounded-2xl p-6 flex flex-col items-center justify-center cursor-pointer transition-all space-y-2 text-center">
-                <div className="w-12 h-12 rounded-full bg-white text-[#FF9D9D] flex items-center justify-center shadow-xs">
+              <label className="border-2 border-dashed border-[#E8DACD] hover:border-[#7A0C1E] bg-[#F2E6DA] hover:bg-[#FAF5EF]/40 rounded-2xl p-6 flex flex-col items-center justify-center cursor-pointer transition-all space-y-2 text-center">
+                <div className="w-12 h-12 rounded-full bg-white text-[#7A0C1E] flex items-center justify-center shadow-xs">
                   <FiUploadCloud className="w-6 h-6" />
                 </div>
                 <div>
@@ -251,7 +251,7 @@ const UpdateCategory = () => {
                 placeholder="e.g. Floral Journals"
                 value={formData.name}
                 onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
-                className="w-full px-4 py-3 rounded-xl bg-gray-50 text-gray-900 text-sm border border-gray-200 focus:border-[#FF9D9D] focus:ring-2 focus:ring-[#FF9D9D]/30 transition-all outline-none font-semibold"
+                className="w-full px-4 py-3 rounded-xl bg-gray-50 text-gray-900 text-sm border border-[#E8DACD] focus:border-[#7A0C1E] focus:ring-2 focus:ring-[#7A0C1E]/30 transition-all outline-none font-semibold"
               />
             </div>
 
@@ -266,7 +266,7 @@ const UpdateCategory = () => {
                 placeholder="e.g. floral-journals"
                 value={formData.slug}
                 onChange={(e) => setFormData((prev) => ({ ...prev, slug: e.target.value }))}
-                className="w-full px-4 py-3 rounded-xl bg-gray-50 text-gray-900 text-sm border border-gray-200 focus:border-[#FF9D9D] focus:ring-2 focus:ring-[#FF9D9D]/30 transition-all outline-none font-mono text-xs"
+                className="w-full px-4 py-3 rounded-xl bg-gray-50 text-gray-900 text-sm border border-[#E8DACD] focus:border-[#7A0C1E] focus:ring-2 focus:ring-[#7A0C1E]/30 transition-all outline-none font-mono text-xs"
               />
               <p className="text-[11px] text-gray-400 font-semibold mt-1">
                 URL friendly identifier (e.g. store.com/category/floral-journals)
@@ -277,13 +277,13 @@ const UpdateCategory = () => {
           {/* Status Dropdown */}
           <div className="w-full md:w-1/2">
             <label className="block text-xs font-bold text-gray-700 mb-2 flex items-center gap-1.5">
-              <FiActivity className="w-3.5 h-3.5 text-[#FF9D9D]" />
+              <FiActivity className="w-3.5 h-3.5 text-[#7A0C1E]" />
               <span>Category Status</span>
             </label>
             <select
               value={formData.status}
               onChange={(e) => setFormData((prev) => ({ ...prev, status: e.target.value }))}
-              className="w-full px-4 py-3 rounded-xl bg-gray-50 text-gray-900 text-sm font-black border border-gray-200 focus:border-[#FF9D9D] focus:ring-2 focus:ring-[#FF9D9D]/30 transition-all outline-none cursor-pointer"
+              className="w-full px-4 py-3 rounded-xl bg-gray-50 text-gray-900 text-sm font-black border border-[#E8DACD] focus:border-[#7A0C1E] focus:ring-2 focus:ring-[#7A0C1E]/30 transition-all outline-none cursor-pointer"
             >
               <option value="active">Active (Visible in Store)</option>
               <option value="inactive">Inactive (Hidden from Store)</option>
@@ -293,7 +293,7 @@ const UpdateCategory = () => {
           {/* Description Textarea */}
           <div>
             <label className="block text-xs font-bold text-gray-700 mb-2 flex items-center gap-1.5">
-              <FiFileText className="w-3.5 h-3.5 text-[#FFC5AA]" />
+              <FiFileText className="w-3.5 h-3.5 text-[#5F0917]" />
               <span>Description</span>
             </label>
             <textarea
@@ -301,16 +301,16 @@ const UpdateCategory = () => {
               placeholder="Provide a description for this category..."
               value={formData.description}
               onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
-              className="w-full px-4 py-3 rounded-xl bg-gray-50 text-gray-900 text-sm border border-gray-200 focus:border-[#FF9D9D] focus:ring-2 focus:ring-[#FF9D9D]/30 transition-all outline-none font-medium leading-relaxed"
+              className="w-full px-4 py-3 rounded-xl bg-gray-50 text-gray-900 text-sm border border-[#E8DACD] focus:border-[#7A0C1E] focus:ring-2 focus:ring-[#7A0C1E]/30 transition-all outline-none font-medium leading-relaxed"
             />
           </div>
 
           {/* Form Actions */}
-          <div className="flex items-center justify-end gap-3 border-t border-gray-100 pt-6">
+          <div className="flex items-center justify-end gap-3 border-t border-[#E8DACD] pt-6">
             <button
               type="button"
               onClick={() => navigate('/categories')}
-              className="py-3 px-6 rounded-2xl bg-[#FAF5F7] font-black text-xs text-gray-700 hover:bg-gray-200 transition-all cursor-pointer"
+              className="py-3 px-6 rounded-2xl bg-[#F2E6DA] font-black text-xs text-gray-700 hover:bg-gray-200 transition-all cursor-pointer"
             >
               Cancel
             </button>
@@ -318,7 +318,7 @@ const UpdateCategory = () => {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="py-3 px-8 rounded-2xl bg-[#FF9D9D] hover:bg-[#F58383] text-[#2D252E] font-black text-xs shadow-md shadow-rose-500/10 transition-all cursor-pointer disabled:opacity-50 flex items-center gap-2"
+              className="py-3 px-8 rounded-2xl bg-[#7A0C1E] hover:bg-[#5F0917] text-white font-black text-xs shadow-md shadow-red-900/10 transition-all cursor-pointer disabled:opacity-50 flex items-center gap-2"
             >
               {isSubmitting ? (
                 <>

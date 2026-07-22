@@ -27,6 +27,7 @@ import Profile from '../pages/admin/Profile';
 import Settings from '../pages/settings/Settings';
 import Notifications from '../pages/notifications/Notifications';
 import ContactSupport from '../pages/support/ContactSupport';
+import LiveSupportChat from '../pages/support/LiveSupportChat';
 import Reviews from '../pages/reviews/Reviews';
 import FAQs from '../pages/faqs/FAQs';
 import AddFAQ from '../pages/faqs/AddFAQ';
@@ -174,8 +175,9 @@ const AdminRoutes = () => {
         <Route path="faqs/edit/:id" element={<UpdateFAQ />} />
         <Route path="faqs/:id" element={<GetFAQ />} />
 
-        {/* Contact Support & Reported Users */}
+        {/* Contact Support & Live Support Chat */}
         <Route path="contact-support" element={<ContactSupport />} />
+        <Route path="support/chat" element={<LiveSupportChat />} />
         <Route path="reported-users" element={<ReportedUsers />} />
 
         <Route path="profile" element={<Profile />} />

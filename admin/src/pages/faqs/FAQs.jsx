@@ -148,8 +148,8 @@ const FAQs = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-2xl bg-[#FF9D9D]/20 text-[#2D252E]">
-              <FiHelpCircle className="w-6 h-6 text-[#FF9D9D]" />
+            <div className="p-2.5 rounded-2xl bg-[#7A0C1E]/20 text-[#2B1B17]">
+              <FiHelpCircle className="w-6 h-6 text-[#7A0C1E]" />
             </div>
             <h2 className="text-2xl font-black text-gray-900 tracking-tight">
               Frequently Asked Questions (FAQs)
@@ -172,7 +172,7 @@ const FAQs = () => {
       {/* 4 Stat Overview Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Total FAQs */}
-        <div className="bg-white rounded-3xl p-5 shadow-xs border border-gray-100 flex items-center justify-between transition-all hover:shadow-md">
+        <div className="bg-white rounded-3xl p-5 shadow-xs border border-[#E8DACD] flex items-center justify-between transition-all hover:shadow-md">
           <div>
             <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Total FAQs</p>
             <h3 className="text-2xl font-black text-gray-900 mt-1">{totalItems}</h3>
@@ -183,18 +183,18 @@ const FAQs = () => {
         </div>
 
         {/* Active FAQs */}
-        <div className="bg-white rounded-3xl p-5 shadow-xs border border-gray-100 flex items-center justify-between transition-all hover:shadow-md">
+        <div className="bg-white rounded-3xl p-5 shadow-xs border border-[#E8DACD] flex items-center justify-between transition-all hover:shadow-md">
           <div>
             <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Active</p>
             <h3 className="text-2xl font-black text-gray-900 mt-1">{activeCount}</h3>
           </div>
-          <div className="p-3 rounded-2xl bg-[#BBF1D2]/40 text-[#1E7741]">
+          <div className="p-3 rounded-2xl bg-[#E8DACD]/40 text-[#1E7741]">
             <FiCheckCircle className="w-5 h-5" />
           </div>
         </div>
 
         {/* Inactive FAQs */}
-        <div className="bg-white rounded-3xl p-5 shadow-xs border border-gray-100 flex items-center justify-between transition-all hover:shadow-md">
+        <div className="bg-white rounded-3xl p-5 shadow-xs border border-[#E8DACD] flex items-center justify-between transition-all hover:shadow-md">
           <div>
             <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Inactive</p>
             <h3 className="text-2xl font-black text-gray-900 mt-1">{inactiveCount}</h3>
@@ -205,19 +205,19 @@ const FAQs = () => {
         </div>
 
         {/* Categories */}
-        <div className="bg-white rounded-3xl p-5 shadow-xs border border-gray-100 flex items-center justify-between transition-all hover:shadow-md">
+        <div className="bg-white rounded-3xl p-5 shadow-xs border border-[#E8DACD] flex items-center justify-between transition-all hover:shadow-md">
           <div>
             <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Categories</p>
             <h3 className="text-2xl font-black text-gray-900 mt-1">{uniqueCategories.length || 1}</h3>
           </div>
-          <div className="p-3 rounded-2xl bg-[#FFC5AA]/30 text-[#D96B3B]">
+          <div className="p-3 rounded-2xl bg-[#5F0917]/30 text-[#D96B3B]">
             <FiGrid className="w-5 h-5" />
           </div>
         </div>
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="bg-white rounded-3xl p-5 shadow-sm border border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div className="bg-white rounded-3xl p-5 shadow-sm border border-[#E8DACD] flex flex-col sm:flex-row items-center justify-between gap-4">
         {/* Search Input */}
         <div className="relative w-full sm:w-80">
           <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -229,13 +229,13 @@ const FAQs = () => {
               setSearchTerm(e.target.value);
               setCurrentPage(1);
             }}
-            className="w-full pl-11 pr-4 py-2.5 rounded-full bg-[#FAF5F7] text-xs font-semibold text-gray-700 border-none focus:outline-none focus:ring-2 focus:ring-[#FF9D9D] transition-all"
+            className="w-full pl-11 pr-4 py-2.5 rounded-full bg-[#F2E6DA] text-xs font-semibold text-gray-700 border-none focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all"
           />
         </div>
 
         {/* Category Filter */}
         <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
-          <div className="flex items-center gap-2 bg-[#FAF5F7] px-4 py-2.5 rounded-full text-xs font-bold text-gray-600">
+          <div className="flex items-center gap-2 bg-[#F2E6DA] px-4 py-2.5 rounded-full text-xs font-bold text-gray-600">
             <FiFilter className="w-3.5 h-3.5 text-gray-400" />
             <span>Category:</span>
             <select
@@ -255,10 +255,10 @@ const FAQs = () => {
       </div>
 
       {/* FAQs List Card */}
-      <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden relative p-6">
+      <div className="bg-white rounded-3xl shadow-sm border border-[#E8DACD] overflow-hidden relative p-6">
         {isLoading && (
           <div className="absolute inset-0 bg-white/70 backdrop-blur-xs flex items-center justify-center z-20">
-            <div className="flex items-center gap-3 font-black text-[#FF9D9D] text-xs">
+            <div className="flex items-center gap-3 font-black text-[#7A0C1E] text-xs">
               <FiLoader className="w-5 h-5 animate-spin" />
               <span>Loading FAQs...</span>
             </div>
@@ -281,8 +281,8 @@ const FAQs = () => {
                   key={faq.id}
                   className={`rounded-2xl border transition-all duration-200 overflow-hidden ${
                     isExpanded
-                      ? 'border-[#FF9D9D] bg-[#FAF5F7]/50 shadow-xs'
-                      : 'border-gray-100 bg-white hover:border-gray-200'
+                      ? 'border-[#7A0C1E] bg-[#F2E6DA]/50 shadow-xs'
+                      : 'border-[#E8DACD] bg-white hover:border-[#E8DACD]'
                   }`}
                 >
                   {/* Item Accordion Header */}
@@ -291,7 +291,7 @@ const FAQs = () => {
                   >
                     <div className="flex items-start gap-3 flex-1">
                       <div className="mt-0.5 text-gray-400">
-                        {isExpanded ? <FiChevronUp className="w-5 h-5 text-[#FF9D9D]" /> : <FiChevronDown className="w-5 h-5" />}
+                        {isExpanded ? <FiChevronUp className="w-5 h-5 text-[#7A0C1E]" /> : <FiChevronDown className="w-5 h-5" />}
                       </div>
                       <div>
                         <h4 className="font-extrabold text-gray-900 text-sm leading-snug">
@@ -299,7 +299,7 @@ const FAQs = () => {
                         </h4>
                         <div className="flex items-center gap-2 mt-1.5 flex-wrap">
                           {faq.category && (
-                            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-[#EEF8CD] text-[#2D252E]">
+                            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-[#FAF5EF] text-[#2B1B17]">
                               {faq.category}
                             </span>
                           )}
@@ -318,7 +318,7 @@ const FAQs = () => {
                         onClick={() => handleStatusToggle(faq.id, faq.status)}
                         className={`px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wider border transition-all cursor-pointer ${
                           isActive
-                            ? 'bg-[#BBF1D2]/60 text-[#1E7741] border-[#BBF1D2]'
+                            ? 'bg-[#E8DACD]/60 text-[#1E7741] border-[#E8DACD]'
                             : 'bg-amber-100 text-amber-700 border-amber-200'
                         }`}
                       >
@@ -329,7 +329,7 @@ const FAQs = () => {
                       <button
                         onClick={() => navigate(`/faqs/${faq.id}`)}
                         title="View FAQ Details"
-                        className="p-2 rounded-xl bg-gray-100 text-gray-600 hover:bg-[#EEF8CD] hover:text-[#2D252E] transition-all cursor-pointer"
+                        className="p-2 rounded-xl bg-gray-100 text-gray-600 hover:bg-[#FAF5EF] hover:text-[#2B1B17] transition-all cursor-pointer"
                       >
                         <FiEye className="w-4 h-4" />
                       </button>
@@ -338,7 +338,7 @@ const FAQs = () => {
                       <button
                         onClick={() => navigate(`/faqs/edit/${faq.id}`)}
                         title="Edit FAQ"
-                        className="p-2 rounded-xl bg-gray-100 text-gray-600 hover:bg-[#FFC5AA]/40 hover:text-[#2D252E] transition-all cursor-pointer"
+                        className="p-2 rounded-xl bg-gray-100 text-gray-600 hover:bg-[#5F0917]/40 hover:text-[#2B1B17] transition-all cursor-pointer"
                       >
                         <FiEdit2 className="w-4 h-4" />
                       </button>
@@ -356,7 +356,7 @@ const FAQs = () => {
 
                   {/* Accordion Content Body */}
                   {isExpanded && (
-                    <div className="px-5 pb-5 pt-2 border-t border-gray-100/80 text-xs text-gray-700 font-medium leading-relaxed bg-white/70">
+                    <div className="px-5 pb-5 pt-2 border-t border-[#E8DACD]/80 text-xs text-gray-700 font-medium leading-relaxed bg-white/70">
                       <p className="whitespace-pre-line text-gray-800">{faq.answer}</p>
                     </div>
                   )}
@@ -368,7 +368,7 @@ const FAQs = () => {
 
         {/* Pagination Footer */}
         {totalPages > 1 && (
-          <div className="mt-6 pt-4 border-t border-gray-100 flex items-center justify-between text-xs font-bold text-gray-500">
+          <div className="mt-6 pt-4 border-t border-[#E8DACD] flex items-center justify-between text-xs font-bold text-gray-500">
             <span>
               Showing page {currentPage} of {totalPages} ({totalItems} FAQs)
             </span>
@@ -376,7 +376,7 @@ const FAQs = () => {
               <button
                 disabled={currentPage === 1}
                 onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                className="p-2 rounded-xl bg-gray-100 text-gray-700 disabled:opacity-40 hover:bg-[#EEF8CD] hover:text-[#2D252E] transition-all cursor-pointer"
+                className="p-2 rounded-xl bg-gray-100 text-gray-700 disabled:opacity-40 hover:bg-[#FAF5EF] hover:text-[#2B1B17] transition-all cursor-pointer"
               >
                 <FiChevronLeft className="w-4 h-4" />
               </button>
@@ -386,7 +386,7 @@ const FAQs = () => {
               <button
                 disabled={currentPage === totalPages}
                 onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-                className="p-2 rounded-xl bg-gray-100 text-gray-700 disabled:opacity-40 hover:bg-[#EEF8CD] hover:text-[#2D252E] transition-all cursor-pointer"
+                className="p-2 rounded-xl bg-gray-100 text-gray-700 disabled:opacity-40 hover:bg-[#FAF5EF] hover:text-[#2B1B17] transition-all cursor-pointer"
               >
                 <FiChevronRight className="w-4 h-4" />
               </button>

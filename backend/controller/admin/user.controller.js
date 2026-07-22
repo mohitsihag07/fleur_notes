@@ -50,6 +50,17 @@ const getUsersList = async (req, res) => {
       offset,
     });
     
+    // Calculate user statistics
+    const totalUsers = await User.count({ where: { role } });
+    const activeUsers = await User.count({ where: { role, status: 'active' } });
+    const verifiedUsers = await User.count({ where: { role, is_email_verified: true } });
+    const blockedUsers = await User.count({
+      where: {
+        role,
+        status: { [Op.in]: ['blocked', 'inactive', 'suspended'] }
+      }
+    });
+
     await logActivity(req.user.id, 'VIEW_USERS', `Fetched list of ${role}s`, req);
     
     return helper.success(res, `Successfully fetched list of ${role}s`, {
@@ -58,7 +69,13 @@ const getUsersList = async (req, res) => {
         totalItems: count,
         totalPages: Math.ceil(count / limit),
         currentPage: page,
-        limit
+        limit,
+        stats: {
+          totalUsers,
+          activeUsers,
+          verifiedUsers,
+          blockedUsers
+        }
       }
     });
   } catch (error) {

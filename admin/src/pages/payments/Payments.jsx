@@ -140,14 +140,14 @@ const Payments = () => {
   const getStatusBadgeStyle = (status) => {
     switch (status?.toLowerCase()) {
       case 'paid':
-        return 'bg-[#BBF1D2]/50 text-[#1E7741] border-[#BBF1D2]';
+        return 'bg-[#E8DACD]/50 text-[#1E7741] border-[#E8DACD]';
       case 'refunded':
         return 'bg-purple-100 text-purple-700 border-purple-200';
       case 'failed':
         return 'bg-red-100 text-red-700 border-red-200';
       case 'pending':
       default:
-        return 'bg-[#FFC5AA]/40 text-[#D96B3B] border-[#FFC5AA]';
+        return 'bg-[#5F0917]/40 text-[#D96B3B] border-[#5F0917]';
     }
   };
 
@@ -167,8 +167,8 @@ const Payments = () => {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-2xl bg-[#FF9D9D]/20 text-[#2D252E]">
-              <FiCreditCard className="w-6 h-6 text-[#FF9D9D]" />
+            <div className="p-2.5 rounded-2xl bg-[#7A0C1E]/20 text-[#2B1B17]">
+              <FiCreditCard className="w-6 h-6 text-[#7A0C1E]" />
             </div>
             <h2 className="text-2xl font-black text-gray-900 tracking-tight">
               Payments & Transactions
@@ -183,20 +183,20 @@ const Payments = () => {
       {/* 4 Stat Overview Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Total Received */}
-        <div className="bg-white rounded-3xl p-5 shadow-xs border border-gray-100 flex items-center justify-between transition-all hover:shadow-md">
+        <div className="bg-white rounded-3xl p-5 shadow-xs border border-[#E8DACD] flex items-center justify-between transition-all hover:shadow-md">
           <div>
             <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Total Received</p>
             <h3 className="text-2xl font-black text-gray-900 mt-1">
               ₹{parseFloat(stats.totalReceived || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
             </h3>
           </div>
-          <div className="p-3 rounded-2xl bg-[#BBF1D2]/40 text-[#1E7741]">
+          <div className="p-3 rounded-2xl bg-[#E8DACD]/40 text-[#1E7741]">
             <span className="font-black text-lg">₹</span>
           </div>
         </div>
 
         {/* Total Refunded */}
-        <div className="bg-white rounded-3xl p-5 shadow-xs border border-gray-100 flex items-center justify-between transition-all hover:shadow-md">
+        <div className="bg-white rounded-3xl p-5 shadow-xs border border-[#E8DACD] flex items-center justify-between transition-all hover:shadow-md">
           <div>
             <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Total Refunded</p>
             <h3 className="text-2xl font-black text-gray-900 mt-1">
@@ -209,30 +209,30 @@ const Payments = () => {
         </div>
 
         {/* Paid Transactions */}
-        <div className="bg-white rounded-3xl p-5 shadow-xs border border-gray-100 flex items-center justify-between transition-all hover:shadow-md">
+        <div className="bg-white rounded-3xl p-5 shadow-xs border border-[#E8DACD] flex items-center justify-between transition-all hover:shadow-md">
           <div>
             <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Paid Transactions</p>
             <h3 className="text-2xl font-black text-gray-900 mt-1">{stats.paidCount || 0}</h3>
           </div>
-          <div className="p-3 rounded-2xl bg-[#EEF8CD] text-[#2D252E]">
+          <div className="p-3 rounded-2xl bg-[#FAF5EF] text-[#2B1B17]">
             <FiCheckCircle className="w-5 h-5" />
           </div>
         </div>
 
         {/* Pending Payments */}
-        <div className="bg-white rounded-3xl p-5 shadow-xs border border-gray-100 flex items-center justify-between transition-all hover:shadow-md">
+        <div className="bg-white rounded-3xl p-5 shadow-xs border border-[#E8DACD] flex items-center justify-between transition-all hover:shadow-md">
           <div>
             <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Pending Payments</p>
             <h3 className="text-2xl font-black text-gray-900 mt-1">{stats.pendingCount || 0}</h3>
           </div>
-          <div className="p-3 rounded-2xl bg-[#FFC5AA]/30 text-[#D96B3B]">
+          <div className="p-3 rounded-2xl bg-[#5F0917]/30 text-[#D96B3B]">
             <FiClock className="w-5 h-5" />
           </div>
         </div>
       </div>
 
       {/* Search and Filter Bar */}
-      <div className="bg-white rounded-3xl p-5 shadow-sm border border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div className="bg-white rounded-3xl p-5 shadow-sm border border-[#E8DACD] flex flex-col sm:flex-row items-center justify-between gap-4">
         {/* Search Input */}
         <div className="relative w-full sm:w-80">
           <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -244,13 +244,13 @@ const Payments = () => {
               setSearchTerm(e.target.value);
               setCurrentPage(1);
             }}
-            className="w-full pl-11 pr-4 py-2.5 rounded-full bg-[#FAF5F7] text-xs font-semibold text-gray-700 border-none focus:outline-none focus:ring-2 focus:ring-[#FF9D9D] transition-all"
+            className="w-full pl-11 pr-4 py-2.5 rounded-full bg-[#F2E6DA] text-xs font-semibold text-gray-700 border-none focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all"
           />
         </div>
 
         {/* Status Filter */}
         <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
-          <div className="flex items-center gap-2 bg-[#FAF5F7] px-4 py-2.5 rounded-full text-xs font-bold text-gray-600">
+          <div className="flex items-center gap-2 bg-[#F2E6DA] px-4 py-2.5 rounded-full text-xs font-bold text-gray-600">
             <FiFilter className="w-3.5 h-3.5 text-gray-400" />
             <span>Status:</span>
             <select
@@ -272,10 +272,10 @@ const Payments = () => {
       </div>
 
       {/* Payments Table */}
-      <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden relative">
+      <div className="bg-white rounded-3xl shadow-sm border border-[#E8DACD] overflow-hidden relative">
         {isLoading && (
           <div className="absolute inset-0 bg-white/70 backdrop-blur-xs flex items-center justify-center z-20">
-            <div className="flex items-center gap-3 font-black text-[#FF9D9D] text-xs">
+            <div className="flex items-center gap-3 font-black text-[#7A0C1E] text-xs">
               <FiLoader className="w-5 h-5 animate-spin" />
               <span>Loading Payments & Transactions...</span>
             </div>
@@ -284,7 +284,7 @@ const Payments = () => {
 
         <div className="overflow-x-auto min-h-[380px]">
           <table className="w-full text-left text-xs">
-            <thead className="bg-[#FAF5F7] text-gray-400 font-extrabold text-xs uppercase tracking-wider">
+            <thead className="bg-[#F2E6DA] text-gray-400 font-extrabold text-xs uppercase tracking-wider">
               <tr>
                 <th className="py-4 px-6">Transaction ID</th>
                 <th className="py-4 px-6">Order & Customer</th>
@@ -295,7 +295,7 @@ const Payments = () => {
                 <th className="py-4 px-6 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100 font-medium text-gray-700">
+            <tbody className="divide-y divide-[#E8DACD] font-medium text-gray-700">
               {!isLoading && payments.length === 0 ? (
                 <tr>
                   <td colSpan="7" className="py-12 text-center text-gray-400 font-bold">
@@ -318,7 +318,7 @@ const Payments = () => {
                       <td className="py-4 px-6">
                         <button
                           onClick={() => navigate(`/orders/${payment.order_id}`)}
-                          className="font-black text-[#FF9D9D] hover:underline block text-xs"
+                          className="font-black text-[#7A0C1E] hover:underline block text-xs"
                         >
                           #{orderNum}
                         </button>
@@ -362,7 +362,7 @@ const Payments = () => {
                           <button
                             onClick={() => navigate(`/orders/${payment.order_id}`)}
                             title="View Associated Order"
-                            className="p-2.5 rounded-2xl bg-[#EEF8CD] text-[#2D252E] hover:bg-[#FF9D9D] transition-all cursor-pointer shadow-2xs font-bold text-xs flex items-center gap-1"
+                            className="p-2.5 rounded-2xl bg-[#FAF5EF] text-[#2B1B17] hover:bg-[#7A0C1E] transition-all cursor-pointer shadow-2xs font-bold text-xs flex items-center gap-1"
                           >
                             <FiShoppingBag className="w-3.5 h-3.5" />
                             <span>Order</span>
@@ -390,7 +390,7 @@ const Payments = () => {
 
         {/* Pagination Footer */}
         {totalPages > 1 && (
-          <div className="px-6 py-4 bg-[#FAF5F7] flex items-center justify-between border-t border-gray-100 text-xs font-bold text-gray-500">
+          <div className="px-6 py-4 bg-[#F2E6DA] flex items-center justify-between border-t border-[#E8DACD] text-xs font-bold text-gray-500">
             <span>
               Showing page {currentPage} of {totalPages} ({totalItems} total transactions)
             </span>
@@ -398,7 +398,7 @@ const Payments = () => {
               <button
                 disabled={currentPage === 1}
                 onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                className="p-2 rounded-xl bg-white text-gray-700 disabled:opacity-40 shadow-xs hover:bg-[#EEF8CD] hover:text-[#2D252E] transition-all cursor-pointer"
+                className="p-2 rounded-xl bg-white text-gray-700 disabled:opacity-40 shadow-xs hover:bg-[#FAF5EF] hover:text-[#2B1B17] transition-all cursor-pointer"
               >
                 <FiChevronLeft className="w-4 h-4" />
               </button>
@@ -408,7 +408,7 @@ const Payments = () => {
               <button
                 disabled={currentPage === totalPages}
                 onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-                className="p-2 rounded-xl bg-white text-gray-700 disabled:opacity-40 shadow-xs hover:bg-[#EEF8CD] hover:text-[#2D252E] transition-all cursor-pointer"
+                className="p-2 rounded-xl bg-white text-gray-700 disabled:opacity-40 shadow-xs hover:bg-[#FAF5EF] hover:text-[#2B1B17] transition-all cursor-pointer"
               >
                 <FiChevronRight className="w-4 h-4" />
               </button>
@@ -421,7 +421,7 @@ const Payments = () => {
       {refundModal.isOpen && refundModal.paymentItem && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs animate-fade-in">
           <div className="bg-white rounded-3xl p-6 md:p-8 max-w-md w-full shadow-2xl space-y-6 relative">
-            <div className="flex items-center justify-between pb-4 border-b border-gray-100">
+            <div className="flex items-center justify-between pb-4 border-b border-[#E8DACD]">
               <div className="flex items-center gap-3">
                 <div className="p-2.5 rounded-2xl bg-red-100 text-red-600">
                   <FiRotateCcw className="w-5 h-5" />
@@ -440,7 +440,7 @@ const Payments = () => {
             </div>
 
             <form onSubmit={handleRefundSubmit} className="space-y-4">
-              <div className="p-4 rounded-2xl bg-[#FAF5F7] text-xs space-y-1.5 border border-gray-100">
+              <div className="p-4 rounded-2xl bg-[#F2E6DA] text-xs space-y-1.5 border border-[#E8DACD]">
                 <div className="flex justify-between font-extrabold text-gray-800">
                   <span>Transaction Amount:</span>
                   <span>₹{parseFloat(refundModal.paymentItem.amount || 0).toFixed(2)}</span>
@@ -461,15 +461,15 @@ const Payments = () => {
                   max={refundModal.paymentItem.amount}
                   value={refundModal.refundAmount}
                   onChange={(e) => setRefundModal((prev) => ({ ...prev, refundAmount: e.target.value }))}
-                  className="w-full p-3.5 rounded-2xl bg-[#FAF5F7] text-xs font-black text-gray-900 focus:outline-none focus:ring-2 focus:ring-red-400"
+                  className="w-full p-3.5 rounded-2xl bg-[#F2E6DA] text-xs font-black text-gray-900 focus:outline-none focus:ring-2 focus:ring-red-400"
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-100">
+              <div className="flex items-center justify-end gap-3 pt-4 border-t border-[#E8DACD]">
                 <button
                   type="button"
                   onClick={() => setRefundModal({ isOpen: false, paymentItem: null, refundAmount: '', isSubmitting: false })}
-                  className="py-3 px-5 rounded-2xl bg-[#FAF5F7] text-xs font-black text-gray-700 hover:bg-gray-200 transition-all cursor-pointer"
+                  className="py-3 px-5 rounded-2xl bg-[#F2E6DA] text-xs font-black text-gray-700 hover:bg-gray-200 transition-all cursor-pointer"
                 >
                   Cancel
                 </button>

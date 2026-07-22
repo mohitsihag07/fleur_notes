@@ -94,7 +94,7 @@ const GetCategory = () => {
   if (isLoading) {
     return (
       <div className="flex h-[70vh] items-center justify-center">
-        <div className="flex items-center gap-3 font-black text-[#FF9D9D] text-base">
+        <div className="flex items-center gap-3 font-black text-[#7A0C1E] text-base">
           <FiLoader className="w-6 h-6 animate-spin" />
           <span>Loading Category Details...</span>
         </div>
@@ -115,7 +115,7 @@ const GetCategory = () => {
         <div className="flex items-center gap-3">
           <button
             onClick={() => navigate('/categories')}
-            className="p-2.5 rounded-2xl bg-white text-gray-700 border border-gray-100 hover:bg-[#EEF8CD] hover:text-[#2D252E] shadow-sm transition-all cursor-pointer"
+            className="p-2.5 rounded-2xl bg-white text-gray-700 border border-[#E8DACD] hover:bg-[#FAF5EF] hover:text-[#2B1B17] shadow-sm transition-all cursor-pointer"
             title="Back to Categories"
           >
             <FiArrowLeft className="w-5 h-5" />
@@ -134,7 +134,7 @@ const GetCategory = () => {
         <div className="flex items-center gap-3">
           <button
             onClick={() => navigate(`/categories/edit/${category.id}`)}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-[#EEF8CD] hover:bg-[#E2F2AF] text-[#2D252E] font-black text-xs shadow-xs transition-all cursor-pointer"
+            className="flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-[#FAF5EF] hover:bg-[#E8DACD] text-[#2B1B17] font-black text-xs shadow-xs transition-all cursor-pointer"
           >
             <FiEdit2 className="w-4 h-4 text-[#88A626]" />
             <span>Edit Category</span>
@@ -151,9 +151,9 @@ const GetCategory = () => {
       </div>
 
       {/* Main Category Profile Card */}
-      <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100 flex flex-col md:flex-row gap-8 items-start">
+      <div className="bg-white rounded-3xl p-8 shadow-sm border border-[#E8DACD] flex flex-col md:flex-row gap-8 items-start">
         {/* Category Cover Image Box */}
-        <div className="w-full md:w-64 h-52 rounded-3xl overflow-hidden bg-[#FAF5F7] border border-gray-100 shrink-0 flex items-center justify-center relative shadow-inner">
+        <div className="w-full md:w-64 h-52 rounded-3xl overflow-hidden bg-[#F2E6DA] border border-[#E8DACD] shrink-0 flex items-center justify-center relative shadow-inner">
           {imageUrl ? (
             <img
               src={imageUrl}
@@ -166,7 +166,7 @@ const GetCategory = () => {
             />
           ) : (
             <div className="flex flex-col items-center gap-2 text-gray-400">
-              <div className="w-14 h-14 rounded-2xl bg-[#EEF8CD] text-[#2D252E] flex items-center justify-center font-black">
+              <div className="w-14 h-14 rounded-2xl bg-[#FAF5EF] text-[#2B1B17] flex items-center justify-center font-black">
                 <FiTag className="w-7 h-7 text-[#88A626]" />
               </div>
               <span className="text-xs font-bold text-gray-400">No Image Uploaded</span>
@@ -177,7 +177,7 @@ const GetCategory = () => {
         {/* Details Column */}
         <div className="flex-1 space-y-5">
           {/* Header row: Name, Slug, Status */}
-          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-gray-100 pb-4">
+          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#E8DACD] pb-4">
             <div>
               <div className="flex items-center gap-3">
                 <h1 className="text-2xl font-black text-gray-900 tracking-tight">
@@ -186,7 +186,7 @@ const GetCategory = () => {
                 <span
                   className={`px-3 py-1 rounded-full text-xs font-black ${
                     isActive
-                      ? 'bg-[#BBF1D2]/60 text-[#1E7741]'
+                      ? 'bg-[#E8DACD]/60 text-[#1E7741]'
                       : 'bg-red-100 text-red-600'
                   }`}
                 >
@@ -199,8 +199,8 @@ const GetCategory = () => {
             </div>
 
             {/* Total Linked Products Metric Pill */}
-            <div className="flex items-center gap-2.5 px-4 py-2.5 rounded-2xl bg-[#FAF5F7] border border-gray-100">
-              <div className="w-8 h-8 rounded-xl bg-[#FF9D9D] text-[#2D252E] flex items-center justify-center font-black">
+            <div className="flex items-center gap-2.5 px-4 py-2.5 rounded-2xl bg-[#F2E6DA] border border-[#E8DACD]">
+              <div className="w-8 h-8 rounded-xl bg-[#7A0C1E] text-white flex items-center justify-center font-black">
                 <FiBox className="w-4 h-4" />
               </div>
               <div>
@@ -219,7 +219,7 @@ const GetCategory = () => {
             <span className="text-xs font-bold text-gray-400 block mb-1">
               Description
             </span>
-            <p className="text-sm font-medium text-gray-700 bg-gray-50/70 p-4 rounded-2xl border border-gray-100 leading-relaxed">
+            <p className="text-sm font-medium text-gray-700 bg-gray-50/70 p-4 rounded-2xl border border-[#E8DACD] leading-relaxed">
               {category.description || 'No description provided for this category.'}
             </p>
           </div>
@@ -227,11 +227,11 @@ const GetCategory = () => {
           {/* Metadata Timestamps */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs font-semibold text-gray-500 pt-1">
             <div className="flex items-center gap-2">
-              <FiCalendar className="w-4 h-4 text-[#FF9D9D]" />
+              <FiCalendar className="w-4 h-4 text-[#7A0C1E]" />
               <span>Created: {formatDate(category.created_at || category.createdAt)}</span>
             </div>
             <div className="flex items-center gap-2">
-              <FiClock className="w-4 h-4 text-[#FFC5AA]" />
+              <FiClock className="w-4 h-4 text-[#5F0917]" />
               <span>Last Updated: {formatDate(category.updated_at || category.updatedAt)}</span>
             </div>
           </div>
@@ -242,7 +242,7 @@ const GetCategory = () => {
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <FiLayers className="w-5 h-5 text-[#FF9D9D]" />
+            <FiLayers className="w-5 h-5 text-[#7A0C1E]" />
             <h3 className="text-lg font-black text-gray-900 tracking-tight">
               Linked Products ({linkedProducts.length})
             </h3>
@@ -252,10 +252,10 @@ const GetCategory = () => {
           </span>
         </div>
 
-        <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+        <div className="bg-white rounded-3xl shadow-sm border border-[#E8DACD] overflow-hidden">
           <div className="overflow-x-auto min-h-[250px]">
             <table className="w-full text-left text-sm">
-              <thead className="bg-[#FAF5F7] text-gray-400 font-bold text-xs uppercase tracking-wider">
+              <thead className="bg-[#F2E6DA] text-gray-400 font-bold text-xs uppercase tracking-wider">
                 <tr>
                   <th className="py-4 px-6">Product</th>
                   <th className="py-4 px-6">Price</th>
@@ -264,7 +264,7 @@ const GetCategory = () => {
                   <th className="py-4 px-6 text-right">Created</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100 font-medium text-gray-700">
+              <tbody className="divide-y divide-[#E8DACD] font-medium text-gray-700">
                 {linkedProducts.length === 0 ? (
                   <tr>
                     <td colSpan="5" className="py-12 text-center text-gray-400 font-bold">
@@ -287,14 +287,14 @@ const GetCategory = () => {
                               <img
                                 src={prodImgUrl}
                                 alt={product.name}
-                                className="w-10 h-10 rounded-2xl object-cover border border-gray-200 shrink-0 shadow-2xs"
+                                className="w-10 h-10 rounded-2xl object-cover border border-[#E8DACD] shrink-0 shadow-2xs"
                                 onError={(e) => {
                                   e.target.onerror = null;
                                   e.target.style.display = 'none';
                                 }}
                               />
                             ) : (
-                              <div className="w-10 h-10 rounded-2xl bg-[#EEF8CD] text-[#2D252E] flex items-center justify-center font-black shrink-0">
+                              <div className="w-10 h-10 rounded-2xl bg-[#FAF5EF] text-[#2B1B17] flex items-center justify-center font-black shrink-0">
                                 <FiBox className="w-5 h-5 text-[#88A626]" />
                               </div>
                             )}
@@ -331,7 +331,7 @@ const GetCategory = () => {
                           <span
                             className={`px-3 py-1 rounded-full text-xs font-black ${
                               prodActive
-                                ? 'bg-[#BBF1D2]/60 text-[#1E7741]'
+                                ? 'bg-[#E8DACD]/60 text-[#1E7741]'
                                 : 'bg-red-100 text-red-600'
                             }`}
                           >

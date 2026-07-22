@@ -8,26 +8,62 @@ import { ArrowRight, Heart, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/common/Button';
 import { Container } from '@/components/ui/Container';
 import { heroSlides } from '@/data/banners';
+import { bannerService } from '@/services/bannerService';
+import { getBackendURL } from '@/services/api';
 
 export function Hero() {
+  const [slides, setSlides] = useState(heroSlides);
   const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentIndex((prevIndex) => (prevIndex + 1) % heroSlides.length);
-    }, 5000);
-    return () => clearInterval(timer);
+    async function loadBanners() {
+      try {
+        const fetchedBanners = await bannerService.getBanners({ limit: 10, type: 'home' });
+        if (fetchedBanners && fetchedBanners.length > 0) {
+          const backendUrl = getBackendURL();
+          const mapped = fetchedBanners.map((b) => {
+            let imgUrl = b.image || '/images/banners/hero_banner.jpg';
+            if (imgUrl && !imgUrl.startsWith('http') && !imgUrl.startsWith('data:')) {
+              const path = imgUrl.startsWith('/') ? imgUrl : `/${imgUrl}`;
+              imgUrl = `${backendUrl}${path}`;
+            }
+            return {
+              tagline: b.tagline || '',
+              title: b.title || '',
+              description: b.description || '',
+              primaryCta: b.primary_cta_text || 'Shop Now',
+              primaryCtaLink: b.primary_cta_link || '/shop',
+              secondaryCta: b.secondary_cta_text || 'Explore Collection',
+              secondaryCtaLink: b.secondary_cta_link || '/categories',
+              image: imgUrl
+            };
+          });
+          setSlides(mapped);
+        }
+      } catch (error) {
+        console.error('Failed to load banners from backend:', error);
+      }
+    }
+    loadBanners();
   }, []);
 
+  useEffect(() => {
+    if (slides.length <= 1) return;
+    const timer = setInterval(() => {
+      setCurrentIndex((prevIndex) => (prevIndex + 1) % slides.length);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, [slides.length]);
+
   const handlePrev = () => {
-    setCurrentIndex((prevIndex) => (prevIndex - 1 + heroSlides.length) % heroSlides.length);
+    setCurrentIndex((prevIndex) => (prevIndex - 1 + slides.length) % slides.length);
   };
 
   const handleNext = () => {
-    setCurrentIndex((prevIndex) => (prevIndex + 1) % heroSlides.length);
+    setCurrentIndex((prevIndex) => (prevIndex + 1) % slides.length);
   };
 
-  const slide = heroSlides[currentIndex];
+  const slide = slides[currentIndex] || heroSlides[0];
 
   return (
     <section className="relative overflow-hidden w-full h-[70vh] sm:h-[80vh] min-h-[580px] border-b border-[#E8DACD]/40 bg-[#FAF5EF] flex items-center">
@@ -47,7 +83,7 @@ export function Hero() {
               alt={slide.title}
               fill
               priority
-              quality={100}
+              unoptimized
               className="object-cover"
               sizes="100vw"
             />
@@ -68,11 +104,13 @@ export function Hero() {
               className="flex flex-col items-start space-y-6"
             >
               {/* Tagline */}
-              <div className="inline-flex items-center gap-2 text-xs font-semibold tracking-widest text-[#7A0C1E] uppercase">
-                <Heart className="w-3.5 h-3.5 fill-[#7A0C1E] text-[#7A0C1E]" />
-                <span>{slide.tagline}</span>
-                <Heart className="w-3.5 h-3.5 fill-[#7A0C1E] text-[#7A0C1E]" />
-              </div>
+              {slide.tagline && (
+                <div className="inline-flex items-center gap-2 text-xs font-semibold tracking-widest text-[#7A0C1E] uppercase">
+                  <Heart className="w-3.5 h-3.5 fill-[#7A0C1E] text-[#7A0C1E]" />
+                  <span>{slide.tagline}</span>
+                  <Heart className="w-3.5 h-3.5 fill-[#7A0C1E] text-[#7A0C1E]" />
+                </div>
+              )}
 
               {/* Title */}
               <h1 className="font-serif-luxury text-4xl sm:text-5xl lg:text-6xl font-bold text-[#7A0C1E] leading-[1.15] tracking-tight">
@@ -86,7 +124,7 @@ export function Hero() {
 
               {/* CTAs */}
               <div className="flex flex-wrap items-center gap-4 pt-2">
-                <Link href="/shop">
+                <Link href={slide.primaryCtaLink || '/shop'}>
                   <Button
                     variant="primary"
                     size="lg"
@@ -98,7 +136,7 @@ export function Hero() {
                   </Button>
                 </Link>
 
-                <Link href="/categories">
+                <Link href={slide.secondaryCtaLink || '/categories'}>
                   <Button
                     variant="outline"
                     size="lg"
@@ -114,38 +152,44 @@ export function Hero() {
       </Container>
 
       {/* Manual Slide Controls - Left Arrow */}
-      <button
-        onClick={handlePrev}
-        className="hidden md:flex absolute left-6 top-1/2 -translate-y-1/2 z-30 w-11 h-11 items-center justify-center rounded-full bg-[#FAF5EF]/80 hover:bg-[#7A0C1E] text-[#7A0C1E] hover:text-white border border-[#E8DACD] shadow-md transition-all duration-300 cursor-pointer focus:outline-hidden hover:translate-x-[-2px]"
-        aria-label="Previous Slide"
-      >
-        <ChevronLeft className="w-6 h-6" />
-      </button>
+      {slides.length > 1 && (
+        <button
+          onClick={handlePrev}
+          className="hidden md:flex absolute left-6 top-1/2 -translate-y-1/2 z-30 w-11 h-11 items-center justify-center rounded-full bg-[#FAF5EF]/80 hover:bg-[#7A0C1E] text-[#7A0C1E] hover:text-white border border-[#E8DACD] shadow-md transition-all duration-300 cursor-pointer focus:outline-hidden hover:translate-x-[-2px]"
+          aria-label="Previous Slide"
+        >
+          <ChevronLeft className="w-6 h-6" />
+        </button>
+      )}
 
       {/* Manual Slide Controls - Right Arrow */}
-      <button
-        onClick={handleNext}
-        className="hidden md:flex absolute right-6 top-1/2 -translate-y-1/2 z-30 w-11 h-11 items-center justify-center rounded-full bg-[#FAF5EF]/80 hover:bg-[#7A0C1E] text-[#7A0C1E] hover:text-white border border-[#E8DACD] shadow-md transition-all duration-300 cursor-pointer focus:outline-hidden hover:translate-x-[2px]"
-        aria-label="Next Slide"
-      >
-        <ChevronRight className="w-6 h-6" />
-      </button>
+      {slides.length > 1 && (
+        <button
+          onClick={handleNext}
+          className="hidden md:flex absolute right-6 top-1/2 -translate-y-1/2 z-30 w-11 h-11 items-center justify-center rounded-full bg-[#FAF5EF]/80 hover:bg-[#7A0C1E] text-[#7A0C1E] hover:text-white border border-[#E8DACD] shadow-md transition-all duration-300 cursor-pointer focus:outline-hidden hover:translate-x-[2px]"
+          aria-label="Next Slide"
+        >
+          <ChevronRight className="w-6 h-6" />
+        </button>
+      )}
 
       {/* Dot Indicators */}
-      <div className="absolute bottom-6 left-0 right-0 z-30 flex items-center justify-center gap-2">
-        {heroSlides.map((_, index) => (
-          <button
-            key={index}
-            onClick={() => setCurrentIndex(index)}
-            className={`transition-all duration-300 cursor-pointer focus:outline-hidden ${
-              index === currentIndex
-                ? 'w-8 h-2 rounded-full bg-[#7A0C1E]'
-                : 'w-2 h-2 rounded-full bg-gray-400/50 hover:bg-[#7A0C1E]/50'
-            }`}
-            aria-label={`Go to slide ${index + 1}`}
-          />
-        ))}
-      </div>
+      {slides.length > 1 && (
+        <div className="absolute bottom-6 left-0 right-0 z-30 flex items-center justify-center gap-2">
+          {slides.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => setCurrentIndex(index)}
+              className={`transition-all duration-300 cursor-pointer focus:outline-hidden ${
+                index === currentIndex
+                  ? 'w-8 h-2 rounded-full bg-[#7A0C1E]'
+                  : 'w-2 h-2 rounded-full bg-gray-400/50 hover:bg-[#7A0C1E]/50'
+              }`}
+              aria-label={`Go to slide ${index + 1}`}
+            />
+          ))}
+        </div>
+      )}
     </section>
   );
 }

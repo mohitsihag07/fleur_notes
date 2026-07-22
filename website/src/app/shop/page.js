@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Filter, Grid, List, ChevronLeft, ChevronRight, SlidersHorizontal } from 'lucide-react';
@@ -8,6 +8,8 @@ import { Container } from '@/components/ui/Container';
 import { ProductCard } from '@/components/shop/ProductCard';
 import { FilterSidebar } from '@/components/shop/FilterSidebar';
 import { featuredProducts } from '@/data/products';
+import { bannerService } from '@/services/bannerService';
+import { getBackendURL } from '@/services/api';
 
 export default function ShopPage() {
   const [activeCategory, setActiveCategory] = useState('all');
@@ -16,6 +18,39 @@ export default function ShopPage() {
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
 
+  const [banner, setBanner] = useState({
+    title: 'Shop Our Collection',
+    description: 'Handcrafted with love, made for you.',
+    tagline: '',
+    image: '/images/banners/hero_banner.jpg'
+  });
+
+  useEffect(() => {
+    async function loadBanner() {
+      try {
+        const fetchedBanners = await bannerService.getBanners({ limit: 1, type: 'shop' });
+        if (fetchedBanners && fetchedBanners.length > 0) {
+          const b = fetchedBanners[0];
+          const backendUrl = getBackendURL();
+          let imgUrl = b.image || '/images/banners/hero_banner.jpg';
+          if (imgUrl && !imgUrl.startsWith('http') && !imgUrl.startsWith('data:')) {
+            const path = imgUrl.startsWith('/') ? imgUrl : `/${imgUrl}`;
+            imgUrl = `${backendUrl}${path}`;
+          }
+          setBanner({
+            title: b.title || 'Shop Our Collection',
+            description: b.description || 'Handcrafted with love, made for you.',
+            tagline: b.tagline || '',
+            image: imgUrl
+          });
+        }
+      } catch (error) {
+        console.error('Failed to load shop banner:', error);
+      }
+    }
+    loadBanner();
+  }, []);
+
   return (
     <div className="bg-[#FAF5EF] min-h-screen">
       {/* Hero Header Banner (Full Screen Width) */}
@@ -23,12 +58,12 @@ export default function ShopPage() {
         {/* Background Image */}
         <div className="absolute inset-0 z-0">
           <Image
-            src="/images/banners/hero_banner.jpg"
-            alt="Shop Collection"
+            src={banner.image}
+            alt={banner.title}
             fill
+            unoptimized
             className="object-cover"
             priority
-            quality={100}
           />
         </div>
 
@@ -40,11 +75,16 @@ export default function ShopPage() {
               <span>›</span>
               <span className="text-[#7A0C1E] font-bold">Shop</span>
             </nav>
+            {banner.tagline && (
+              <div className="inline-flex items-center gap-2 text-xs font-bold tracking-widest text-[#7A0C1E] uppercase">
+                <span>{banner.tagline}</span>
+              </div>
+            )}
             <h1 className="font-serif-luxury text-4xl sm:text-5xl font-bold text-[#7A0C1E] tracking-tight leading-tight">
-              Shop Our Collection
+              {banner.title}
             </h1>
             <p className="text-base sm:text-lg text-black font-medium leading-relaxed max-w-lg">
-              Handcrafted with love, made for you.
+              {banner.description}
             </p>
           </div>
         </Container>

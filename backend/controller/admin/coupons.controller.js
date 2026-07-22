@@ -46,6 +46,12 @@ const getCouponsList = async (req, res) => {
             order: [['created_at', 'DESC']]
         });
         
+        // Calculate coupon statistics
+        const totalCoupons = await Coupon.count();
+        const activeCoupons = await Coupon.count({ where: { status: 'active' } });
+        const inactiveCoupons = await Coupon.count({ where: { status: 'inactive' } });
+        const expiredCoupons = await Coupon.count({ where: { status: 'expired' } });
+
         await logActivity(req.user.id, 'VIEW_COUPONS', `Fetched list of coupons`, req);
         
         return helper.success(res, `Successfully fetched list of coupons`, {
@@ -54,7 +60,13 @@ const getCouponsList = async (req, res) => {
                 totalItems: count,
                 totalPages: Math.ceil(count / limit),
                 currentPage: page,
-                limit
+                limit,
+                stats: {
+                    totalCoupons,
+                    activeCoupons,
+                    inactiveCoupons,
+                    expiredCoupons
+                }
             }
         });
     } catch (error) {

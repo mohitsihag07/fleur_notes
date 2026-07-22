@@ -12,7 +12,7 @@ import {
   FiTag,
   FiCreditCard,
   FiBell,
-  FiStar,   
+  FiStar,
   FiHelpCircle,
   FiLogOut,
   FiUsers,
@@ -36,6 +36,7 @@ const Sidebar = () => {
     { name: 'Reviews', path: '/reviews', icon: FiStar },
     { name: 'Faqs', path: '/faqs', icon: FiHelpCircle },
     { name: 'CMS', path: '/cms', icon: FiFileText },
+    { name: 'Live Support Chat', path: '/support/chat', icon: FiMessageSquare },
     { name: 'Contact Support', path: '/contact-support', icon: FiMessageSquare },
     { name: 'Settings', path: '/settings', icon: FiSettings },
   ];
@@ -47,7 +48,7 @@ const Sidebar = () => {
 
   return (
     <>
-      <aside className={`${isSidebarOpen ? 'w-64' : 'w-20'} h-screen bg-[#FF9D9D] text-[#2D252E] flex flex-col justify-between transition-all duration-300 z-30 shrink-0`}>
+      <aside className={`${isSidebarOpen ? 'w-64' : 'w-20'} h-screen bg-[#7A0C1E] text-white flex flex-col justify-between transition-all duration-300 z-30 shrink-0`}>
 
         {/* 1. TOP HEADER */}
         <div className={`p-6 shrink-0 flex items-center ${isSidebarOpen ? 'gap-3' : 'justify-center px-0'}`}>
@@ -55,7 +56,7 @@ const Sidebar = () => {
             <img src="/src/assets/logo.png" alt="Fleur Notes Logo" className="w-full h-full object-cover" />
           </div>
           {isSidebarOpen && (
-            <span className="font-black text-2xl tracking-tight text-[#2D252E] font-sans truncate">
+            <span className="font-black text-2xl tracking-tight text-white font-sans truncate">
               FleurNotes
             </span>
           )}
@@ -71,12 +72,15 @@ const Sidebar = () => {
                 to={item.path}
                 title={!isSidebarOpen ? item.name : undefined}
                 className={({ isActive }) =>
-                  `relative flex items-center ${isSidebarOpen ? 'justify-between px-5 py-3.5' : 'justify-center p-3.5'} font-extrabold text-sm transition-all duration-200 ${isActive
-                    ? `bg-[#EEF8CD] text-[#2D252E] font-black z-10 ${isSidebarOpen
-                      ? 'rounded-l-full before:content-[""] before:absolute before:-top-4 before:right-0 before:w-4 before:h-4 before:bg-transparent before:rounded-br-2xl before:shadow-[4px_4px_0_4px_#EEF8CD] before:pointer-events-none after:content-[""] after:absolute after:-bottom-4 after:right-0 after:w-4 after:h-4 after:bg-transparent after:rounded-tr-2xl after:shadow-[4px_-4px_0_4px_#EEF8CD] after:pointer-events-none'
+                  `relative flex items-center ${isSidebarOpen ? 'justify-between px-5 py-3.5' : 'justify-center p-3.5'} font-extrabold text-sm transition-all duration-300 ease-in-out ${isActive
+                    ? `bg-[#FAF5EF] text-[#7A0C1E] font-black z-10 ${isSidebarOpen
+                      ? 'rounded-l-full before:content-[""] before:absolute before:-top-4 before:right-0 before:w-4 before:h-4 before:bg-transparent before:rounded-br-2xl before:shadow-[4px_4px_0_4px_#FAF5EF] before:pointer-events-none before:transition-opacity before:duration-300 before:opacity-100 after:content-[""] after:absolute after:-bottom-4 after:right-0 after:w-4 after:h-4 after:bg-transparent after:rounded-tr-2xl after:shadow-[4px_-4px_0_4px_#FAF5EF] after:pointer-events-none after:transition-opacity after:duration-300 after:opacity-100'
                       : 'rounded-2xl shadow-sm'
                     }`
-                    : `text-[#2D252E] hover:bg-[#FFC5AA] hover:text-[#2D252E] ${isSidebarOpen ? 'rounded-full mr-4' : 'rounded-2xl'}`
+                    : `text-white/80 hover:bg-[#5F0917] hover:text-white ${isSidebarOpen
+                      ? 'rounded-l-full before:content-[""] before:absolute before:-top-4 before:right-0 before:w-4 before:h-4 before:bg-transparent before:rounded-br-2xl before:shadow-[4px_4px_0_4px_#FAF5EF] before:pointer-events-none before:transition-opacity before:duration-300 before:opacity-0 after:content-[""] after:absolute after:-bottom-4 after:right-0 after:w-4 after:h-4 after:bg-transparent after:rounded-tr-2xl after:shadow-[4px_-4px_0_4px_#FAF5EF] after:pointer-events-none after:transition-opacity after:duration-300 after:opacity-0'
+                      : 'rounded-2xl'
+                    }`
                   }`
                 }
               >
@@ -94,7 +98,7 @@ const Sidebar = () => {
           <button
             onClick={() => setShowLogoutModal(true)}
             title={!isSidebarOpen ? "Logout" : undefined}
-            className={`flex items-center justify-center gap-3 ${isSidebarOpen ? 'w-full px-5 py-3.5 rounded-full' : 'w-12 h-12 rounded-2xl'} font-black text-sm bg-white text-red-500 hover:bg-[#FFC5AA] hover:text-[#2D252E] shadow-sm transition-all cursor-pointer`}
+            className={`flex items-center justify-center gap-3 ${isSidebarOpen ? 'w-full px-5 py-3.5 rounded-full' : 'w-12 h-12 rounded-2xl'} font-black text-sm bg-white text-red-600 hover:bg-[#FAF5EF] hover:text-red-700 shadow-sm transition-all cursor-pointer`}
           >
             <FiLogOut className="w-5 h-5 shrink-0" />
             {isSidebarOpen && <span>Logout</span>}

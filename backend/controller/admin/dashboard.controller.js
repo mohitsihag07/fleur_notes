@@ -63,6 +63,55 @@ const dashboard = async (req, res) => {
       }
     });
 
+    // 4.1 Today's stats calculation
+    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
+    const todayEnd = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999);
+
+    const todayOrders = await Order.count({
+      where: {
+        created_at: {
+          [Op.gte]: todayStart,
+          [Op.lte]: todayEnd
+        }
+      }
+    });
+
+    const todayNewUsers = await User.count({
+      where: {
+        role: 'user',
+        created_at: {
+          [Op.gte]: todayStart,
+          [Op.lte]: todayEnd
+        }
+      }
+    });
+
+    const todayCancelledOrders = await Order.count({
+      where: {
+        status: 'cancelled',
+        created_at: {
+          [Op.gte]: todayStart,
+          [Op.lte]: todayEnd
+        }
+      }
+    });
+
+    const todayCancellationPercentage = todayOrders > 0
+      ? Number(((todayCancelledOrders / todayOrders) * 100).toFixed(1))
+      : 0;
+
+    // 4.2 Monthly Revenue calculation (sum of non-cancelled orders in current month)
+    const monthlyRevenueRes = await Order.sum('grand_total', {
+      where: {
+        status: { [Op.ne]: 'cancelled' },
+        created_at: {
+          [Op.gte]: startOfMonth,
+          [Op.lte]: endOfMonth
+        }
+      }
+    }) || 0;
+    const monthlyRevenue = Number(parseFloat(monthlyRevenueRes).toFixed(2));
+
     // 5. 12-Month Graph of Products Selling & Sales
     const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
     const monthlySalesGraph = [];
@@ -117,7 +166,12 @@ const dashboard = async (req, res) => {
         totalOrders,
         totalProducts,
         monthlyCancelledOrders,
-        monthlySalesGraph
+        monthlySalesGraph,
+        monthlyRevenue,
+        todayOrders,
+        todayNewUsers,
+        todayCancelledOrders,
+        todayCancellationPercentage
       },
       200
     );
