@@ -30,12 +30,18 @@ import { formatPrice } from '@/utils/formatPrice';
 
 export default function ProductDetailPage() {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [slideDirection, setSlideDirection] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState('description');
   const [isInWishlist, setIsInWishlist] = useState(false);
 
   const [touchStartX, setTouchStartX] = useState(0);
   const [touchEndX, setTouchEndX] = useState(0);
+
+  const selectImage = (idx) => {
+    setSlideDirection(idx > selectedImageIndex ? 1 : -1);
+    setSelectedImageIndex(idx);
+  };
 
   const galleryImages = [
     '/images/products/vase.jpg',
@@ -85,10 +91,12 @@ export default function ProductDetailPage() {
   ];
 
   const nextImage = () => {
+    setSlideDirection(1);
     setSelectedImageIndex((prev) => (prev + 1) % galleryImages.length);
   };
 
   const prevImage = () => {
+    setSlideDirection(-1);
     setSelectedImageIndex((prev) => (prev - 1 + galleryImages.length) % galleryImages.length);
   };
 
@@ -107,6 +115,21 @@ export default function ProductDetailPage() {
     if (touchStartX - touchEndX < -50) {
       prevImage();
     }
+  };
+
+  const slideVariants = {
+    enter: (direction) => ({
+      x: direction > 0 ? 60 : -60,
+      opacity: 0
+    }),
+    center: {
+      x: 0,
+      opacity: 1
+    },
+    exit: (direction) => ({
+      x: direction < 0 ? 60 : -60,
+      opacity: 0
+    })
   };
 
   return (
@@ -132,7 +155,7 @@ export default function ProductDetailPage() {
               {galleryImages.map((img, idx) => (
                 <button
                   key={idx}
-                  onClick={() => setSelectedImageIndex(idx)}
+                  onClick={() => selectImage(idx)}
                   className={`relative w-16 h-16 rounded-xl overflow-hidden border-2 transition-all cursor-pointer ${
                     selectedImageIndex === idx ? 'border-[#7A0C1E] shadow-sm scale-105' : 'border-[#E8DACD] opacity-70'
                   }`}
@@ -149,24 +172,51 @@ export default function ProductDetailPage() {
               onTouchMove={handleTouchMove}
               onTouchEnd={handleTouchEnd}
             >
-              <Image
-                src={galleryImages[selectedImageIndex]}
-                alt="Minimal Ceramic Vase"
-                fill
-                className="object-cover transition-all duration-300"
-                priority
-              />
+              <AnimatePresence initial={false} mode="wait" custom={slideDirection}>
+                <motion.div
+                  key={selectedImageIndex}
+                  custom={slideDirection}
+                  variants={slideVariants}
+                  initial="enter"
+                  animate="center"
+                  exit="exit"
+                  transition={{
+                    x: { type: 'spring', stiffness: 350, damping: 30 },
+                    opacity: { duration: 0.2 }
+                  }}
+                  className="absolute inset-0 w-full h-full"
+                >
+                  <Image
+                    src={galleryImages[selectedImageIndex]}
+                    alt="Minimal Ceramic Vase"
+                    fill
+                    className="object-cover"
+                    priority
+                  />
+                </motion.div>
+              </AnimatePresence>
 
-              {/* Wishlist Button Overlay */}
-              <button
-                type="button"
-                onClick={() => setIsInWishlist(!isInWishlist)}
-                className="absolute top-4 right-4 p-2.5 rounded-full bg-white/95 shadow-md text-[#2B1B17] hover:text-[#7A0C1E] transition-all cursor-pointer z-10"
-              >
-                <Heart className={`w-4.5 h-4.5 transition-colors ${
-                  isInWishlist ? 'fill-[#7A0C1E] text-[#7A0C1E]' : 'text-gray-600'
-                }`} />
-              </button>
+              {/* Overlay Actions: Wishlist and Share */}
+              <div className="absolute top-4 right-4 flex flex-col gap-3.5 z-10">
+                <button
+                  type="button"
+                  onClick={() => setIsInWishlist(!isInWishlist)}
+                  className="text-[#2B1B17] hover:text-[#7A0C1E] hover:scale-110 active:scale-90 transition-all cursor-pointer drop-shadow-sm"
+                  aria-label="Wishlist"
+                >
+                  <Heart className={`w-5 h-5 transition-colors ${
+                    isInWishlist ? 'fill-[#7A0C1E] text-[#7A0C1E]' : 'text-[#2B1B17]'
+                  }`} />
+                </button>
+
+                <button
+                  type="button"
+                  className="text-[#2B1B17] hover:text-[#7A0C1E] hover:scale-110 active:scale-90 transition-all cursor-pointer drop-shadow-sm"
+                  aria-label="Share"
+                >
+                  <Share2 className="w-5 h-5" />
+                </button>
+              </div>
 
               {/* Slide Navigation Arrows */}
               <button
@@ -189,7 +239,7 @@ export default function ProductDetailPage() {
                 {galleryImages.map((_, idx) => (
                   <button
                     key={idx}
-                    onClick={() => setSelectedImageIndex(idx)}
+                    onClick={() => selectImage(idx)}
                     className={`w-1.5 h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
                       selectedImageIndex === idx ? 'bg-white w-3.5' : 'bg-white/50'
                     }`}
@@ -279,17 +329,7 @@ export default function ProductDetailPage() {
               </button>
             </div>
 
-            {/* Wishlist & Share */}
-            <div className="flex items-center justify-between text-xs text-gray-500 pt-2">
-              <button className="flex items-center gap-1.5 hover:text-[#7A0C1E]">
-                <Heart className="w-4 h-4" />
-                <span>Add to Wishlist</span>
-              </button>
-              <button className="flex items-center gap-1.5 hover:text-[#7A0C1E]">
-                <Share2 className="w-4 h-4" />
-                <span>Share</span>
-              </button>
-            </div>
+
 
             {/* Value Badges Side Column Box */}
             <div className="bg-[#F2E6DA]/70 rounded-2xl border border-[#E8DACD] p-4 space-y-3">

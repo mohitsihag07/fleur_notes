@@ -52,7 +52,7 @@ export default function WishlistPage() {
             </Link>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
             {wishlistItems.map((prod, idx) => (
               <div key={prod.id} className="bg-white rounded-2xl border border-[#E8DACD] overflow-hidden shadow-sm flex flex-col justify-between group">
                 <div className="relative aspect-[4/3] bg-[#FAF5EF]">
@@ -65,25 +65,25 @@ export default function WishlistPage() {
                   </button>
                 </div>
 
-                <div className="p-4 space-y-2 flex-1 flex flex-col justify-between">
+                <div className="p-3 sm:p-4 space-y-2 flex-1 flex flex-col justify-between">
                   <div>
-                    <h4 className="font-semibold text-sm text-[#2B1B17]">{prod.name}</h4>
-                    <p className="font-bold text-sm text-[#2B1B17] mt-0.5">{formatPrice(prod.price)}</p>
-                    <span className={`inline-block text-[10px] font-semibold mt-1 ${idx === 4 ? 'text-amber-600' : 'text-green-600'}`}>
+                    <h4 className="font-semibold text-xs sm:text-sm text-[#2B1B17] line-clamp-1">{prod.name}</h4>
+                    <p className="font-bold text-xs sm:text-sm text-[#2B1B17] mt-0.5">{formatPrice(prod.price)}</p>
+                    <span className={`inline-block text-[9px] sm:text-[10px] font-semibold mt-1 ${idx === 4 ? 'text-amber-600' : 'text-green-600'}`}>
                       ● {idx === 4 ? 'Only 4 left' : 'In Stock'}
                     </span>
                   </div>
 
-                  <div className="flex items-center gap-2 pt-2">
+                  <div className="flex items-center gap-1.5 pt-2">
                     <button
                       onClick={() => removeItem(prod.id)}
-                      className="p-2.5 rounded-xl border border-[#E8DACD] text-gray-400 hover:text-red-500 hover:border-red-200"
+                      className="p-2 sm:p-2.5 rounded-xl border border-[#E8DACD] text-gray-400 hover:text-red-500 hover:border-red-200 shrink-0"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
-                    <button className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-[#7A0C1E] hover:bg-[#5F0917] text-white rounded-xl text-xs font-bold">
-                      <ShoppingBag className="w-3.5 h-3.5" />
-                      <span>Add to Cart</span>
+                    <button className="flex-1 flex items-center justify-center gap-1 sm:gap-2 py-2 sm:py-2.5 px-1 bg-[#7A0C1E] hover:bg-[#5F0917] text-white rounded-xl text-[10px] sm:text-xs font-bold transition-all">
+                      <ShoppingBag className="w-3.5 h-3.5 shrink-0" />
+                      <span className="truncate">Add to Cart</span>
                     </button>
                   </div>
                 </div>

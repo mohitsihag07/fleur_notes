@@ -45,14 +45,10 @@ export function ProductCard({ product, layout = 'grid' }) {
           {/* Wishlist Button Overlay */}
           <button
             onClick={handleWishlistToggle}
-            className={`absolute top-2 right-2 p-1.5 rounded-full backdrop-blur-md transition-all duration-200 z-10 ${
-              isWishlisted
-                ? 'bg-[#7A0C1E] text-white shadow-md'
-                : 'bg-white/80 text-[#2B1B17] hover:bg-white hover:text-[#7A0C1E]'
-            }`}
+            className="absolute top-2.5 right-2.5 transition-all duration-200 z-10 text-[#2B1B17] hover:text-[#7A0C1E] hover:scale-110 active:scale-90 drop-shadow-sm"
             aria-label="Add to wishlist"
           >
-            <Heart className={`w-3.5 h-3.5 ${isWishlisted ? 'fill-white' : ''}`} />
+            <Heart className={`w-4 h-4 transition-colors ${isWishlisted ? 'fill-[#7A0C1E] text-[#7A0C1E]' : 'text-[#2B1B17]'}`} />
           </button>
 
           {/* Badge Overlay */}
@@ -144,14 +140,10 @@ export function ProductCard({ product, layout = 'grid' }) {
         {/* Wishlist Button Overlay */}
         <button
           onClick={handleWishlistToggle}
-          className={`absolute top-3 right-3 p-2 rounded-full backdrop-blur-md transition-all duration-200 ${
-            isWishlisted
-              ? 'bg-[#7A0C1E] text-white shadow-md'
-              : 'bg-white/80 text-[#2B1B17] hover:bg-white hover:text-[#7A0C1E]'
-          }`}
+          className="absolute top-3 right-3 transition-all duration-200 z-10 text-[#2B1B17] hover:text-[#7A0C1E] hover:scale-110 active:scale-90 drop-shadow-sm"
           aria-label="Add to wishlist"
         >
-          <Heart className={`w-4 h-4 ${isWishlisted ? 'fill-white' : ''}`} />
+          <Heart className={`w-4.5 h-4.5 transition-colors ${isWishlisted ? 'fill-[#7A0C1E] text-[#7A0C1E]' : 'text-[#2B1B17]'}`} />
         </button>
 
         {/* Badge Overlay */}
