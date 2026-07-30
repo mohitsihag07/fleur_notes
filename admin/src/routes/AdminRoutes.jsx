@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import useAuthStore from '../store/authStore';
+import useSettingsStore from '../store/settingsStore';
 import Layout from '../layout/Layout';
 
 // Auth pages
@@ -89,10 +90,12 @@ const RequireAuth = ({ children }) => {
 
 const AdminRoutes = () => {
   const { initialize } = useAuthStore();
+  const { fetchSettings } = useSettingsStore();
 
   useEffect(() => {
     initialize();
-  }, [initialize]);
+    fetchSettings();
+  }, [initialize, fetchSettings]);
 
   return (
     <Routes>
@@ -161,6 +164,25 @@ const AdminRoutes = () => {
         <Route path="banners/edit/:id" element={<UpdateBanner />} />
         <Route path="banners/:id" element={<GetBanner />} />
         <Route path="banner" element={<Banners />} />
+
+        {/* Alias redirects for /admin/* routes */}
+        <Route path="admin/banners" element={<Navigate to="/banners" replace />} />
+        <Route path="admin/banners/add" element={<Navigate to="/banners/add" replace />} />
+        <Route path="admin/banners/edit/:id" element={<Navigate to="/banners/edit/:id" replace />} />
+        <Route path="admin/banners/:id" element={<Navigate to="/banners/:id" replace />} />
+        <Route path="admin/categories" element={<Navigate to="/categories" replace />} />
+        <Route path="admin/categories/add" element={<Navigate to="/categories/add" replace />} />
+        <Route path="admin/categories/edit/:id" element={<Navigate to="/categories/edit/:id" replace />} />
+        <Route path="admin/categories/:id" element={<Navigate to="/categories/:id" replace />} />
+        <Route path="admin/products" element={<Navigate to="/products" replace />} />
+        <Route path="admin/products/add" element={<Navigate to="/products/add" replace />} />
+        <Route path="admin/products/edit/:id" element={<Navigate to="/products/edit/:id" replace />} />
+        <Route path="admin/products/:id" element={<Navigate to="/products/:id" replace />} />
+        <Route path="admin/orders" element={<Navigate to="/orders" replace />} />
+        <Route path="admin/orders/:id" element={<Navigate to="/orders/:id" replace />} />
+        <Route path="admin/users" element={<Navigate to="/users" replace />} />
+        <Route path="admin/users/:id" element={<Navigate to="/users/:id" replace />} />
+        
         <Route path="cms" element={<CMSPage />} />
 
         {/* Notifications & Communication */}

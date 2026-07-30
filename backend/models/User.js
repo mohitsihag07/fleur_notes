@@ -1,86 +1,24 @@
-'use strict';
-const { Model } = require('sequelize');
+const mongoose = require('mongoose');
+const { Schema } = mongoose;
 
-module.exports = (sequelize, DataTypes) => {
-  class User extends Model {
-    static associate(models) {
-      User.hasOne(models.UserProfile, { foreignKey: 'user_id', as: 'profile' });
-      User.hasMany(models.UserAddress, { foreignKey: 'user_id', as: 'addresses' });
-      User.hasMany(models.CustomerActivity, { foreignKey: 'user_id', as: 'activities' });
-      User.hasMany(models.WishlistItem, { foreignKey: 'user_id', as: 'wishlistItems' });
-      User.hasOne(models.Cart, { foreignKey: 'user_id', as: 'cart' });
-      User.hasMany(models.Order, { foreignKey: 'user_id', as: 'orders' });
-      User.hasMany(models.Review, { foreignKey: 'user_id', as: 'reviews' });
-      User.hasMany(models.Notification, { foreignKey: 'user_id', as: 'notifications' });
-      User.hasMany(models.RefreshToken, { foreignKey: 'user_id', as: 'refreshTokens' });
-      User.hasMany(models.PasswordReset, { foreignKey: 'user_id', as: 'passwordResets' });
-      User.hasMany(models.AuditLog, { foreignKey: 'user_id', as: 'auditLogs' });
-    }
-  }
+const userSchema = new Schema({
+  role: { type: String, enum: ['user', 'admin'], default: 'user', required: true },
+  name: { type: String, default: 'Customer', maxlength: 100 },
+  email: { type: String, sparse: true, maxlength: 150 },
+  password: { type: String, default: null },
+  country_code: { type: String, maxlength: 10, default: '+91' },
+  phone: { type: String, maxlength: 20, default: null },
+  status: { type: String, enum: ['active', 'inactive', 'blocked', 'suspended'], default: 'active' },
+  otp: { type: String, default: null },
+  otp_expires_at: { type: Date, default: null },
+  is_email_verified: { type: Boolean, default: false },
+  is_phone_verified: { type: Boolean, default: false },
+  deleted_at: { type: Date, default: null },
+}, {
+  timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true },
+});
 
-  User.init({
-    id: {
-      type: DataTypes.BIGINT.UNSIGNED,
-      autoIncrement: true,
-      primaryKey: true,
-    },
-    role: {
-      type: DataTypes.ENUM('user','admin'),
-      allowNull: false,
-      defaultValue : "user"
-    },
-    name: {
-      type: DataTypes.STRING(100),
-      allowNull: false,
-    },
-    email: {
-      type: DataTypes.STRING(150),
-      allowNull: false,
-      unique: true,
-    },
-    password: {
-      type: DataTypes.STRING(255),
-      allowNull: false,
-    },
-    country_code: {
-      type: DataTypes.STRING(10),
-      allowNull: true,
-    },
-    phone: {
-      type: DataTypes.STRING(20),
-      allowNull: true,
-    },
-    status: {
-      type: DataTypes.ENUM('active','inactive','blocked', 'suspended'),
-      defaultValue: 'active',
-    },
-    otp : {
-      type: DataTypes.INTEGER,
-      allowNull: true,
-    },
-    otp_expires_at : {
-      type: DataTypes.DATE,
-      allowNull: true,
-    },
-    is_email_verified: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false,
-    },
-    deleted_at: {
-      type: DataTypes.DATE,
-      allowNull: true,
-    },
-  }, {
-    sequelize,
-    modelName: 'User',
-    tableName: 'users',
-    timestamps: true,
-    underscored: true,
-    paranoid: true,   // enables soft deletes via deleted_at
-    indexes: [
-      { fields: ['email'] },
-    ],
-  });
-
-  return User;
-};
+const User = mongoose.model('User', userSchema);
+module.exports = User;

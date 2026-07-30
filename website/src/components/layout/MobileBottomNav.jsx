@@ -6,15 +6,17 @@ import { usePathname } from 'next/navigation';
 import { Home, ShoppingBag, LayoutGrid, ShoppingCart, User } from 'lucide-react';
 import { motion } from 'framer-motion';
 import clsx from 'clsx';
+import { useShop } from '@/context/ShopContext';
 
 export function MobileBottomNav() {
   const pathname = usePathname();
+  const { cartCount } = useShop();
 
   const navItems = [
     { name: 'Home', href: '/', icon: Home },
     { name: 'Shop', href: '/shop', icon: ShoppingBag },
     { name: 'Categories', href: '/categories', icon: LayoutGrid },
-    { name: 'Cart', href: '/cart', icon: ShoppingCart, badge: 2 },
+    { name: 'Cart', href: '/cart', icon: ShoppingCart, badge: cartCount > 0 ? cartCount : undefined },
     { name: 'Account', href: '/profile', icon: User }
   ];
 

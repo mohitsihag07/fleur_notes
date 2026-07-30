@@ -1,4 +1,4 @@
-# Common .gitignore for Fleur Notes monorepo (admin, backend, website)
+# Common .gitignore for Caflore monorepo (admin, backend, website)
 
 # Dependencies
 node_modules/

@@ -1,52 +1,18 @@
-'use strict';
-const { Model } = require('sequelize');
+const mongoose = require('mongoose');
+const { Schema } = mongoose;
 
-module.exports = (sequelize, DataTypes) => {
-  class SupportMessage extends Model {
-    static associate(models) {
-      if (models.SupportConversation) {
-        SupportMessage.belongsTo(models.SupportConversation, { foreignKey: 'conversation_id', as: 'conversation' });
-      }
-    }
-  }
+const supportMessageSchema = new Schema({
+  conversation_id: { type: Schema.Types.ObjectId, ref: 'SupportConversation', required: true },
+  sender_type: { type: String, enum: ['user', 'admin', 'system'], default: 'user' },
+  sender_id: { type: Schema.Types.ObjectId, default: null },
+  sender_name: { type: String, default: null },
+  message: { type: String, required: true },
+  is_read: { type: Boolean, default: false },
+}, {
+  timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true },
+});
 
-  SupportMessage.init({
-    id: {
-      type: DataTypes.BIGINT.UNSIGNED,
-      autoIncrement: true,
-      primaryKey: true,
-    },
-    conversation_id: {
-      type: DataTypes.BIGINT.UNSIGNED,
-      allowNull: false,
-    },
-    sender_type: {
-      type: DataTypes.ENUM('user', 'admin', 'system'),
-      defaultValue: 'user',
-    },
-    sender_id: {
-      type: DataTypes.BIGINT.UNSIGNED,
-      allowNull: true,
-    },
-    sender_name: {
-      type: DataTypes.STRING(100),
-      allowNull: true,
-    },
-    message: {
-      type: DataTypes.TEXT,
-      allowNull: false,
-    },
-    is_read: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false,
-    },
-  }, {
-    sequelize,
-    modelName: 'SupportMessage',
-    tableName: 'support_messages',
-    timestamps: true,
-    underscored: true,
-  });
-
-  return SupportMessage;
-};
+const SupportMessage = mongoose.model('SupportMessage', supportMessageSchema);
+module.exports = SupportMessage;

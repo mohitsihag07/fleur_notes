@@ -1,62 +1,22 @@
-'use strict';
-const { Model } = require('sequelize');
+const mongoose = require('mongoose');
+const { Schema } = mongoose;
 
-module.exports = (sequelize, DataTypes) => {
-  class AuditLog extends Model {
-    static associate(models) {
-      AuditLog.belongsTo(models.User, { foreignKey: 'user_id', as: 'user' });
-    }
-  }
+const auditLogSchema = new Schema({
+  user_id: { type: Schema.Types.ObjectId, ref: 'User', default: null },
+  action: { type: String, required: true, maxlength: 150 },
+  module: { type: String, default: null, maxlength: 80 },
+  record_id: { type: Schema.Types.ObjectId, default: null },
+  old_values: { type: Schema.Types.Mixed, default: null },
+  new_values: { type: Schema.Types.Mixed, default: null },
+  ip_address: { type: String, default: null },
+}, {
+  timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true },
+});
 
-  AuditLog.init({
-    id: {
-      type: DataTypes.BIGINT.UNSIGNED,
-      autoIncrement: true,
-      primaryKey: true,
-    },
-    user_id: {
-      type: DataTypes.BIGINT.UNSIGNED,
-      allowNull: true,
-      references: { model: 'users', key: 'id' },
-    },
-    action: {
-      type: DataTypes.STRING(150),
-      allowNull: false,
-      comment: 'e.g. created_product, deleted_category, updated_order_status',
-    },
-    module: {
-      type: DataTypes.STRING(80),
-      allowNull: true,
-      comment: 'e.g. products, orders, customers',
-    },
-    record_id: {
-      type: DataTypes.BIGINT.UNSIGNED,
-      allowNull: true,
-      comment: 'ID of the affected record',
-    },
-    old_values: {
-      type: DataTypes.JSON,
-      allowNull: true,
-    },
-    new_values: {
-      type: DataTypes.JSON,
-      allowNull: true,
-    },
-    ip_address: {
-      type: DataTypes.STRING(45),
-      allowNull: true,
-    },
-  }, {
-    sequelize,
-    modelName: 'AuditLog',
-    tableName: 'audit_logs',
-    timestamps: true,
-    underscored: true,
-    indexes: [
-      { fields: ['user_id'] },
-      { fields: ['module', 'record_id'] },
-    ],
-  });
+auditLogSchema.index({ user_id: 1 });
+auditLogSchema.index({ module: 1 });
 
-  return AuditLog;
-};
+const AuditLog = mongoose.model('AuditLog', auditLogSchema);
+module.exports = AuditLog;

@@ -94,7 +94,7 @@ const AddCoupon = () => {
           <button
             type="button"
             onClick={() => navigate('/coupons')}
-            className="p-2.5 rounded-2xl bg-white text-gray-700 border border-[#E8DACD] hover:bg-[#FAF5EF] hover:text-[#2B1B17] shadow-sm transition-all cursor-pointer"
+            className="p-2.5 rounded-2xl bg-white text-gray-700 border border-[#E8DACD] hover:bg-[#FAF5EF] hover:text-[#7A0C1E] shadow-sm transition-all cursor-pointer"
             title="Back to Coupons"
           >
             <FiArrowLeft className="w-5 h-5" />
@@ -128,7 +128,7 @@ const AddCoupon = () => {
                 placeholder="e.g. WELCOME20"
                 value={formData.code}
                 onChange={handleChange}
-                className="w-full pl-11 pr-4 py-3 rounded-2xl bg-[#F2E6DA] text-sm font-mono font-black text-gray-900 border border-[#E8DACD] focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all uppercase tracking-wider"
+                className="w-full pl-11 pr-4 py-3 rounded-2xl bg-[#FAF5EF] text-sm font-mono font-black text-gray-900 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all uppercase tracking-wider"
               />
             </div>
           </div>
@@ -143,7 +143,7 @@ const AddCoupon = () => {
               required
               value={formData.type}
               onChange={handleChange}
-              className="w-full px-4 py-3 rounded-2xl bg-[#F2E6DA] text-sm font-bold text-gray-800 border border-[#E8DACD] focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all cursor-pointer"
+              className="w-full px-4 py-3 rounded-2xl bg-[#FAF5EF] text-sm font-bold text-gray-800 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all cursor-pointer"
             >
               <option value="percentage">Percentage Discount (%)</option>
               <option value="fixed">Fixed Rupee Discount (₹)</option>
@@ -171,7 +171,7 @@ const AddCoupon = () => {
                 placeholder={formData.type === 'percentage' ? '20' : '500'}
                 value={formData.value}
                 onChange={handleChange}
-                className="w-full pl-11 pr-4 py-3 rounded-2xl bg-[#F2E6DA] text-sm font-semibold text-gray-800 border border-[#E8DACD] focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all"
+                className="w-full pl-11 pr-4 py-3 rounded-2xl bg-[#FAF5EF] text-sm font-semibold text-gray-800 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all"
               />
             </div>
           </div>
@@ -192,7 +192,7 @@ const AddCoupon = () => {
                 placeholder={formData.type === 'fixed' ? 'N/A for fixed discount' : 'Optional max cap (e.g. 1000)'}
                 value={formData.maximum_discount}
                 onChange={handleChange}
-                className="w-full pl-11 pr-4 py-3 rounded-2xl bg-[#F2E6DA] text-sm font-semibold text-gray-800 border border-[#E8DACD] focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all disabled:opacity-50"
+                className="w-full pl-11 pr-4 py-3 rounded-2xl bg-[#FAF5EF] text-sm font-semibold text-gray-800 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all disabled:opacity-50"
               />
             </div>
           </div>
@@ -215,7 +215,7 @@ const AddCoupon = () => {
                 placeholder="0"
                 value={formData.minimum_amount}
                 onChange={handleChange}
-                className="w-full pl-11 pr-4 py-3 rounded-2xl bg-[#F2E6DA] text-sm font-semibold text-gray-800 border border-[#E8DACD] focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all"
+                className="w-full pl-11 pr-4 py-3 rounded-2xl bg-[#FAF5EF] text-sm font-semibold text-gray-800 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all"
               />
             </div>
           </div>
@@ -232,7 +232,7 @@ const AddCoupon = () => {
               placeholder="Unlimited if blank"
               value={formData.usage_limit}
               onChange={handleChange}
-              className="w-full px-4 py-3 rounded-2xl bg-[#F2E6DA] text-sm font-semibold text-gray-800 border border-[#E8DACD] focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all"
+              className="w-full px-4 py-3 rounded-2xl bg-[#FAF5EF] text-sm font-semibold text-gray-800 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all"
             />
           </div>
 
@@ -248,7 +248,7 @@ const AddCoupon = () => {
               placeholder="1"
               value={formData.per_user_limit}
               onChange={handleChange}
-              className="w-full px-4 py-3 rounded-2xl bg-[#F2E6DA] text-sm font-semibold text-gray-800 border border-[#E8DACD] focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all"
+              className="w-full px-4 py-3 rounded-2xl bg-[#FAF5EF] text-sm font-semibold text-gray-800 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all"
             />
           </div>
         </div>
@@ -267,7 +267,7 @@ const AddCoupon = () => {
                 name="expiry_date"
                 value={formData.expiry_date}
                 onChange={handleChange}
-                className="w-full pl-11 pr-4 py-3 rounded-2xl bg-[#F2E6DA] text-sm font-semibold text-gray-800 border border-[#E8DACD] focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all cursor-pointer"
+                className="w-full pl-11 pr-4 py-3 rounded-2xl bg-[#FAF5EF] text-sm font-semibold text-gray-800 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all cursor-pointer"
               />
             </div>
           </div>
@@ -281,7 +281,7 @@ const AddCoupon = () => {
               name="status"
               value={formData.status}
               onChange={handleChange}
-              className="w-full px-4 py-3 rounded-2xl bg-[#F2E6DA] text-sm font-bold text-gray-800 border border-[#E8DACD] focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all cursor-pointer"
+              className="w-full px-4 py-3 rounded-2xl bg-[#FAF5EF] text-sm font-bold text-gray-800 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all cursor-pointer"
             >
               <option value="active">Active</option>
               <option value="inactive">Inactive</option>
@@ -294,7 +294,7 @@ const AddCoupon = () => {
           <button
             type="button"
             onClick={() => navigate('/coupons')}
-            className="px-6 py-3 rounded-2xl bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold text-xs transition-all cursor-pointer"
+            className="px-6 py-3 rounded-2xl bg-[#FAF5EF] border border-[#E8DACD] text-[#7A0C1E] font-black text-xs hover:bg-[#E8DACD] transition-all cursor-pointer"
           >
             Cancel
           </button>
@@ -302,7 +302,7 @@ const AddCoupon = () => {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="flex items-center gap-2 px-7 py-3 rounded-2xl bg-[#7A0C1E] hover:bg-[#5F0917] text-white font-black text-xs shadow-md shadow-red-900/10 transition-all cursor-pointer disabled:opacity-50"
+            className="flex items-center gap-2 px-7 py-3 rounded-2xl bg-[#7A0C1E] hover:bg-[#5F0917] text-white font-black text-xs shadow-md transition-all cursor-pointer disabled:opacity-50"
           >
             {isSubmitting ? (
               <>

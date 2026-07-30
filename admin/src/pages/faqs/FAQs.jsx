@@ -89,7 +89,7 @@ const FAQs = () => {
       if (response.data?.success) {
         toast.success(`FAQ status updated to ${newStatus.toUpperCase()}`);
         setFaqs((prev) =>
-          prev.map((f) => (f.id === faqId ? { ...f, status: newStatus } : f))
+          prev.map((f) => ((f.id || f._id) === faqId ? { ...f, status: newStatus } : f))
         );
       }
     } catch (error) {
@@ -148,7 +148,7 @@ const FAQs = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-2xl bg-[#7A0C1E]/20 text-[#2B1B17]">
+            <div className="p-2.5 rounded-2xl bg-[#FAF5EF] text-[#7A0C1E] border border-[#E8DACD]">
               <FiHelpCircle className="w-6 h-6 text-[#7A0C1E]" />
             </div>
             <h2 className="text-2xl font-black text-gray-900 tracking-tight">
@@ -162,7 +162,7 @@ const FAQs = () => {
 
         <button
           onClick={() => navigate('/faqs/add')}
-          className="btn-primary py-3 px-6 rounded-2xl font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-md cursor-pointer transition-all hover:scale-[1.02] shrink-0"
+          className="bg-[#7A0C1E] hover:bg-[#5F0917] text-white py-3 px-6 rounded-2xl font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-md cursor-pointer transition-all hover:scale-[1.02] shrink-0"
         >
           <FiPlus className="w-4 h-4" />
           <span>Add New FAQ</span>
@@ -177,7 +177,7 @@ const FAQs = () => {
             <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Total FAQs</p>
             <h3 className="text-2xl font-black text-gray-900 mt-1">{totalItems}</h3>
           </div>
-          <div className="p-3 rounded-2xl bg-purple-50 text-purple-600">
+          <div className="p-3 rounded-2xl bg-[#FAF5EF] text-[#7A0C1E]">
             <FiHelpCircle className="w-5 h-5" />
           </div>
         </div>
@@ -188,7 +188,7 @@ const FAQs = () => {
             <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Active</p>
             <h3 className="text-2xl font-black text-gray-900 mt-1">{activeCount}</h3>
           </div>
-          <div className="p-3 rounded-2xl bg-[#E8DACD]/40 text-[#1E7741]">
+          <div className="p-3 rounded-2xl bg-[#FAF5EF] text-[#5F0917]">
             <FiCheckCircle className="w-5 h-5" />
           </div>
         </div>
@@ -199,7 +199,7 @@ const FAQs = () => {
             <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Inactive</p>
             <h3 className="text-2xl font-black text-gray-900 mt-1">{inactiveCount}</h3>
           </div>
-          <div className="p-3 rounded-2xl bg-amber-50 text-amber-600">
+          <div className="p-3 rounded-2xl bg-[#F2E6DA]/40 text-[#7A0C1E]">
             <FiXCircle className="w-5 h-5" />
           </div>
         </div>
@@ -210,7 +210,7 @@ const FAQs = () => {
             <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Categories</p>
             <h3 className="text-2xl font-black text-gray-900 mt-1">{uniqueCategories.length || 1}</h3>
           </div>
-          <div className="p-3 rounded-2xl bg-[#5F0917]/30 text-[#D96B3B]">
+          <div className="p-3 rounded-2xl bg-[#FAF5EF] text-[#A87B39]">
             <FiGrid className="w-5 h-5" />
           </div>
         </div>
@@ -229,13 +229,13 @@ const FAQs = () => {
               setSearchTerm(e.target.value);
               setCurrentPage(1);
             }}
-            className="w-full pl-11 pr-4 py-2.5 rounded-full bg-[#F2E6DA] text-xs font-semibold text-gray-700 border-none focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all"
+            className="w-full pl-11 pr-4 py-2.5 rounded-full bg-[#FAF5EF] text-xs font-semibold text-gray-700 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all"
           />
         </div>
 
         {/* Category Filter */}
         <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
-          <div className="flex items-center gap-2 bg-[#F2E6DA] px-4 py-2.5 rounded-full text-xs font-bold text-gray-600">
+          <div className="flex items-center gap-2 bg-[#FAF5EF] px-4 py-2.5 rounded-full text-xs font-bold text-gray-600 border border-[#E8DACD]">
             <FiFilter className="w-3.5 h-3.5 text-gray-400" />
             <span>Category:</span>
             <select
@@ -273,21 +273,22 @@ const FAQs = () => {
             </div>
           ) : (
             filteredFaqs.map((faq) => {
-              const isExpanded = expandedId === faq.id;
+              const faqId = faq.id || faq._id;
+              const isExpanded = expandedId === faqId;
               const isActive = faq.status === 'active';
 
               return (
                 <div
-                  key={faq.id}
+                  key={faqId}
                   className={`rounded-2xl border transition-all duration-200 overflow-hidden ${
                     isExpanded
-                      ? 'border-[#7A0C1E] bg-[#F2E6DA]/50 shadow-xs'
-                      : 'border-[#E8DACD] bg-white hover:border-[#E8DACD]'
+                      ? 'border-[#7A0C1E] bg-[#FAF5EF]/50 shadow-xs'
+                      : 'border-[#E8DACD] bg-white hover:border-[#7A0C1E]/50'
                   }`}
                 >
                   {/* Item Accordion Header */}
                   <div className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 cursor-pointer"
-                    onClick={() => setExpandedId(isExpanded ? null : faq.id)}
+                    onClick={() => setExpandedId(isExpanded ? null : faqId)}
                   >
                     <div className="flex items-start gap-3 flex-1">
                       <div className="mt-0.5 text-gray-400">
@@ -299,7 +300,7 @@ const FAQs = () => {
                         </h4>
                         <div className="flex items-center gap-2 mt-1.5 flex-wrap">
                           {faq.category && (
-                            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-[#FAF5EF] text-[#2B1B17]">
+                            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-[#FAF5EF] text-[#7A0C1E]">
                               {faq.category}
                             </span>
                           )}
@@ -315,10 +316,10 @@ const FAQs = () => {
                       {/* Active/Inactive Status Toggle */}
                       <button
                         type="button"
-                        onClick={() => handleStatusToggle(faq.id, faq.status)}
+                        onClick={() => handleStatusToggle(faqId, faq.status)}
                         className={`px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wider border transition-all cursor-pointer ${
                           isActive
-                            ? 'bg-[#E8DACD]/60 text-[#1E7741] border-[#E8DACD]'
+                            ? 'bg-[#FAF5EF] text-[#5F0917] border-[#E8DACD]'
                             : 'bg-amber-100 text-amber-700 border-amber-200'
                         }`}
                       >
@@ -327,25 +328,25 @@ const FAQs = () => {
 
                       {/* View Button */}
                       <button
-                        onClick={() => navigate(`/faqs/${faq.id}`)}
+                        onClick={() => navigate(`/faqs/${faqId}`)}
                         title="View FAQ Details"
-                        className="p-2 rounded-xl bg-gray-100 text-gray-600 hover:bg-[#FAF5EF] hover:text-[#2B1B17] transition-all cursor-pointer"
+                        className="p-2 rounded-xl bg-[#FAF5EF] text-[#7A0C1E] hover:bg-[#7A0C1E] hover:text-white transition-all cursor-pointer"
                       >
                         <FiEye className="w-4 h-4" />
                       </button>
 
                       {/* Edit Button */}
                       <button
-                        onClick={() => navigate(`/faqs/edit/${faq.id}`)}
+                        onClick={() => navigate(`/faqs/edit/${faqId}`)}
                         title="Edit FAQ"
-                        className="p-2 rounded-xl bg-gray-100 text-gray-600 hover:bg-[#5F0917]/40 hover:text-[#2B1B17] transition-all cursor-pointer"
+                        className="p-2 rounded-xl bg-[#FAF5EF] text-[#7A0C1E] hover:bg-[#7A0C1E] hover:text-white transition-all cursor-pointer"
                       >
                         <FiEdit2 className="w-4 h-4" />
                       </button>
 
                       {/* Delete Button */}
                       <button
-                        onClick={() => openDeleteModal(faq.id, faq.question)}
+                        onClick={() => openDeleteModal(faqId, faq.question)}
                         title="Delete FAQ"
                         className="p-2 rounded-xl bg-red-50 text-red-500 hover:bg-red-500 hover:text-white transition-all cursor-pointer"
                       >
@@ -368,7 +369,7 @@ const FAQs = () => {
 
         {/* Pagination Footer */}
         {totalPages > 1 && (
-          <div className="mt-6 pt-4 border-t border-[#E8DACD] flex items-center justify-between text-xs font-bold text-gray-500">
+          <div className="mt-6 pt-4 border-t border-[#E8DACD] flex items-center justify-between text-xs font-bold text-gray-600">
             <span>
               Showing page {currentPage} of {totalPages} ({totalItems} FAQs)
             </span>
@@ -376,17 +377,17 @@ const FAQs = () => {
               <button
                 disabled={currentPage === 1}
                 onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                className="p-2 rounded-xl bg-gray-100 text-gray-700 disabled:opacity-40 hover:bg-[#FAF5EF] hover:text-[#2B1B17] transition-all cursor-pointer"
+                className="p-2 rounded-xl bg-[#FAF5EF] text-[#7A0C1E] border border-[#E8DACD] disabled:opacity-40 hover:bg-[#7A0C1E] hover:text-white transition-all cursor-pointer"
               >
                 <FiChevronLeft className="w-4 h-4" />
               </button>
-              <span className="px-3 py-1 rounded-lg bg-gray-100 text-gray-800 font-black">
+              <span className="px-3 py-1 rounded-lg bg-[#7A0C1E] text-white font-black">
                 {currentPage}
               </span>
               <button
                 disabled={currentPage === totalPages}
                 onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-                className="p-2 rounded-xl bg-gray-100 text-gray-700 disabled:opacity-40 hover:bg-[#FAF5EF] hover:text-[#2B1B17] transition-all cursor-pointer"
+                className="p-2 rounded-xl bg-[#FAF5EF] text-[#7A0C1E] border border-[#E8DACD] disabled:opacity-40 hover:bg-[#7A0C1E] hover:text-white transition-all cursor-pointer"
               >
                 <FiChevronRight className="w-4 h-4" />
               </button>

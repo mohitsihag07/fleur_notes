@@ -147,11 +147,11 @@ export function FloatingSupportChat() {
           <div className="bg-[#7A0C1E] text-white p-4 flex items-center justify-between shadow-md">
             <div className="flex items-center gap-3">
               <div className="w-9 h-9 rounded-full bg-white/10 border border-white/20 flex items-center justify-center font-serif-luxury font-bold text-xs relative">
-                FN
+                C
                 <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-400 border-2 border-[#7A0C1E] rounded-full animate-pulse" />
               </div>
               <div>
-                <h4 className="text-xs font-bold font-serif-luxury tracking-wide">Fleur Notes Support</h4>
+                <h4 className="text-xs font-bold font-serif-luxury tracking-wide">Caflore Support</h4>
                 <span className="text-[10px] text-green-300 font-medium">Online • Live Assistant</span>
               </div>
             </div>
@@ -168,7 +168,7 @@ export function FloatingSupportChat() {
             {messages.length === 0 ? (
               <div className="text-center py-8 text-xs text-gray-400 space-y-2">
                 <Sparkles className="w-6 h-6 mx-auto text-[#7A0C1E]/40" />
-                <p>Hello! Welcome to Fleur Notes Support. 🌸</p>
+                <p>Hello! Welcome to Caflore Support. 🌸</p>
                 <p className="text-[11px] text-gray-400">Ask us anything about products, orders, or gifts!</p>
               </div>
             ) : (
@@ -193,7 +193,7 @@ export function FloatingSupportChat() {
                   <div key={msg.id || Math.random()} className={`flex gap-2 ${isSupport ? 'justify-start items-start' : 'justify-end items-end'}`}>
                     {isSupport && (
                       <div className="w-6 h-6 rounded-full bg-[#7A0C1E]/10 border border-[#A87B39]/20 flex items-center justify-center text-[#7A0C1E] shrink-0 font-serif-luxury text-[9px] font-bold">
-                        FN
+                        C
                       </div>
                     )}
                     <div

@@ -102,18 +102,20 @@ const AddBanner = () => {
           to="/banners"
           className="inline-flex items-center gap-2 text-xs font-black text-gray-600 hover:text-[#7A0C1E] transition-colors"
         >
-          <FiArrowLeft className="w-4 h-4" />
+          <FiArrowLeft className="w-4 h-4 text-[#7A0C1E]" />
           <span>Back to Banners</span>
         </Link>
       </div>
 
-      <div className="bg-[#F2E6DA] rounded-3xl p-6 border border-[#E8DACD] flex items-center justify-between">
+      <div className="bg-white rounded-3xl p-6 border border-[#E8DACD] shadow-sm flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-black text-gray-900 tracking-tight flex items-center gap-2">
-            <FiLayers className="w-6 h-6 text-[#7A0C1E]" />
+          <h2 className="text-2xl font-black text-gray-900 tracking-tight flex items-center gap-3">
+            <div className="p-2.5 rounded-2xl bg-[#FAF5EF] text-[#7A0C1E]">
+              <FiLayers className="w-6 h-6 text-[#7A0C1E]" />
+            </div>
             <span>Create Promotional Banner</span>
           </h2>
-          <p className="text-xs font-semibold text-gray-500 mt-1">
+          <p className="text-xs font-semibold text-gray-500 mt-1 pl-12">
             Add a new promotional hero slide or CTA banner to the store.
           </p>
         </div>
@@ -133,16 +135,16 @@ const AddBanner = () => {
           <label className="block text-xs font-black text-gray-800 uppercase tracking-wider mb-2">
             Banner Image <span className="text-red-500">*</span>
           </label>
-          <div className="relative border-2 border-dashed border-[#E8DACD] rounded-3xl p-6 text-center hover:border-[#7A0C1E] transition-colors bg-[#F2E6DA]/50">
+          <div className="relative border-2 border-dashed border-[#E8DACD] rounded-3xl p-6 text-center hover:border-[#7A0C1E] transition-colors bg-[#FAF5EF]/40">
             {previewUrl ? (
               <div className="space-y-4">
                 <img
                   src={previewUrl}
                   alt="Banner preview"
-                  className="max-h-60 w-full object-cover rounded-2xl shadow-sm mx-auto"
+                  className="max-h-60 w-full object-cover rounded-2xl shadow-sm mx-auto border border-[#E8DACD]"
                 />
                 <div className="flex justify-center gap-3">
-                  <label className="px-4 py-2 bg-white text-[#2B1B17] rounded-full text-xs font-black shadow-sm cursor-pointer hover:bg-[#FAF5EF]">
+                  <label className="px-4 py-2 bg-white text-[#7A0C1E] rounded-full text-xs font-black shadow-sm cursor-pointer hover:bg-[#FAF5EF] border border-[#E8DACD]">
                     <span>Change Image</span>
                     <input type="file" accept="image/*" onChange={handleFileSelect} className="hidden" />
                   </label>
@@ -172,7 +174,7 @@ const AddBanner = () => {
                 value={formData.title}
                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                 placeholder="e.g. Beautiful things for every moment."
-                className="w-full pl-11 pr-4 py-3 bg-[#F2E6DA] rounded-2xl text-xs font-bold text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E]"
+                className="w-full pl-11 pr-4 py-3 bg-[#FAF5EF] rounded-2xl text-xs font-bold text-gray-800 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E]"
               />
             </div>
           </div>
@@ -188,7 +190,7 @@ const AddBanner = () => {
                 value={formData.tagline}
                 onChange={(e) => setFormData({ ...formData, tagline: e.target.value })}
                 placeholder="e.g. ROMANTICISE EVERY DAY"
-                className="w-full pl-11 pr-4 py-3 bg-[#F2E6DA] rounded-2xl text-xs font-bold text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E]"
+                className="w-full pl-11 pr-4 py-3 bg-[#FAF5EF] rounded-2xl text-xs font-bold text-gray-800 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E]"
               />
             </div>
           </div>
@@ -204,7 +206,7 @@ const AddBanner = () => {
             value={formData.description}
             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
             placeholder="e.g. Discover handcrafted products that bring beauty, warmth, and meaning to your life."
-            className="w-full p-4 bg-[#F2E6DA] rounded-2xl text-xs font-bold text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E]"
+            className="w-full p-4 bg-[#FAF5EF] rounded-2xl text-xs font-bold text-gray-800 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E]"
           />
         </div>
 
@@ -219,7 +221,7 @@ const AddBanner = () => {
               value={formData.primary_cta_text}
               onChange={(e) => setFormData({ ...formData, primary_cta_text: e.target.value })}
               placeholder="e.g. Shop Now"
-              className="w-full px-4 py-3 bg-[#F2E6DA] rounded-2xl text-xs font-bold text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E]"
+              className="w-full px-4 py-3 bg-[#FAF5EF] rounded-2xl text-xs font-bold text-gray-800 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E]"
             />
           </div>
 
@@ -234,7 +236,7 @@ const AddBanner = () => {
                 value={formData.primary_cta_link}
                 onChange={(e) => setFormData({ ...formData, primary_cta_link: e.target.value })}
                 placeholder="e.g. /shop"
-                className="w-full pl-11 pr-4 py-3 bg-[#F2E6DA] rounded-2xl text-xs font-bold text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E]"
+                className="w-full pl-11 pr-4 py-3 bg-[#FAF5EF] rounded-2xl text-xs font-bold text-gray-800 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E]"
               />
             </div>
           </div>
@@ -251,7 +253,7 @@ const AddBanner = () => {
               value={formData.secondary_cta_text}
               onChange={(e) => setFormData({ ...formData, secondary_cta_text: e.target.value })}
               placeholder="e.g. Explore Collection"
-              className="w-full px-4 py-3 bg-[#F2E6DA] rounded-2xl text-xs font-bold text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E]"
+              className="w-full px-4 py-3 bg-[#FAF5EF] rounded-2xl text-xs font-bold text-gray-800 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E]"
             />
           </div>
 
@@ -266,7 +268,7 @@ const AddBanner = () => {
                 value={formData.secondary_cta_link}
                 onChange={(e) => setFormData({ ...formData, secondary_cta_link: e.target.value })}
                 placeholder="e.g. /categories"
-                className="w-full pl-11 pr-4 py-3 bg-[#F2E6DA] rounded-2xl text-xs font-bold text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E]"
+                className="w-full pl-11 pr-4 py-3 bg-[#FAF5EF] rounded-2xl text-xs font-bold text-gray-800 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E]"
               />
             </div>
           </div>
@@ -281,7 +283,7 @@ const AddBanner = () => {
             <select
               value={formData.type}
               onChange={(e) => setFormData({ ...formData, type: e.target.value })}
-              className="w-full px-4 py-3 bg-[#F2E6DA] rounded-2xl text-xs font-bold text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] cursor-pointer"
+              className="w-full px-4 py-3 bg-[#FAF5EF] rounded-2xl text-xs font-bold text-gray-800 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] cursor-pointer"
             >
               <option value="home">Home Page</option>
               <option value="shop">Shop Page</option>
@@ -300,7 +302,7 @@ const AddBanner = () => {
               value={formData.display_order}
               onChange={(e) => setFormData({ ...formData, display_order: e.target.value })}
               placeholder="0"
-              className="w-full px-4 py-3 bg-[#F2E6DA] rounded-2xl text-xs font-bold text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E]"
+              className="w-full px-4 py-3 bg-[#FAF5EF] rounded-2xl text-xs font-bold text-gray-800 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E]"
             />
           </div>
 
@@ -310,7 +312,7 @@ const AddBanner = () => {
             </label>
             <div className="flex gap-4">
               <label className={`flex items-center gap-2 px-5 py-2.5 rounded-2xl border text-xs font-black cursor-pointer transition-colors ${
-                formData.status === 'active' ? 'bg-[#FAF5EF] border-[#2B1B17] text-[#2B1B17]' : 'bg-gray-50 border-[#E8DACD] text-gray-500'
+                formData.status === 'active' ? 'bg-[#FAF5EF] border-[#E8DACD] text-[#5F0917]' : 'bg-gray-50 border-gray-200 text-gray-500'
               }`}>
                 <input
                   type="radio"
@@ -320,12 +322,12 @@ const AddBanner = () => {
                   onChange={() => setFormData({ ...formData, status: 'active' })}
                   className="hidden"
                 />
-                  <FiCheckCircle className="w-4 h-4" />
+                  <FiCheckCircle className="w-4 h-4 text-[#5F0917]" />
                 <span>Active</span>
               </label>
 
               <label className={`flex items-center gap-2 px-5 py-2.5 rounded-2xl border text-xs font-black cursor-pointer transition-colors ${
-                formData.status === 'inactive' ? 'bg-gray-200 border-gray-400 text-gray-800' : 'bg-gray-50 border-[#E8DACD] text-gray-500'
+                formData.status === 'inactive' ? 'bg-gray-200 border-gray-300 text-gray-800' : 'bg-gray-50 border-gray-200 text-gray-500'
               }`}>
                 <input
                   type="radio"
@@ -345,7 +347,7 @@ const AddBanner = () => {
         <div className="pt-4 border-t border-[#E8DACD] flex items-center justify-end gap-3">
           <Link
             to="/banners"
-            className="px-6 py-3 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-black uppercase"
+            className="px-6 py-3 rounded-full bg-[#FAF5EF] hover:bg-[#E8DACD] text-[#7A0C1E] text-xs font-black uppercase border border-[#E8DACD]"
           >
             Cancel
           </Link>

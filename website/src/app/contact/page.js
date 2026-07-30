@@ -10,7 +10,10 @@ import { ValueProps } from '@/components/home/ValueProps';
 import { bannerService } from '@/services/bannerService';
 import { getBackendURL } from '@/services/api';
 
+import { useSettings } from '@/context/SettingsContext';
+
 export default function ContactPage() {
+  const { contactEmail, contactPhone, storeAddress, businessHours } = useSettings();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -42,7 +45,11 @@ export default function ContactPage() {
             title: b.title || "Let's Create Something Beautiful Together",
             description: b.description || "Have a question, need help, or just want to say hello? We're here for you.",
             tagline: b.tagline || "WE'D LOVE TO HEAR FROM YOU",
-            image: imgUrl
+            image: imgUrl,
+            primary_cta_text: b.primary_cta_text || b.button_text,
+            primary_cta_link: b.primary_cta_link || b.button_link,
+            secondary_cta_text: b.secondary_cta_text,
+            secondary_cta_link: b.secondary_cta_link,
           });
         }
       } catch (error) {
@@ -65,65 +72,87 @@ export default function ContactPage() {
     {
       icon: MapPin,
       title: 'Our Address',
-      line1: '123 Greenway Lane, Suite 101',
-      line2: 'Los Angeles, CA 90024, USA'
+      line1: storeAddress || '123 Blossom Avenue, Suite 400, New York, NY 10001',
+      line2: null
     },
     {
       icon: Mail,
       title: 'Email Us',
-      line1: 'hello@fleurnotes.com',
+      line1: contactEmail || 'hello@caflore.com',
       line2: null
     },
     {
       icon: Phone,
       title: 'Call Us',
-      line1: '+1 (555) 123-4567',
+      line1: contactPhone || '+1 (800) 555-0199',
       line2: null
     },
     {
       icon: Clock,
       title: 'Business Hours',
-      line1: 'Mon – Fri: 9:00 AM – 6:00 PM (EST)',
-      line2: 'Sat – Sun: 10:00 AM – 4:00 PM (EST)'
+      line1: businessHours ? (businessHours.includes('\n') ? businessHours.split('\n')[0] : businessHours) : 'Mon – Fri: 9:00 AM – 6:00 PM (EST)',
+      line2: businessHours && businessHours.includes('\n') ? businessHours.split('\n')[1] : null
     }
   ];
 
   return (
     <div className="bg-[#FAF5EF] min-h-screen">
       {/* Hero Header Banner (Full Screen Width) */}
-      <section className="relative overflow-hidden w-full h-[70vh] sm:h-[80vh] min-h-[580px] border-b border-[#E8DACD]/40 bg-[#FAF5EF] flex items-center">
+      <section className="relative overflow-hidden w-full min-h-[320px] sm:min-h-[380px] lg:min-h-[440px] border-b border-[#E8DACD]/40 bg-[#FAF5EF] flex items-center">
         {/* Background Image */}
         <div className="absolute inset-0 z-0">
           <Image
             src={banner.image}
-            alt={banner.title}
+            alt={banner.title || 'Contact Banner'}
             fill
             unoptimized
             className="object-cover"
             priority
           />
+          {/* Subtle dark gradient overlay for optimal text contrast */}
+          <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/55 to-black/30" />
         </div>
 
         {/* Hero Content (Layered directly over the banner) */}
-        <Container className="relative z-10 w-full">
-          <div className="max-w-xl md:max-w-2xl flex flex-col items-start space-y-4">
-            <div className="inline-flex items-center gap-2 text-xs font-bold tracking-widest text-[#7A0C1E] uppercase">
-              <Sparkles className="w-3.5 h-3.5 fill-[#7A0C1E]" />
-              <span>{banner.tagline}</span>
-            </div>
-            <h1 className="font-serif-luxury text-4xl sm:text-5xl font-bold text-[#7A0C1E] leading-tight tracking-tight">
-              {banner.title}
-            </h1>
-            <p className="text-base sm:text-lg text-black font-medium leading-relaxed max-w-lg">
-              {banner.description}
-            </p>
-            <div className="pt-2">
-              <a href="#contact-form">
-                <Button variant="primary" icon={Send} iconPosition="left" className="rounded-xl px-6 py-3 bg-[#7A0C1E] hover:bg-[#5F0917]">
-                  Send Us a Message
-                </Button>
-              </a>
-            </div>
+        <Container className="relative z-10 w-full py-10 sm:py-16">
+          <div className="max-w-xl md:max-w-2xl flex flex-col items-start space-y-3 sm:space-y-4 text-white">
+            {banner.tagline && (
+              <div className="inline-flex items-center gap-2 text-[10px] sm:text-xs font-bold tracking-widest text-[#FAF5EF] uppercase bg-black/40 backdrop-blur-xs px-3.5 py-1 rounded-full border border-white/20">
+                <Sparkles className="w-3.5 h-3.5 fill-[#FAF5EF]" />
+                <span>{banner.tagline}</span>
+              </div>
+            )}
+            {banner.title && (
+              <h1 className="font-serif-luxury text-3xl sm:text-4xl lg:text-5xl font-bold text-white leading-tight tracking-tight drop-shadow-md">
+                {banner.title}
+              </h1>
+            )}
+            {banner.description && (
+              <p className="text-xs sm:text-base lg:text-lg text-gray-100 font-medium leading-normal sm:leading-relaxed max-w-lg drop-shadow">
+                {banner.description}
+              </p>
+            )}
+
+            {/* Dynamic CTAs */}
+            {(banner.primary_cta_text || banner.secondary_cta_text) && (
+              <div className="pt-2 flex flex-wrap items-center gap-3">
+                {banner.primary_cta_text && (
+                  <a href={banner.primary_cta_link || '#contact-form'}>
+                    <Button variant="primary" icon={Send} iconPosition="left" className="rounded-xl px-6 py-3 bg-[#7A0C1E] hover:bg-[#5F0917] text-white">
+                      {banner.primary_cta_text}
+                    </Button>
+                  </a>
+                )}
+
+                {banner.secondary_cta_text && (
+                  <a href={banner.secondary_cta_link || '#'}>
+                    <Button variant="outline" className="rounded-xl px-6 py-3 bg-white/20 hover:bg-white/30 text-white border-white/40 backdrop-blur-xs">
+                      {banner.secondary_cta_text}
+                    </Button>
+                  </a>
+                )}
+              </div>
+            )}
           </div>
         </Container>
       </section>

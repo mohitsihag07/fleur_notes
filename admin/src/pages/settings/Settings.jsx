@@ -1,20 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  FiSettings, 
-  FiSave, 
-  FiShoppingBag, 
-  FiTruck, 
-  FiCreditCard, 
-  FiGlobe, 
+import useSettingsStore from '../../store/settingsStore';
+import {
+  FiSettings,
+  FiSave,
+  FiShoppingBag,
+  FiTruck,
+  FiCreditCard,
+  FiGlobe,
   FiLoader,
   FiUpload,
-  FiCheckCircle,
   FiMail,
   FiPhone,
   FiMapPin,
   FiDollarSign,
   FiPercent,
-  FiShield
+  FiShield,
+  FiClock
 } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import ApiInstance from '../../utils/ApiInstance';
@@ -26,11 +27,12 @@ const Settings = () => {
 
   // Settings state
   const [formData, setFormData] = useState({
-    site_name: 'Fleur Notes',
+    site_name: 'Caflore',
     site_tagline: 'Handcrafted Stationery & Gifts',
-    contact_email: 'hello@fleurnotes.com',
+    contact_email: 'hello@caflore.com',
     contact_phone: '+1 (800) 555-0199',
     store_address: '123 Blossom Avenue, Suite 400, New York, NY 10001',
+    business_hours: 'Mon – Fri: 9:00 AM – 6:00 PM (EST)\nSat – Sun: 10:00 AM – 4:00 PM (EST)',
     currency: 'INR (₹)',
     tax_rate: '18',
     flat_shipping_rate: '10.00',
@@ -38,10 +40,12 @@ const Settings = () => {
     enable_free_shipping: 'true',
     enable_stripe: 'true',
     enable_cod: 'true',
-    stripe_public_key: 'pk_test_sample_fleur_notes',
-    instagram_url: 'https://instagram.com/fleurnotes',
-    facebook_url: 'https://facebook.com/fleurnotes',
-    pinterest_url: 'https://pinterest.com/fleurnotes'
+    stripe_public_key: 'pk_test_sample_caflore',
+    instagram_url: 'https://instagram.com/caflore',
+    facebook_url: 'https://facebook.com/caflore',
+    pinterest_url: 'https://pinterest.com/caflore',
+    newsletter_title: 'Get 10% Off Your First Order!',
+    newsletter_subtitle: 'Join our newsletter for exclusive offers, new arrivals, and more.'
   });
 
   const [logoFile, setLogoFile] = useState(null);
@@ -113,6 +117,7 @@ const Settings = () => {
 
       if (response.data?.success) {
         toast.success('System settings updated successfully!');
+        useSettingsStore.getState().fetchSettings();
       }
     } catch (error) {
       console.error('Settings update error:', error);
@@ -135,7 +140,7 @@ const Settings = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-2xl bg-[#7A0C1E]/20 text-[#2B1B17]">
+            <div className="p-2.5 rounded-2xl bg-[#FAF5EF] text-[#7A0C1E]">
               <FiSettings className="w-6 h-6 text-[#7A0C1E]" />
             </div>
             <h2 className="text-2xl font-black text-gray-900 tracking-tight">
@@ -151,7 +156,7 @@ const Settings = () => {
           type="button"
           onClick={handleSubmit}
           disabled={isSubmitting || isLoading}
-          className="btn-primary py-3 px-6 rounded-2xl font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-md cursor-pointer disabled:opacity-50 transition-all hover:scale-[1.01] shrink-0"
+          className="bg-[#7A0C1E] hover:bg-[#5F0917] text-white py-3 px-6 rounded-2xl font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-md cursor-pointer disabled:opacity-50 transition-all hover:scale-[1.01] shrink-0"
         >
           {isSubmitting ? (
             <>
@@ -176,11 +181,10 @@ const Settings = () => {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-3 px-6 py-3.5 rounded-2xl font-black text-xs transition-all cursor-pointer whitespace-nowrap ${
-                isActive
-                  ? 'bg-[#FAF5EF] text-[#2B1B17] shadow-sm scale-[1.01]'
-                  : 'bg-[#F2E6DA] text-gray-600 hover:bg-gray-200'
-              }`}
+              className={`flex items-center gap-3 px-6 py-3.5 rounded-2xl font-black text-xs transition-all cursor-pointer whitespace-nowrap ${isActive
+                  ? 'bg-[#7A0C1E] text-white shadow-sm scale-[1.01]'
+                  : 'bg-[#FAF5EF] text-gray-700 hover:bg-[#E8DACD]'
+                }`}
             >
               <Icon className="w-4 h-4" />
               <span>{tab.label}</span>
@@ -220,7 +224,7 @@ const Settings = () => {
                       name="site_name"
                       value={formData.site_name}
                       onChange={handleChange}
-                      className="w-full px-4 py-3 rounded-2xl bg-[#F2E6DA] text-xs font-semibold text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E]"
+                      className="w-full px-4 py-3 rounded-2xl bg-[#FAF5EF] text-xs font-semibold text-gray-800 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E]"
                     />
                   </div>
 
@@ -233,7 +237,7 @@ const Settings = () => {
                       name="site_tagline"
                       value={formData.site_tagline}
                       onChange={handleChange}
-                      className="w-full px-4 py-3 rounded-2xl bg-[#F2E6DA] text-xs font-semibold text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E]"
+                      className="w-full px-4 py-3 rounded-2xl bg-[#FAF5EF] text-xs font-semibold text-gray-800 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E]"
                     />
                   </div>
                 </div>
@@ -250,7 +254,7 @@ const Settings = () => {
                         name="contact_email"
                         value={formData.contact_email}
                         onChange={handleChange}
-                        className="w-full pl-11 pr-4 py-3 rounded-2xl bg-[#F2E6DA] text-xs font-semibold text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E]"
+                        className="w-full pl-11 pr-4 py-3 rounded-2xl bg-[#FAF5EF] text-xs font-semibold text-gray-800 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E]"
                       />
                     </div>
                   </div>
@@ -266,7 +270,7 @@ const Settings = () => {
                         name="contact_phone"
                         value={formData.contact_phone}
                         onChange={handleChange}
-                        className="w-full pl-11 pr-4 py-3 rounded-2xl bg-[#F2E6DA] text-xs font-semibold text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E]"
+                        className="w-full pl-11 pr-4 py-3 rounded-2xl bg-[#FAF5EF] text-xs font-semibold text-gray-800 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E]"
                       />
                     </div>
                   </div>
@@ -279,11 +283,28 @@ const Settings = () => {
                   <div className="relative">
                     <FiMapPin className="absolute left-4 top-3.5 text-gray-400 w-4 h-4" />
                     <textarea
-                      rows="3"
+                      rows="2"
                       name="store_address"
                       value={formData.store_address}
                       onChange={handleChange}
-                      className="w-full pl-11 pr-4 py-3 rounded-2xl bg-[#F2E6DA] text-xs font-semibold text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] resize-y"
+                      className="w-full pl-11 pr-4 py-3 rounded-2xl bg-[#FAF5EF] text-xs font-semibold text-gray-800 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] resize-y"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-xs font-extrabold text-gray-700 uppercase tracking-wider">
+                    Business Operating Hours
+                  </label>
+                  <div className="relative">
+                    <FiClock className="absolute left-4 top-3.5 text-gray-400 w-4 h-4" />
+                    <textarea
+                      rows="2"
+                      name="business_hours"
+                      value={formData.business_hours}
+                      onChange={handleChange}
+                      placeholder="e.g. Mon – Fri: 9:00 AM – 6:00 PM (EST)"
+                      className="w-full pl-11 pr-4 py-3 rounded-2xl bg-[#FAF5EF] text-xs font-semibold text-gray-800 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] resize-y"
                     />
                   </div>
                 </div>
@@ -296,13 +317,49 @@ const Settings = () => {
                     name="currency"
                     value={formData.currency}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 rounded-2xl bg-[#F2E6DA] text-xs font-extrabold text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] cursor-pointer"
+                    className="w-full px-4 py-3 rounded-2xl bg-[#FAF5EF] text-xs font-extrabold text-gray-800 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] cursor-pointer"
                   >
                     <option value="USD ($)">USD ($) - US Dollar</option>
                     <option value="EUR (€)">EUR (€) - Euro</option>
                     <option value="GBP (£)">GBP (£) - British Pound</option>
                     <option value="INR (₹)">INR (₹) - Indian Rupee</option>
                   </select>
+                </div>
+
+                {/* Newsletter Banner Settings */}
+                <div className="pt-4 border-t border-[#E8DACD] space-y-4">
+                  <h4 className="text-xs font-black text-[#7A0C1E] uppercase tracking-wider">
+                    Website Newsletter Discount Banner
+                  </h4>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                    <div className="space-y-2">
+                      <label className="text-xs font-extrabold text-gray-700 uppercase tracking-wider">
+                        Newsletter Banner Heading
+                      </label>
+                      <input
+                        type="text"
+                        name="newsletter_title"
+                        value={formData.newsletter_title}
+                        onChange={handleChange}
+                        placeholder="Get 10% Off Your First Order!"
+                        className="w-full px-4 py-3 rounded-2xl bg-[#FAF5EF] text-xs font-semibold text-gray-800 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E]"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="text-xs font-extrabold text-gray-700 uppercase tracking-wider">
+                        Newsletter Subtitle / Description
+                      </label>
+                      <input
+                        type="text"
+                        name="newsletter_subtitle"
+                        value={formData.newsletter_subtitle}
+                        onChange={handleChange}
+                        placeholder="Join our newsletter for exclusive offers, new arrivals, and more."
+                        className="w-full px-4 py-3 rounded-2xl bg-[#FAF5EF] text-xs font-semibold text-gray-800 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E]"
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
             )}
@@ -330,7 +387,7 @@ const Settings = () => {
                         name="flat_shipping_rate"
                         value={formData.flat_shipping_rate}
                         onChange={handleChange}
-                        className="w-full pl-11 pr-4 py-3 rounded-2xl bg-[#F2E6DA] text-xs font-semibold text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E]"
+                        className="w-full pl-11 pr-4 py-3 rounded-2xl bg-[#FAF5EF] text-xs font-semibold text-gray-800 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E]"
                       />
                     </div>
                   </div>
@@ -347,13 +404,13 @@ const Settings = () => {
                         name="free_shipping_threshold"
                         value={formData.free_shipping_threshold}
                         onChange={handleChange}
-                        className="w-full pl-11 pr-4 py-3 rounded-2xl bg-[#F2E6DA] text-xs font-semibold text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E]"
+                        className="w-full pl-11 pr-4 py-3 rounded-2xl bg-[#FAF5EF] text-xs font-semibold text-gray-800 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E]"
                       />
                     </div>
                   </div>
                 </div>
 
-                <div className="p-4 rounded-2xl bg-[#F2E6DA] border border-[#E8DACD] flex items-center justify-between">
+                <div className="p-4 rounded-2xl bg-[#FAF5EF] border border-[#E8DACD] flex items-center justify-between">
                   <div>
                     <h4 className="font-extrabold text-gray-900 text-xs">Enable Free Shipping Rule</h4>
                     <p className="text-[11px] text-gray-500 font-medium">Automatically waive delivery fee when order total exceeds threshold.</p>
@@ -394,12 +451,12 @@ const Settings = () => {
                       name="tax_rate"
                       value={formData.tax_rate}
                       onChange={handleChange}
-                      className="w-full pl-11 pr-4 py-3 rounded-2xl bg-[#F2E6DA] text-xs font-semibold text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E]"
+                      className="w-full pl-11 pr-4 py-3 rounded-2xl bg-[#FAF5EF] text-xs font-semibold text-gray-800 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E]"
                     />
                   </div>
                 </div>
 
-                <div className="p-4 rounded-2xl bg-[#F2E6DA] border border-[#E8DACD] flex items-center justify-between">
+                <div className="p-4 rounded-2xl bg-[#FAF5EF] border border-[#E8DACD] flex items-center justify-between">
                   <div>
                     <h4 className="font-extrabold text-gray-900 text-xs">Enable Cash on Delivery (COD)</h4>
                     <p className="text-[11px] text-gray-500 font-medium">Allow customers to pay in cash upon product delivery.</p>
@@ -416,7 +473,7 @@ const Settings = () => {
                   </label>
                 </div>
 
-                <div className="p-4 rounded-2xl bg-[#F2E6DA] border border-[#E8DACD] flex items-center justify-between">
+                <div className="p-4 rounded-2xl bg-[#FAF5EF] border border-[#E8DACD] flex items-center justify-between">
                   <div>
                     <h4 className="font-extrabold text-gray-900 text-xs">Enable Online Credit/Debit Card Checkout</h4>
                     <p className="text-[11px] text-gray-500 font-medium">Accept online payments securely via Stripe gateway.</p>
@@ -442,7 +499,7 @@ const Settings = () => {
                     name="stripe_public_key"
                     value={formData.stripe_public_key}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 rounded-2xl bg-[#F2E6DA] text-xs font-mono font-bold text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E]"
+                    className="w-full px-4 py-3 rounded-2xl bg-[#FAF5EF] text-xs font-mono font-bold text-gray-800 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E]"
                   />
                 </div>
               </div>
@@ -470,10 +527,10 @@ const Settings = () => {
                       </div>
                     ) : (
                       <div className="w-16 h-16 rounded-2xl bg-[#7A0C1E] text-white font-black text-xl flex items-center justify-center">
-                        FN
+                        C
                       </div>
                     )}
-                    <label className="btn-primary py-2.5 px-4 rounded-2xl font-black text-xs cursor-pointer flex items-center gap-2">
+                    <label className="py-2.5 px-4 rounded-2xl bg-[#7A0C1E] hover:bg-[#5F0917] text-white font-black text-xs cursor-pointer flex items-center gap-2 transition-all">
                       <FiUpload className="w-4 h-4" />
                       <span>Upload New Logo</span>
                       <input
@@ -496,7 +553,7 @@ const Settings = () => {
                       name="instagram_url"
                       value={formData.instagram_url}
                       onChange={handleChange}
-                      className="w-full px-4 py-3 rounded-2xl bg-[#F2E6DA] text-xs font-semibold text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E]"
+                      className="w-full px-4 py-3 rounded-2xl bg-[#FAF5EF] text-xs font-semibold text-gray-800 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E]"
                     />
                   </div>
 
@@ -509,7 +566,7 @@ const Settings = () => {
                       name="facebook_url"
                       value={formData.facebook_url}
                       onChange={handleChange}
-                      className="w-full px-4 py-3 rounded-2xl bg-[#F2E6DA] text-xs font-semibold text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E]"
+                      className="w-full px-4 py-3 rounded-2xl bg-[#FAF5EF] text-xs font-semibold text-gray-800 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E]"
                     />
                   </div>
 
@@ -522,7 +579,7 @@ const Settings = () => {
                       name="pinterest_url"
                       value={formData.pinterest_url}
                       onChange={handleChange}
-                      className="w-full px-4 py-3 rounded-2xl bg-[#F2E6DA] text-xs font-semibold text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E]"
+                      className="w-full px-4 py-3 rounded-2xl bg-[#FAF5EF] text-xs font-semibold text-gray-800 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E]"
                     />
                   </div>
                 </div>
@@ -534,7 +591,7 @@ const Settings = () => {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="btn-primary py-3.5 px-8 rounded-2xl font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-md cursor-pointer disabled:opacity-50 transition-all hover:scale-[1.01]"
+                className="py-3.5 px-8 rounded-2xl bg-[#7A0C1E] hover:bg-[#5F0917] text-white font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-md cursor-pointer disabled:opacity-50 transition-all hover:scale-[1.01]"
               >
                 {isSubmitting ? (
                   <>

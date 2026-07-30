@@ -1,74 +1,24 @@
-'use strict';
-const { Model } = require('sequelize');
+const mongoose = require('mongoose');
+const { Schema } = mongoose;
 
-module.exports = (sequelize, DataTypes) => {
-  class Banner extends Model {
-    static associate(models) {}
-  }
+const bannerSchema = new Schema({
+  tagline: { type: String, default: null },
+  title: { type: String, default: null },
+  description: { type: String, default: null },
+  primary_cta_text: { type: String, default: null },
+  primary_cta_link: { type: String, default: null },
+  secondary_cta_text: { type: String, default: null },
+  secondary_cta_link: { type: String, default: null },
+  image: { type: String, required: true },
+  display_order: { type: Number, default: 0 },
+  status: { type: String, enum: ['active', 'inactive'], default: 'active' },
+  type: { type: String, enum: ['home', 'shop', 'categories', 'about', 'contact'], default: 'home', required: true },
+  deleted_at: { type: Date, default: null },
+}, {
+  timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true },
+});
 
-  Banner.init({
-    id: {
-      type: DataTypes.BIGINT.UNSIGNED,
-      autoIncrement: true,
-      primaryKey: true,
-    },
-    tagline: {
-      type: DataTypes.STRING(255),
-      allowNull: true,
-    },
-    title: {
-      type: DataTypes.STRING(255),
-      allowNull: true,
-    },
-    description: {
-      type: DataTypes.TEXT,
-      allowNull: true,
-    },
-    primary_cta_text: {
-      type: DataTypes.STRING(100),
-      allowNull: true,
-    },
-    primary_cta_link: {
-      type: DataTypes.STRING(500),
-      allowNull: true,
-    },
-    secondary_cta_text: {
-      type: DataTypes.STRING(100),
-      allowNull: true,
-    },
-    secondary_cta_link: {
-      type: DataTypes.STRING(500),
-      allowNull: true,
-    },
-    image: {
-      type: DataTypes.STRING(255),
-      allowNull: false,
-    },
-    display_order: {
-      type: DataTypes.INTEGER.UNSIGNED,
-      defaultValue: 0,
-    },
-    status: {
-      type: DataTypes.ENUM('active', 'inactive'),
-      defaultValue: 'active',
-    },
-    type: {
-      type: DataTypes.ENUM('home', 'shop', 'categories', 'about', 'contact'),
-      defaultValue: 'home',
-      allowNull: false,
-    },
-    deleted_at: {
-      type: DataTypes.DATE,
-      allowNull: true,
-    },
-  }, {
-    sequelize,
-    modelName: 'Banner',
-    tableName: 'banners',
-    timestamps: true,
-    underscored: true,
-    paranoid: true,
-  });
-
-  return Banner;
-};
+const Banner = mongoose.model('Banner', bannerSchema);
+module.exports = Banner;

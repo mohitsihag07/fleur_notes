@@ -68,9 +68,14 @@ const UpdateProduct = () => {
         const prodRes = await ApiInstance.get(`/products/${id}`);
         if (prodRes.data.success) {
           const p = prodRes.data.data;
+          const rawCatId = p.category_id;
+          const catId = typeof rawCatId === 'object' && rawCatId !== null
+            ? (rawCatId._id || rawCatId.id || '')
+            : (rawCatId || '');
+
           setFormData({
             name: p.name || '',
-            category_id: p.category_id || '',
+            category_id: catId,
             price: p.price !== undefined ? p.price : '',
             sale_price: p.sale_price !== null && p.sale_price !== undefined ? p.sale_price : '',
             quantity: p.inventory?.quantity !== undefined ? p.inventory.quantity : '0',
@@ -126,26 +131,60 @@ const UpdateProduct = () => {
     }));
   };
 
-  // Handle Image Upload Selection for slot index
-  const handleImageChange = (index, e) => {
-    const file = e.target.files[0];
-    if (file) {
-      if (file.size > 5 * 1024 * 1024) {
-        toast.error('Image size must be under 5MB');
-        return;
-      }
+  // Handle Image Upload Selection (Supports single or multiple file selection)
+  const handleImageChange = (startIndex, e) => {
+    const rawFiles = Array.from(e.target.files || []);
+    if (!rawFiles.length) return;
 
-      const newSlots = [...imageSlots];
-      if (newSlots[index]?.file && newSlots[index]?.preview) {
-        URL.revokeObjectURL(newSlots[index].preview);
+    const validFiles = [];
+    rawFiles.forEach((file) => {
+      if (!file.type.startsWith('image/')) {
+        toast.error(`"${file.name}" is not a valid image file`);
+      } else if (file.size > 5 * 1024 * 1024) {
+        toast.error(`"${file.name}" exceeds the 5MB file limit`);
+      } else {
+        validFiles.push(file);
       }
-      newSlots[index] = {
-        existingPath: null,
-        file,
-        preview: URL.createObjectURL(file)
-      };
-      setImageSlots(newSlots);
-    }
+    });
+
+    if (!validFiles.length) return;
+
+    setImageSlots((prevSlots) => {
+      const newSlots = [...prevSlots];
+
+      if (validFiles.length === 1) {
+        if (newSlots[startIndex]?.file && newSlots[startIndex]?.preview) {
+          URL.revokeObjectURL(newSlots[startIndex].preview);
+        }
+        newSlots[startIndex] = {
+          existingPath: null,
+          file: validFiles[0],
+          preview: URL.createObjectURL(validFiles[0])
+        };
+      } else {
+        let fillIdx = startIndex;
+        validFiles.forEach((file) => {
+          while (fillIdx < 4 && newSlots[fillIdx] !== null && startIndex === 0) {
+            fillIdx++;
+          }
+          if (fillIdx < 4) {
+            if (newSlots[fillIdx]?.file && newSlots[fillIdx]?.preview) {
+              URL.revokeObjectURL(newSlots[fillIdx].preview);
+            }
+            newSlots[fillIdx] = {
+              existingPath: null,
+              file,
+              preview: URL.createObjectURL(file)
+            };
+            fillIdx++;
+          }
+        });
+      }
+      return newSlots;
+    });
+
+    toast.success(`Selected ${validFiles.length} image(s)`);
+    e.target.value = '';
   };
 
   // Remove Image Action from slot index
@@ -234,7 +273,7 @@ const UpdateProduct = () => {
     return (
       <div className="flex h-[70vh] items-center justify-center">
         <div className="flex items-center gap-3 font-black text-[#7A0C1E] text-base">
-          <FiLoader className="w-6 h-6 animate-spin" />
+          <FiLoader className="w-6 h-6 animate-spin text-[#7A0C1E]" />
           <span>Loading Product Data...</span>
         </div>
       </div>
@@ -249,17 +288,17 @@ const UpdateProduct = () => {
           <button
             type="button"
             onClick={() => navigate('/products')}
-            className="p-2.5 rounded-2xl bg-white text-gray-700 border border-[#E8DACD] hover:bg-[#FAF5EF] hover:text-[#2B1B17] shadow-sm transition-all cursor-pointer"
+            className="p-2.5 rounded-2xl bg-white text-gray-700 border border-[#E8DACD] hover:bg-[#FAF5EF] hover:text-[#7A0C1E] shadow-sm transition-all cursor-pointer"
             title="Back to Products"
           >
             <FiArrowLeft className="w-5 h-5" />
           </button>
           <div>
             <h2 className="text-2xl font-black text-gray-900 tracking-tight">
-              Update Product #{id}
+              Update Product
             </h2>
             <p className="text-xs font-semibold text-gray-500 mt-0.5">
-              Edit product information, category mapping, pricing, stock levels, and up to 4 images.
+              Edit product details, pricing, inventory, or upload up to 4 product images.
             </p>
           </div>
         </div>
@@ -269,13 +308,28 @@ const UpdateProduct = () => {
       <form onSubmit={handleSubmit} className="bg-white rounded-3xl p-8 shadow-sm border border-[#E8DACD] space-y-6">
         {/* Product Images Upload Grid (Up to 4 images) */}
         <div>
-          <div className="flex items-center justify-between mb-2">
-            <label className="block text-xs font-bold text-gray-600 uppercase tracking-wider">
-              Product Images (Up to 4 images)
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
+            <div>
+              <label className="block text-xs font-bold text-gray-600 uppercase tracking-wider">
+                Product Images (Up to 4 images)
+              </label>
+              <span className="text-xs font-semibold text-gray-400">
+                First image will be the primary cover
+              </span>
+            </div>
+
+            {/* Bulk Upload Button */}
+            <label className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-[#7A0C1E] hover:bg-[#5F0917] text-white text-xs font-bold shadow-sm transition-all cursor-pointer shrink-0 self-start sm:self-auto">
+              <FiUploadCloud className="w-4 h-4" />
+              <span>Upload Multiple Images (Select 4 at once)</span>
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={(e) => handleImageChange(0, e)}
+                className="hidden"
+              />
             </label>
-            <span className="text-xs font-semibold text-gray-400">
-              First image will be the primary cover
-            </span>
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -284,14 +338,14 @@ const UpdateProduct = () => {
               return (
                 <div key={index} className="relative">
                   {slot?.preview ? (
-                    <div className="relative w-full h-40 rounded-2xl overflow-hidden bg-[#F2E6DA] border border-[#E8DACD] group shadow-inner">
+                    <div className="relative w-full h-40 rounded-2xl overflow-hidden bg-[#FAF5EF] border border-[#E8DACD] group shadow-inner">
                       <img
                         src={slot.preview}
                         alt={`Product Image ${index + 1}`}
                         className="w-full h-full object-cover"
                       />
                       {index === 0 && (
-                        <span className="absolute top-2 left-2 px-2 py-0.5 rounded-md bg-[#FAF5EF] text-[#2B1B17] text-[10px] font-black uppercase">
+                        <span className="absolute top-2 left-2 px-2 py-0.5 rounded-md bg-white text-[#7A0C1E] text-[10px] font-black uppercase border border-[#E8DACD]">
                           Cover
                         </span>
                       )}
@@ -305,15 +359,16 @@ const UpdateProduct = () => {
                       </button>
                     </div>
                   ) : (
-                    <div className="relative border-2 border-dashed border-[#E8DACD] hover:border-[#7A0C1E] rounded-2xl h-40 flex flex-col items-center justify-center p-3 text-center bg-[#F2E6DA]/50 hover:bg-[#F2E6DA] transition-all cursor-pointer group">
+                    <div className="relative border-2 border-dashed border-[#E8DACD] hover:border-[#7A0C1E] rounded-2xl h-40 flex flex-col items-center justify-center p-3 text-center bg-[#FAF5EF]/50 hover:bg-[#FAF5EF] transition-all cursor-pointer group">
                       <input
                         type="file"
                         accept="image/*"
+                        multiple
                         onChange={(e) => handleImageChange(index, e)}
                         className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                       />
-                      <div className="w-10 h-10 rounded-xl bg-[#FAF5EF] text-[#2B1B17] flex items-center justify-center font-black group-hover:scale-110 transition-transform mb-1.5">
-                        <FiUploadCloud className="w-5 h-5 text-[#88A626]" />
+                      <div className="w-10 h-10 rounded-xl bg-white text-[#7A0C1E] border border-[#E8DACD] flex items-center justify-center font-black group-hover:scale-110 transition-transform mb-1.5 shadow-2xs">
+                        <FiUploadCloud className="w-5 h-5 text-[#7A0C1E]" />
                       </div>
                       <span className="text-xs font-bold text-gray-700">
                         {index === 0 ? 'Main Cover' : `Image ${index + 1}`}
@@ -345,7 +400,7 @@ const UpdateProduct = () => {
                 placeholder="Product Name"
                 value={formData.name}
                 onChange={handleChange}
-                className="w-full pl-11 pr-4 py-3 rounded-2xl bg-[#F2E6DA] text-sm font-semibold text-gray-800 border border-[#E8DACD] focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all"
+                className="w-full pl-11 pr-4 py-3 rounded-2xl bg-[#FAF5EF] text-sm font-semibold text-gray-800 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all"
               />
             </div>
           </div>
@@ -362,13 +417,17 @@ const UpdateProduct = () => {
                 required
                 value={formData.category_id}
                 onChange={handleChange}
-                className="w-full pl-11 pr-4 py-3 rounded-2xl bg-[#F2E6DA] text-sm font-bold text-gray-800 border border-[#E8DACD] focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all cursor-pointer"
+                className="w-full pl-11 pr-4 py-3 rounded-2xl bg-[#FAF5EF] text-sm font-bold text-gray-800 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all cursor-pointer"
               >
-                {categories.map((cat) => (
-                  <option key={cat.id} value={cat.id}>
-                    {cat.name}
-                  </option>
-                ))}
+                {categories.length === 0 && <option value="">Loading categories...</option>}
+                {categories.map((cat) => {
+                  const catId = cat._id || cat.id;
+                  return (
+                    <option key={catId} value={catId}>
+                      {cat.name}
+                    </option>
+                  );
+                })}
               </select>
             </div>
           </div>
@@ -392,7 +451,7 @@ const UpdateProduct = () => {
                 placeholder="0.00"
                 value={formData.price}
                 onChange={handleChange}
-                className="w-full pl-11 pr-4 py-3 rounded-2xl bg-[#F2E6DA] text-sm font-semibold text-gray-800 border border-[#E8DACD] focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all"
+                className="w-full pl-11 pr-4 py-3 rounded-2xl bg-[#FAF5EF] text-sm font-semibold text-gray-800 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all"
               />
             </div>
           </div>
@@ -412,7 +471,7 @@ const UpdateProduct = () => {
                 placeholder="Optional sale price"
                 value={formData.sale_price}
                 onChange={handleChange}
-                className="w-full pl-11 pr-4 py-3 rounded-2xl bg-[#F2E6DA] text-sm font-semibold text-gray-800 border border-[#E8DACD] focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all"
+                className="w-full pl-11 pr-4 py-3 rounded-2xl bg-[#FAF5EF] text-sm font-semibold text-gray-800 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all"
               />
             </div>
           </div>
@@ -429,7 +488,7 @@ const UpdateProduct = () => {
               placeholder="0"
               value={formData.quantity}
               onChange={handleChange}
-              className="w-full px-4 py-3 rounded-2xl bg-[#F2E6DA] text-sm font-semibold text-gray-800 border border-[#E8DACD] focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all"
+              className="w-full px-4 py-3 rounded-2xl bg-[#FAF5EF] text-sm font-semibold text-gray-800 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all"
             />
           </div>
         </div>
@@ -447,7 +506,7 @@ const UpdateProduct = () => {
               placeholder="0.45"
               value={formData.weight}
               onChange={handleChange}
-              className="w-full px-4 py-3 rounded-2xl bg-[#F2E6DA] text-sm font-semibold text-gray-800 border border-[#E8DACD] focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all"
+              className="w-full px-4 py-3 rounded-2xl bg-[#FAF5EF] text-sm font-semibold text-gray-800 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all"
             />
           </div>
 
@@ -462,7 +521,7 @@ const UpdateProduct = () => {
               placeholder="15"
               value={formData.length}
               onChange={handleChange}
-              className="w-full px-4 py-3 rounded-2xl bg-[#F2E6DA] text-sm font-semibold text-gray-800 border border-[#E8DACD] focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all"
+              className="w-full px-4 py-3 rounded-2xl bg-[#FAF5EF] text-sm font-semibold text-gray-800 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all"
             />
           </div>
 
@@ -477,7 +536,7 @@ const UpdateProduct = () => {
               placeholder="10"
               value={formData.width}
               onChange={handleChange}
-              className="w-full px-4 py-3 rounded-2xl bg-[#F2E6DA] text-sm font-semibold text-gray-800 border border-[#E8DACD] focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all"
+              className="w-full px-4 py-3 rounded-2xl bg-[#FAF5EF] text-sm font-semibold text-gray-800 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all"
             />
           </div>
 
@@ -492,7 +551,7 @@ const UpdateProduct = () => {
               placeholder="10"
               value={formData.height}
               onChange={handleChange}
-              className="w-full px-4 py-3 rounded-2xl bg-[#F2E6DA] text-sm font-semibold text-gray-800 border border-[#E8DACD] focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all"
+              className="w-full px-4 py-3 rounded-2xl bg-[#FAF5EF] text-sm font-semibold text-gray-800 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all"
             />
           </div>
 
@@ -506,7 +565,7 @@ const UpdateProduct = () => {
               placeholder="e.g. Beige, Soft Rose"
               value={formData.color}
               onChange={handleChange}
-              className="w-full px-4 py-3 rounded-2xl bg-[#F2E6DA] text-sm font-semibold text-gray-800 border border-[#E8DACD] focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all"
+              className="w-full px-4 py-3 rounded-2xl bg-[#FAF5EF] text-sm font-semibold text-gray-800 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all"
             />
           </div>
         </div>
@@ -524,7 +583,7 @@ const UpdateProduct = () => {
               placeholder="Product SKU"
               value={formData.sku}
               onChange={handleChange}
-              className="w-full px-4 py-3 rounded-2xl bg-[#F2E6DA] text-sm font-mono font-semibold text-gray-800 border border-[#E8DACD] focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all"
+              className="w-full px-4 py-3 rounded-2xl bg-[#FAF5EF] text-sm font-mono font-semibold text-gray-800 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all"
             />
           </div>
 
@@ -539,7 +598,7 @@ const UpdateProduct = () => {
               placeholder="Product Slug"
               value={formData.slug}
               onChange={handleChange}
-              className="w-full px-4 py-3 rounded-2xl bg-[#F2E6DA] text-sm font-mono font-semibold text-gray-800 border border-[#E8DACD] focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all"
+              className="w-full px-4 py-3 rounded-2xl bg-[#FAF5EF] text-sm font-mono font-semibold text-gray-800 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all"
             />
           </div>
 
@@ -552,7 +611,7 @@ const UpdateProduct = () => {
               name="status"
               value={formData.status}
               onChange={handleChange}
-              className="w-full px-4 py-3 rounded-2xl bg-[#F2E6DA] text-sm font-bold text-gray-800 border border-[#E8DACD] focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all cursor-pointer"
+              className="w-full px-4 py-3 rounded-2xl bg-[#FAF5EF] text-sm font-bold text-gray-800 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all cursor-pointer"
             >
               <option value="active">Active</option>
               <option value="inactive">Inactive</option>
@@ -561,7 +620,7 @@ const UpdateProduct = () => {
         </div>
 
         {/* Product Badges & Tags Section */}
-        <div className="p-4 rounded-2xl bg-[#F2E6DA]/50 border border-[#E8DACD] space-y-3">
+        <div className="p-4 rounded-2xl bg-[#FAF5EF]/50 border border-[#E8DACD] space-y-3">
           <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider">
             Product Badges & Tags
           </label>
@@ -569,7 +628,7 @@ const UpdateProduct = () => {
             {/* New Arrival Tag */}
             <label className={`flex items-center gap-3 p-3 rounded-xl border transition-all cursor-pointer ${
               formData.is_new_arrival 
-                ? 'bg-amber-500/10 border-amber-600 text-amber-900 font-bold' 
+                ? 'bg-[#FAF5EF] border-[#7A0C1E] text-[#7A0C1E] font-bold' 
                 : 'bg-white border-[#E8DACD] text-gray-600'
             }`}>
               <input
@@ -585,7 +644,7 @@ const UpdateProduct = () => {
             {/* Bestseller Tag */}
             <label className={`flex items-center gap-3 p-3 rounded-xl border transition-all cursor-pointer ${
               formData.is_best_seller 
-                ? 'bg-rose-500/10 border-rose-600 text-rose-900 font-bold' 
+                ? 'bg-[#FAF5EF] border-[#7A0C1E] text-[#7A0C1E] font-bold' 
                 : 'bg-white border-[#E8DACD] text-gray-600'
             }`}>
               <input
@@ -601,7 +660,7 @@ const UpdateProduct = () => {
             {/* Featured Tag */}
             <label className={`flex items-center gap-3 p-3 rounded-xl border transition-all cursor-pointer ${
               formData.is_featured 
-                ? 'bg-purple-500/10 border-purple-600 text-purple-900 font-bold' 
+                ? 'bg-[#FAF5EF] border-[#7A0C1E] text-[#7A0C1E] font-bold' 
                 : 'bg-white border-[#E8DACD] text-gray-600'
             }`}>
               <input
@@ -627,7 +686,7 @@ const UpdateProduct = () => {
             placeholder="Product description..."
             value={formData.description}
             onChange={handleChange}
-            className="w-full p-4 rounded-2xl bg-[#F2E6DA] text-sm font-semibold text-gray-800 border border-[#E8DACD] focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all"
+            className="w-full p-4 rounded-2xl bg-[#FAF5EF] text-sm font-semibold text-gray-800 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all"
           />
         </div>
 
@@ -636,7 +695,7 @@ const UpdateProduct = () => {
           <button
             type="button"
             onClick={() => navigate('/products')}
-            className="px-6 py-3 rounded-2xl bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold text-xs transition-all cursor-pointer"
+            className="px-6 py-3 rounded-2xl bg-[#FAF5EF] border border-[#E8DACD] text-[#7A0C1E] font-black text-xs hover:bg-[#E8DACD] transition-all cursor-pointer"
           >
             Cancel
           </button>
@@ -644,7 +703,7 @@ const UpdateProduct = () => {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="flex items-center gap-2 px-7 py-3 rounded-2xl bg-[#7A0C1E] hover:bg-[#5F0917] text-white font-black text-xs shadow-md shadow-red-900/10 transition-all cursor-pointer disabled:opacity-50"
+            className="flex items-center gap-2 px-7 py-3 rounded-2xl bg-[#7A0C1E] hover:bg-[#5F0917] text-white font-black text-xs shadow-md transition-all cursor-pointer disabled:opacity-50"
           >
             {isSubmitting ? (
               <>

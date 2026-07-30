@@ -49,7 +49,8 @@ const AddProduct = () => {
           const list = Array.isArray(response.data.data) ? response.data.data : (response.data.data?.data || []);
           setCategories(list);
           if (list.length > 0) {
-            setFormData((prev) => ({ ...prev, category_id: list[0].id }));
+            const firstId = list[0]._id || list[0].id || '';
+            setFormData((prev) => ({ ...prev, category_id: prev.category_id || firstId }));
           }
         }
       } catch (error) {
@@ -78,29 +79,58 @@ const AddProduct = () => {
     });
   };
 
-  // Handle Image Upload Selection for slot index (0 to 3)
-  const handleImageChange = (index, e) => {
-    const file = e.target.files[0];
-    if (file) {
+  // Handle Image Upload Selection (Supports single or multiple file selection)
+  const handleImageChange = (startIndex, e) => {
+    const rawFiles = Array.from(e.target.files || []);
+    if (!rawFiles.length) return;
+
+    const validFiles = [];
+    rawFiles.forEach((file) => {
       if (!file.type.startsWith('image/')) {
-        toast.error('Please select a valid image file (PNG, JPG, WEBP)');
-        return;
+        toast.error(`"${file.name}" is not a valid image file`);
+      } else if (file.size > 5 * 1024 * 1024) {
+        toast.error(`"${file.name}" exceeds the 5MB file limit`);
+      } else {
+        validFiles.push(file);
       }
-      if (file.size > 5 * 1024 * 1024) {
-        toast.error('File size exceeds 5MB limit');
-        return;
+    });
+
+    if (!validFiles.length) return;
+
+    setImages((prevImages) => {
+      const newImages = [...prevImages];
+
+      if (validFiles.length === 1) {
+        if (newImages[startIndex]?.preview) {
+          URL.revokeObjectURL(newImages[startIndex].preview);
+        }
+        newImages[startIndex] = {
+          file: validFiles[0],
+          preview: URL.createObjectURL(validFiles[0])
+        };
+      } else {
+        let fillIdx = startIndex;
+        validFiles.forEach((file) => {
+          while (fillIdx < 4 && newImages[fillIdx] !== null && startIndex === 0) {
+            fillIdx++;
+          }
+          if (fillIdx < 4) {
+            if (newImages[fillIdx]?.preview) {
+              URL.revokeObjectURL(newImages[fillIdx].preview);
+            }
+            newImages[fillIdx] = {
+              file,
+              preview: URL.createObjectURL(file)
+            };
+            fillIdx++;
+          }
+        });
       }
-      
-      const newImages = [...images];
-      if (newImages[index]?.preview) {
-        URL.revokeObjectURL(newImages[index].preview);
-      }
-      newImages[index] = {
-        file,
-        preview: URL.createObjectURL(file)
-      };
-      setImages(newImages);
-    }
+      return newImages;
+    });
+
+    toast.success(`Selected ${validFiles.length} image(s)`);
+    e.target.value = '';
   };
 
   // Remove Selected Image from slot index
@@ -187,7 +217,7 @@ const AddProduct = () => {
           <button
             type="button"
             onClick={() => navigate('/products')}
-            className="p-2.5 rounded-2xl bg-white text-gray-700 border border-[#E8DACD] hover:bg-[#FAF5EF] hover:text-[#2B1B17] shadow-sm transition-all cursor-pointer"
+            className="p-2.5 rounded-2xl bg-white text-gray-700 border border-[#E8DACD] hover:bg-[#FAF5EF] hover:text-[#7A0C1E] shadow-sm transition-all cursor-pointer"
             title="Back to Products"
           >
             <FiArrowLeft className="w-5 h-5" />
@@ -207,13 +237,28 @@ const AddProduct = () => {
       <form onSubmit={handleSubmit} className="bg-white rounded-3xl p-8 shadow-sm border border-[#E8DACD] space-y-6">
         {/* Product Images Upload Grid (Up to 4 images) */}
         <div>
-          <div className="flex items-center justify-between mb-2">
-            <label className="block text-xs font-bold text-gray-600 uppercase tracking-wider">
-              Product Images (Up to 4 images)
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
+            <div>
+              <label className="block text-xs font-bold text-gray-600 uppercase tracking-wider">
+                Product Images (Up to 4 images)
+              </label>
+              <span className="text-xs font-semibold text-gray-400">
+                First image will be the primary cover
+              </span>
+            </div>
+
+            {/* Bulk Upload Button */}
+            <label className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-[#7A0C1E] hover:bg-[#5F0917] text-white text-xs font-bold shadow-sm transition-all cursor-pointer shrink-0 self-start sm:self-auto">
+              <FiUploadCloud className="w-4 h-4" />
+              <span>Upload Multiple Images (Select 4 at once)</span>
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={(e) => handleImageChange(0, e)}
+                className="hidden"
+              />
             </label>
-            <span className="text-xs font-semibold text-gray-400">
-              First image will be the primary cover
-            </span>
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -222,14 +267,14 @@ const AddProduct = () => {
               return (
                 <div key={index} className="relative">
                   {imgObj?.preview ? (
-                    <div className="relative w-full h-40 rounded-2xl overflow-hidden bg-[#F2E6DA] border border-[#E8DACD] group shadow-inner">
+                    <div className="relative w-full h-40 rounded-2xl overflow-hidden bg-[#FAF5EF] border border-[#E8DACD] group shadow-inner">
                       <img
                         src={imgObj.preview}
                         alt={`Product Image ${index + 1}`}
                         className="w-full h-full object-cover"
                       />
                       {index === 0 && (
-                        <span className="absolute top-2 left-2 px-2 py-0.5 rounded-md bg-[#FAF5EF] text-[#2B1B17] text-[10px] font-black uppercase">
+                        <span className="absolute top-2 left-2 px-2 py-0.5 rounded-md bg-white text-[#7A0C1E] text-[10px] font-black uppercase border border-[#E8DACD]">
                           Cover
                         </span>
                       )}
@@ -243,15 +288,16 @@ const AddProduct = () => {
                       </button>
                     </div>
                   ) : (
-                    <div className="relative border-2 border-dashed border-[#E8DACD] hover:border-[#7A0C1E] rounded-2xl h-40 flex flex-col items-center justify-center p-3 text-center bg-[#F2E6DA]/50 hover:bg-[#F2E6DA] transition-all cursor-pointer group">
+                    <div className="relative border-2 border-dashed border-[#E8DACD] hover:border-[#7A0C1E] rounded-2xl h-40 flex flex-col items-center justify-center p-3 text-center bg-[#FAF5EF]/50 hover:bg-[#FAF5EF] transition-all cursor-pointer group">
                       <input
                         type="file"
                         accept="image/*"
+                        multiple
                         onChange={(e) => handleImageChange(index, e)}
                         className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                       />
-                      <div className="w-10 h-10 rounded-xl bg-[#FAF5EF] text-[#2B1B17] flex items-center justify-center font-black group-hover:scale-110 transition-transform mb-1.5">
-                        <FiUploadCloud className="w-5 h-5 text-[#88A626]" />
+                      <div className="w-10 h-10 rounded-xl bg-white text-[#7A0C1E] border border-[#E8DACD] flex items-center justify-center font-black group-hover:scale-110 transition-transform mb-1.5 shadow-2xs">
+                        <FiUploadCloud className="w-5 h-5 text-[#7A0C1E]" />
                       </div>
                       <span className="text-xs font-bold text-gray-700">
                         {index === 0 ? 'Main Cover' : `Image ${index + 1}`}
@@ -283,7 +329,7 @@ const AddProduct = () => {
                 placeholder="e.g. Handmade Scented Candle"
                 value={formData.name}
                 onChange={handleChange}
-                className="w-full pl-11 pr-4 py-3 rounded-2xl bg-[#F2E6DA] text-sm font-semibold text-gray-800 border border-[#E8DACD] focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all"
+                className="w-full pl-11 pr-4 py-3 rounded-2xl bg-[#FAF5EF] text-sm font-semibold text-gray-800 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all"
               />
             </div>
           </div>
@@ -300,14 +346,17 @@ const AddProduct = () => {
                 required
                 value={formData.category_id}
                 onChange={handleChange}
-                className="w-full pl-11 pr-4 py-3 rounded-2xl bg-[#F2E6DA] text-sm font-bold text-gray-800 border border-[#E8DACD] focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all cursor-pointer"
+                className="w-full pl-11 pr-4 py-3 rounded-2xl bg-[#FAF5EF] text-sm font-bold text-gray-800 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all cursor-pointer"
               >
                 {categories.length === 0 && <option value="">Loading categories...</option>}
-                {categories.map((cat) => (
-                  <option key={cat.id} value={cat.id}>
-                    {cat.name}
-                  </option>
-                ))}
+                {categories.map((cat) => {
+                  const catId = cat._id || cat.id;
+                  return (
+                    <option key={catId} value={catId}>
+                      {cat.name}
+                    </option>
+                  );
+                })}
               </select>
             </div>
           </div>
@@ -331,7 +380,7 @@ const AddProduct = () => {
                 placeholder="499.00"
                 value={formData.price}
                 onChange={handleChange}
-                className="w-full pl-11 pr-4 py-3 rounded-2xl bg-[#F2E6DA] text-sm font-semibold text-gray-800 border border-[#E8DACD] focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all"
+                className="w-full pl-11 pr-4 py-3 rounded-2xl bg-[#FAF5EF] text-sm font-semibold text-gray-800 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all"
               />
             </div>
           </div>
@@ -351,7 +400,7 @@ const AddProduct = () => {
                 placeholder="399.00 (optional)"
                 value={formData.sale_price}
                 onChange={handleChange}
-                className="w-full pl-11 pr-4 py-3 rounded-2xl bg-[#F2E6DA] text-sm font-semibold text-gray-800 border border-[#E8DACD] focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all"
+                className="w-full pl-11 pr-4 py-3 rounded-2xl bg-[#FAF5EF] text-sm font-semibold text-gray-800 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all"
               />
             </div>
           </div>
@@ -368,7 +417,7 @@ const AddProduct = () => {
               placeholder="10"
               value={formData.quantity}
               onChange={handleChange}
-              className="w-full px-4 py-3 rounded-2xl bg-[#F2E6DA] text-sm font-semibold text-gray-800 border border-[#E8DACD] focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all"
+              className="w-full px-4 py-3 rounded-2xl bg-[#FAF5EF] text-sm font-semibold text-gray-800 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all"
             />
           </div>
         </div>
@@ -386,7 +435,7 @@ const AddProduct = () => {
               placeholder="0.45"
               value={formData.weight}
               onChange={handleChange}
-              className="w-full px-4 py-3 rounded-2xl bg-[#F2E6DA] text-sm font-semibold text-gray-800 border border-[#E8DACD] focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all"
+              className="w-full px-4 py-3 rounded-2xl bg-[#FAF5EF] text-sm font-semibold text-gray-800 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all"
             />
           </div>
 
@@ -401,7 +450,7 @@ const AddProduct = () => {
               placeholder="15"
               value={formData.length}
               onChange={handleChange}
-              className="w-full px-4 py-3 rounded-2xl bg-[#F2E6DA] text-sm font-semibold text-gray-800 border border-[#E8DACD] focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all"
+              className="w-full px-4 py-3 rounded-2xl bg-[#FAF5EF] text-sm font-semibold text-gray-800 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all"
             />
           </div>
 
@@ -416,7 +465,7 @@ const AddProduct = () => {
               placeholder="10"
               value={formData.width}
               onChange={handleChange}
-              className="w-full px-4 py-3 rounded-2xl bg-[#F2E6DA] text-sm font-semibold text-gray-800 border border-[#E8DACD] focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all"
+              className="w-full px-4 py-3 rounded-2xl bg-[#FAF5EF] text-sm font-semibold text-gray-800 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all"
             />
           </div>
 
@@ -431,7 +480,7 @@ const AddProduct = () => {
               placeholder="10"
               value={formData.height}
               onChange={handleChange}
-              className="w-full px-4 py-3 rounded-2xl bg-[#F2E6DA] text-sm font-semibold text-gray-800 border border-[#E8DACD] focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all"
+              className="w-full px-4 py-3 rounded-2xl bg-[#FAF5EF] text-sm font-semibold text-gray-800 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all"
             />
           </div>
 
@@ -445,7 +494,7 @@ const AddProduct = () => {
               placeholder="e.g. Beige, Soft Rose"
               value={formData.color}
               onChange={handleChange}
-              className="w-full px-4 py-3 rounded-2xl bg-[#F2E6DA] text-sm font-semibold text-gray-800 border border-[#E8DACD] focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all"
+              className="w-full px-4 py-3 rounded-2xl bg-[#FAF5EF] text-sm font-semibold text-gray-800 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all"
             />
           </div>
         </div>
@@ -463,7 +512,7 @@ const AddProduct = () => {
               placeholder="Auto-generated if blank"
               value={formData.sku}
               onChange={handleChange}
-              className="w-full px-4 py-3 rounded-2xl bg-[#F2E6DA] text-sm font-mono font-semibold text-gray-800 border border-[#E8DACD] focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all"
+              className="w-full px-4 py-3 rounded-2xl bg-[#FAF5EF] text-sm font-mono font-semibold text-gray-800 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all"
             />
           </div>
 
@@ -478,7 +527,7 @@ const AddProduct = () => {
               placeholder="Auto-generated slug"
               value={formData.slug}
               onChange={handleChange}
-              className="w-full px-4 py-3 rounded-2xl bg-[#F2E6DA] text-sm font-mono font-semibold text-gray-800 border border-[#E8DACD] focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all"
+              className="w-full px-4 py-3 rounded-2xl bg-[#FAF5EF] text-sm font-mono font-semibold text-gray-800 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all"
             />
           </div>
 
@@ -491,7 +540,7 @@ const AddProduct = () => {
               name="status"
               value={formData.status}
               onChange={handleChange}
-              className="w-full px-4 py-3 rounded-2xl bg-[#F2E6DA] text-sm font-bold text-gray-800 border border-[#E8DACD] focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all cursor-pointer"
+              className="w-full px-4 py-3 rounded-2xl bg-[#FAF5EF] text-sm font-bold text-gray-800 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all cursor-pointer"
             >
               <option value="active">Active</option>
               <option value="inactive">Inactive</option>
@@ -500,7 +549,7 @@ const AddProduct = () => {
         </div>
 
         {/* Product Badges & Tags Section */}
-        <div className="p-4 rounded-2xl bg-[#F2E6DA]/50 border border-[#E8DACD] space-y-3">
+        <div className="p-4 rounded-2xl bg-[#FAF5EF]/50 border border-[#E8DACD] space-y-3">
           <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider">
             Product Badges & Tags
           </label>
@@ -508,7 +557,7 @@ const AddProduct = () => {
             {/* New Arrival Tag */}
             <label className={`flex items-center gap-3 p-3 rounded-xl border transition-all cursor-pointer ${
               formData.is_new_arrival 
-                ? 'bg-amber-500/10 border-amber-600 text-amber-900 font-bold' 
+                ? 'bg-[#FAF5EF] border-[#7A0C1E] text-[#7A0C1E] font-bold' 
                 : 'bg-white border-[#E8DACD] text-gray-600'
             }`}>
               <input
@@ -524,7 +573,7 @@ const AddProduct = () => {
             {/* Bestseller Tag */}
             <label className={`flex items-center gap-3 p-3 rounded-xl border transition-all cursor-pointer ${
               formData.is_best_seller 
-                ? 'bg-rose-500/10 border-rose-600 text-rose-900 font-bold' 
+                ? 'bg-[#FAF5EF] border-[#7A0C1E] text-[#7A0C1E] font-bold' 
                 : 'bg-white border-[#E8DACD] text-gray-600'
             }`}>
               <input
@@ -540,7 +589,7 @@ const AddProduct = () => {
             {/* Featured Tag */}
             <label className={`flex items-center gap-3 p-3 rounded-xl border transition-all cursor-pointer ${
               formData.is_featured 
-                ? 'bg-purple-500/10 border-purple-600 text-purple-900 font-bold' 
+                ? 'bg-[#FAF5EF] border-[#7A0C1E] text-[#7A0C1E] font-bold' 
                 : 'bg-white border-[#E8DACD] text-gray-600'
             }`}>
               <input
@@ -566,7 +615,7 @@ const AddProduct = () => {
             placeholder="Enter full product description details..."
             value={formData.description}
             onChange={handleChange}
-            className="w-full p-4 rounded-2xl bg-[#F2E6DA] text-sm font-semibold text-gray-800 border border-[#E8DACD] focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all"
+            className="w-full p-4 rounded-2xl bg-[#FAF5EF] text-sm font-semibold text-gray-800 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all"
           />
         </div>
 
@@ -575,7 +624,7 @@ const AddProduct = () => {
           <button
             type="button"
             onClick={() => navigate('/products')}
-            className="px-6 py-3 rounded-2xl bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold text-xs transition-all cursor-pointer"
+            className="px-6 py-3 rounded-2xl bg-[#FAF5EF] border border-[#E8DACD] text-[#7A0C1E] font-black text-xs hover:bg-[#E8DACD] transition-all cursor-pointer"
           >
             Cancel
           </button>
@@ -583,7 +632,7 @@ const AddProduct = () => {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="flex items-center gap-2 px-7 py-3 rounded-2xl bg-[#7A0C1E] hover:bg-[#5F0917] text-white font-black text-xs shadow-md shadow-red-900/10 transition-all cursor-pointer disabled:opacity-50"
+            className="flex items-center gap-2 px-7 py-3 rounded-2xl bg-[#7A0C1E] hover:bg-[#5F0917] text-white font-black text-xs shadow-md transition-all cursor-pointer disabled:opacity-50"
           >
             {isSubmitting ? (
               <>

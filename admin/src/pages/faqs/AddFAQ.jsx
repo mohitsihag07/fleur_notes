@@ -63,7 +63,7 @@ const AddFAQ = () => {
         <div className="flex items-center gap-3">
           <button
             onClick={() => navigate('/faqs')}
-            className="p-2.5 rounded-2xl bg-white border border-[#E8DACD] text-gray-700 hover:bg-[#FAF5EF] hover:text-[#2B1B17] transition-all cursor-pointer shadow-2xs"
+            className="p-2.5 rounded-2xl bg-white border border-[#E8DACD] text-gray-700 hover:bg-[#FAF5EF] hover:text-[#7A0C1E] transition-all cursor-pointer shadow-2xs"
           >
             <FiArrowLeft className="w-5 h-5" />
           </button>
@@ -99,7 +99,7 @@ const AddFAQ = () => {
               placeholder="e.g. How long does shipping take?"
               value={formData.question}
               onChange={handleChange}
-              className="w-full px-4 py-3 rounded-2xl bg-[#F2E6DA] text-xs font-semibold text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all"
+              className="w-full px-4 py-3 rounded-2xl bg-[#FAF5EF] text-xs font-semibold text-gray-800 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all"
             />
           </div>
 
@@ -114,7 +114,7 @@ const AddFAQ = () => {
               placeholder="Provide a detailed, clear answer to the question..."
               value={formData.answer}
               onChange={handleChange}
-              className="w-full px-4 py-3 rounded-2xl bg-[#F2E6DA] text-xs font-semibold text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all resize-y"
+              className="w-full px-4 py-3 rounded-2xl bg-[#FAF5EF] text-xs font-semibold text-gray-800 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all resize-y"
             />
           </div>
 
@@ -129,7 +129,7 @@ const AddFAQ = () => {
                 name="category"
                 value={formData.category}
                 onChange={handleChange}
-                className="w-full px-4 py-3 rounded-2xl bg-[#F2E6DA] text-xs font-extrabold text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] cursor-pointer"
+                className="w-full px-4 py-3 rounded-2xl bg-[#FAF5EF] text-xs font-extrabold text-gray-800 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] cursor-pointer"
               >
                 {categories.map((cat) => (
                   <option key={cat} value={cat}>
@@ -151,7 +151,7 @@ const AddFAQ = () => {
                 placeholder="0"
                 value={formData.sort_order}
                 onChange={handleChange}
-                className="w-full px-4 py-3 rounded-2xl bg-[#F2E6DA] text-xs font-semibold text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all"
+                className="w-full px-4 py-3 rounded-2xl bg-[#FAF5EF] text-xs font-semibold text-gray-800 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all"
               />
             </div>
           </div>
@@ -169,7 +169,7 @@ const AddFAQ = () => {
                   value="active"
                   checked={formData.status === 'active'}
                   onChange={handleChange}
-                  className="w-4 h-4 text-[#7A0C1E] focus:ring-[#7A0C1E]"
+                  className="w-4 h-4 text-[#7A0C1E] focus:ring-[#7A0C1E] accent-[#7A0C1E]"
                 />
                 <span className="text-xs font-bold text-gray-800">Active</span>
               </label>
@@ -181,7 +181,7 @@ const AddFAQ = () => {
                   value="inactive"
                   checked={formData.status === 'inactive'}
                   onChange={handleChange}
-                  className="w-4 h-4 text-[#7A0C1E] focus:ring-[#7A0C1E]"
+                  className="w-4 h-4 text-[#7A0C1E] focus:ring-[#7A0C1E] accent-[#7A0C1E]"
                 />
                 <span className="text-xs font-bold text-gray-800">Inactive</span>
               </label>
@@ -193,7 +193,7 @@ const AddFAQ = () => {
             <button
               type="button"
               onClick={() => navigate('/faqs')}
-              className="py-3 px-6 rounded-2xl bg-[#F2E6DA] text-xs font-black text-gray-700 hover:bg-gray-200 transition-all cursor-pointer"
+              className="py-3 px-6 rounded-2xl bg-[#FAF5EF] border border-[#E8DACD] text-xs font-black text-[#7A0C1E] hover:bg-[#E8DACD] transition-all cursor-pointer"
             >
               Cancel
             </button>
@@ -201,7 +201,7 @@ const AddFAQ = () => {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="btn-primary py-3 px-8 rounded-2xl font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-md cursor-pointer disabled:opacity-50 transition-all hover:scale-[1.01]"
+              className="py-3 px-8 rounded-2xl bg-[#7A0C1E] hover:bg-[#5F0917] text-white font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-md cursor-pointer disabled:opacity-50 transition-all hover:scale-[1.01]"
             >
               {isSubmitting ? (
                 <>

@@ -2,15 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import ApiInstance from '../../utils/ApiInstance';
 import ConfirmModal from '../../components/ConfirmModal';
-import { 
-  FiPlus, 
-  FiSearch, 
-  FiEye, 
-  FiEdit, 
-  FiTrash2, 
-  FiImage, 
-  FiExternalLink, 
-  FiCheckCircle, 
+import {
+  FiPlus,
+  FiSearch,
+  FiEye,
+  FiEdit,
+  FiTrash2,
+  FiImage,
+  FiExternalLink,
+  FiCheckCircle,
   FiXCircle,
   FiArrowUpRight,
   FiSliders,
@@ -87,7 +87,8 @@ const Banners = () => {
   const handleConfirmDelete = async () => {
     if (!bannerToDelete) return;
     try {
-      const res = await ApiInstance.delete(`/banners/delete/${bannerToDelete.id}`);
+      const bannerId = bannerToDelete._id || bannerToDelete.id;
+      const res = await ApiInstance.delete(`/banners/delete/${bannerId}`);
       if (res.data?.success) {
         setDeleteModalOpen(false);
         setBannerToDelete(null);
@@ -101,7 +102,8 @@ const Banners = () => {
   const handleConfirmToggleStatus = async () => {
     if (!bannerToToggle) return;
     try {
-      const res = await ApiInstance.put(`/banners/update-status/${bannerToToggle.id}`);
+      const bannerId = bannerToToggle._id || bannerToToggle.id;
+      const res = await ApiInstance.put(`/banners/update-status/${bannerId}`);
       if (res.data?.success) {
         setStatusModalOpen(false);
         setBannerToToggle(null);
@@ -134,87 +136,83 @@ const Banners = () => {
 
         {/* 4 in a row grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {filtered.map((b) => (
-            <div
-              key={b.id}
-              className="bg-white rounded-3xl border border-[#E8DACD] overflow-hidden shadow-sm hover:shadow-md transition-all group flex flex-col justify-between"
-            >
-              {/* Banner Image Preview Container */}
-              <div className="relative h-48 w-full bg-gray-100 overflow-hidden">
-                <img
-                  src={getImageSrc(b.image)}
-                  alt={b.title || 'Banner'}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  onError={(e) => {
-                    e.target.src = 'https://via.placeholder.com/800x400?text=Banner+Image';
-                  }}
-                />
-                
-                {/* Status & Type Badges */}
-                <div className="absolute top-3 left-3 flex gap-1.5">
-                  <button
-                    onClick={() => {
-                      setBannerToToggle(b);
-                      setStatusModalOpen(true);
+          {filtered.map((b) => {
+            const bId = b._id || b.id;
+            return (
+              <div
+                key={bId}
+                className="bg-white rounded-3xl border border-[#E8DACD] overflow-hidden shadow-sm hover:shadow-md transition-all group flex flex-col justify-between"
+              >
+                {/* Banner Image Preview Container */}
+                <div className="relative h-48 w-full bg-gray-100 overflow-hidden">
+                  <img
+                    src={getImageSrc(b.image)}
+                    alt={b.title || 'Banner'}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    onError={(e) => {
+                      e.target.src = 'https://via.placeholder.com/800x400?text=Banner+Image';
                     }}
-                    className={`px-3 py-1 rounded-full text-[10px] font-black uppercase flex items-center gap-1 shadow-sm transition-transform active:scale-95 cursor-pointer ${
-                      b.status === 'active'
-                        ? 'bg-[#FAF5EF] text-[#2B1B17]'
+                  />
+
+                  {/* Status & Type Badges */}
+                  <div className="absolute top-3 left-3 flex gap-1.5">
+                    <button
+                      onClick={() => {
+                        setBannerToToggle(b);
+                        setStatusModalOpen(true);
+                      }}
+                      className={`px-3 py-1 rounded-full text-[10px] font-black uppercase flex items-center gap-1 shadow-sm transition-transform active:scale-95 cursor-pointer ${b.status === 'active'
+                        ? 'bg-[#FAF5EF] text-[#5F0917]'
                         : 'bg-gray-200 text-gray-600'
-                    }`}
-                  >
-                    {b.status === 'active' ? (
-                      <FiCheckCircle className="w-3 h-3 text-[#2B1B17]" />
-                    ) : (
-                      <FiXCircle className="w-3 h-3 text-gray-500" />
-                    )}
-                    <span>{b.status}</span>
-                  </button>
-                  <span className="px-2.5 py-1 rounded-full text-[10px] font-black uppercase bg-[#F2E6DA] border border-[#7A0C1E]/30 text-[#2B1B17] shadow-sm">
-                    {b.type || 'home'}
-                  </span>
-                </div>
-
-                {/* Display Order Badge */}
-                <div className="absolute top-3 right-3 bg-black/60 backdrop-blur-md text-white px-2.5 py-0.5 rounded-full text-[10px] font-black">
-                  Order: #{b.display_order ?? 0}
-                </div>
-              </div>
-
-              {/* Banner Details Body */}
-              <div className="p-4 space-y-1.5 flex-1 flex flex-col justify-between">
-                <div>
-                  <h3 className="text-sm font-black text-gray-900 tracking-tight line-clamp-1">
-                    {b.title || 'Untitled Banner'}
-                  </h3>
-                  <div className="flex items-center gap-1.5 mt-1">
-                    <span className="text-[9px] font-black text-gray-400 uppercase tracking-wider">Target Page:</span>
-                    <span className="text-[9px] font-black uppercase bg-[#FAF5EF] text-[#7A0C1E] px-2 py-0.5 rounded-full border border-[#E8DACD]">
+                        }`}
+                    >
+                      {b.status === 'active' ? (
+                        <FiCheckCircle className="w-3 h-3 text-[#5F0917]" />
+                      ) : (
+                        <FiXCircle className="w-3 h-3 text-gray-500" />
+                      )}
+                      <span>{b.status}</span>
+                    </button>
+                    <span className="px-2.5 py-1 rounded-full text-[10px] font-black uppercase bg-[#FAF5EF] border border-[#E8DACD] text-[#7A0C1E] shadow-sm">
                       {b.type || 'home'}
                     </span>
                   </div>
+
+                  {/* Display Order Badge */}
+                  <div className="absolute top-3 right-3 bg-black/60 backdrop-blur-md text-white px-2.5 py-0.5 rounded-full text-[10px] font-black">
+                    Order: #{b.display_order ?? 0}
+                  </div>
                 </div>
-              </div>
 
-              {/* Banner Actions Footer */}
-              <div className="px-4 py-3 bg-gray-50 border-t border-[#E8DACD] flex items-center justify-between">
-                <span className="text-[10px] font-medium text-gray-400">
-                  ID: #{b.id}
-                </span>
+                {/* Banner Details Body */}
+                <div className="p-4 space-y-1.5 flex-1 flex flex-col justify-between">
+                  <div>
+                    <h3 className="text-sm font-black text-gray-900 tracking-tight line-clamp-1">
+                      {b.title || 'Untitled Banner'}
+                    </h3>
+                    <div className="flex items-center gap-1.5 mt-1">
+                      <span className="text-[9px] font-black text-gray-400 uppercase tracking-wider">Target Page:</span>
+                      <span className="text-[9px] font-black uppercase bg-[#FAF5EF] text-[#7A0C1E] px-2 py-0.5 rounded-full border border-[#E8DACD]">
+                        {b.type || 'home'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
 
-                <div className="flex items-center gap-2">
+                {/* Banner Actions Footer */}
+                <div className="px-4 py-3 bg-gray-50 border-t border-[#E8DACD] flex items-center justify-end gap-2">
                   <button
-                    onClick={() => navigate(`/banners/${b.id}`)}
-                    className="p-2 rounded-xl text-gray-500 hover:bg-[#FAF5EF] hover:text-[#2B1B17] transition-colors cursor-pointer"
+                    onClick={() => navigate(`/banners/${bId}`)}
                     title="View Banner Details"
+                    className="p-2.5 rounded-xl bg-[#FAF5EF] text-[#7A0C1E] hover:bg-[#7A0C1E] hover:text-white border border-[#E8DACD] transition-all cursor-pointer shadow-2xs"
                   >
                     <FiEye className="w-4 h-4" />
                   </button>
 
                   <button
-                    onClick={() => navigate(`/banners/edit/${b.id}`)}
-                    className="p-2 rounded-xl text-gray-500 hover:bg-[#F2E6DA] hover:text-[#7A0C1E] transition-colors cursor-pointer"
+                    onClick={() => navigate(`/banners/edit/${bId}`)}
                     title="Edit Banner"
+                    className="p-2.5 rounded-xl bg-[#FAF5EF] text-[#7A0C1E] hover:bg-[#7A0C1E] hover:text-white border border-[#E8DACD] transition-all cursor-pointer shadow-2xs"
                   >
                     <FiEdit className="w-4 h-4" />
                   </button>
@@ -224,15 +222,15 @@ const Banners = () => {
                       setBannerToDelete(b);
                       setDeleteModalOpen(true);
                     }}
-                    className="p-2 rounded-xl text-red-400 hover:bg-red-50 hover:text-red-600 transition-colors cursor-pointer"
                     title="Delete Banner"
+                    className="p-2.5 rounded-xl bg-red-50 text-red-500 hover:bg-red-500 hover:text-white border border-red-200 transition-all cursor-pointer shadow-2xs"
                   >
                     <FiTrash2 className="w-4 h-4" />
                   </button>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     );
@@ -241,19 +239,21 @@ const Banners = () => {
   return (
     <div className="space-y-6">
       {/* Header Banner Section */}
-      <div className="bg-[#F2E6DA] rounded-3xl p-6 border border-[#E8DACD] flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+      <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-black text-gray-900 tracking-tight flex items-center gap-2">
-            <FiLayers className="w-6 h-6 text-[#7A0C1E]" />
+          <h2 className="text-2xl font-black text-gray-900 tracking-tight flex items-center gap-3">
+            <div className="p-2.5 rounded-2xl bg-[#FAF5EF] text-[#7A0C1E]">
+              <FiImage className="w-6 h-6 text-[#7A0C1E]" />
+            </div>
             <span>Hero Banners & Promotions</span>
           </h2>
-          <p className="text-xs font-semibold text-gray-500 mt-1">
+          <p className="text-xs font-semibold text-gray-500 mt-1 pl-12">
             Manage store homepage sliders, promo graphics, and call-to-action banners.
           </p>
         </div>
         <Link
           to="/banners/add"
-          className="px-5 py-3 rounded-2xl bg-[#7A0C1E] hover:bg-[#5F0917] text-white font-black text-xs uppercase tracking-wider flex items-center gap-2 shadow-sm transition-all hover:scale-105"
+          className="px-5 py-3 rounded-2xl bg-[#7A0C1E] hover:bg-[#5F0917] text-white font-black text-xs uppercase tracking-wider flex items-center gap-2 shadow-sm transition-all hover:scale-105 shrink-0"
         >
           <FiPlus className="w-4 h-4" />
           <span>Add New Banner</span>
@@ -268,7 +268,7 @@ const Banners = () => {
             <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Total Banners</p>
             <h3 className="text-2xl font-black text-gray-900 mt-1">{stats.totalBanners}</h3>
           </div>
-          <div className="p-3 rounded-2xl bg-purple-50 text-purple-600">
+          <div className="p-3 rounded-2xl bg-[#FAF5EF] text-[#7A0C1E]">
             <FiImage className="w-5 h-5" />
           </div>
         </div>
@@ -279,7 +279,7 @@ const Banners = () => {
             <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Active Banners</p>
             <h3 className="text-2xl font-black text-gray-900 mt-1">{stats.activeBanners}</h3>
           </div>
-          <div className="p-3 rounded-2xl bg-[#E8DACD]/50 text-[#1E7741]">
+          <div className="p-3 rounded-2xl bg-[#FAF5EF] text-[#5F0917]">
             <FiCheckCircle className="w-5 h-5" />
           </div>
         </div>
@@ -290,7 +290,7 @@ const Banners = () => {
             <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Home/Hero Banners</p>
             <h3 className="text-2xl font-black text-gray-900 mt-1">{stats.homeBanners}</h3>
           </div>
-          <div className="p-3 rounded-2xl bg-blue-50 text-blue-600">
+          <div className="p-3 rounded-2xl bg-[#F2E6DA]/40 text-[#7A0C1E]">
             <FiArrowUpRight className="w-5 h-5" />
           </div>
         </div>
@@ -301,7 +301,7 @@ const Banners = () => {
             <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Other Page Banners</p>
             <h3 className="text-2xl font-black text-gray-900 mt-1">{stats.otherBanners}</h3>
           </div>
-          <div className="p-3 rounded-2xl bg-amber-50 text-amber-600">
+          <div className="p-3 rounded-2xl bg-[#FAF5EF] text-[#A87B39]">
             <FiLayers className="w-5 h-5" />
           </div>
         </div>
@@ -316,12 +316,12 @@ const Banners = () => {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search banner title..."
-            className="w-full pl-11 pr-4 py-2.5 bg-[#F2E6DA] rounded-full text-xs font-bold text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E]"
+            className="w-full pl-11 pr-4 py-2.5 bg-[#FAF5EF] rounded-full text-xs font-bold text-gray-800 placeholder-gray-400 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E]"
           />
         </form>
 
         <div className="flex items-center gap-3 w-full md:w-auto justify-end">
-          <div className="flex items-center gap-2 bg-[#F2E6DA] px-3 py-1.5 rounded-full">
+          <div className="flex items-center gap-2 bg-[#FAF5EF] px-3.5 py-2 rounded-full border border-[#E8DACD]">
             <FiSliders className="w-3.5 h-3.5 text-gray-400" />
             <span className="text-xs font-black text-gray-600">Status:</span>
             <select
@@ -338,7 +338,7 @@ const Banners = () => {
             </select>
           </div>
 
-          <span className="text-xs font-black text-gray-400 px-3 py-1 bg-[#FAF5EF] text-[#2B1B17] rounded-full">
+          <span className="text-xs font-black text-[#7A0C1E] px-3.5 py-2 bg-[#FAF5EF] rounded-full border border-[#E8DACD]">
             {totalItems} Banners
           </span>
         </div>
@@ -356,7 +356,7 @@ const Banners = () => {
           <p className="text-xs text-gray-400 mt-1">Get started by adding your first promotional banner.</p>
           <Link
             to="/banners/add"
-            className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#7A0C1E] text-white text-xs font-black uppercase"
+            className="mt-4 inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-[#7A0C1E] hover:bg-[#5F0917] text-white text-xs font-black uppercase transition-all"
           >
             <FiPlus className="w-4 h-4" />
             <span>Create Banner</span>
@@ -378,7 +378,7 @@ const Banners = () => {
           <button
             disabled={page === 1}
             onClick={() => setPage((p) => Math.max(1, p - 1))}
-            className="px-4 py-2 rounded-full bg-white border border-[#E8DACD] text-xs font-black text-gray-700 disabled:opacity-40"
+            className="px-4 py-2 rounded-2xl bg-white border border-[#E8DACD] text-xs font-black text-gray-700 hover:bg-[#FAF5EF] hover:text-[#7A0C1E] disabled:opacity-40 transition-all cursor-pointer"
           >
             Previous
           </button>
@@ -388,7 +388,7 @@ const Banners = () => {
           <button
             disabled={page === totalPages}
             onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-            className="px-4 py-2 rounded-full bg-white border border-[#E8DACD] text-xs font-black text-gray-700 disabled:opacity-40"
+            className="px-4 py-2 rounded-2xl bg-white border border-[#E8DACD] text-xs font-black text-gray-700 hover:bg-[#FAF5EF] hover:text-[#7A0C1E] disabled:opacity-40 transition-all cursor-pointer"
           >
             Next
           </button>
@@ -413,9 +413,8 @@ const Banners = () => {
         onClose={() => setStatusModalOpen(false)}
         onConfirm={handleConfirmToggleStatus}
         title="Toggle Status"
-        message={`Are you sure you want to change status to ${
-          bannerToToggle?.status === 'active' ? 'Inactive' : 'Active'
-        }?`}
+        message={`Are you sure you want to change status to ${bannerToToggle?.status === 'active' ? 'Inactive' : 'Active'
+          }?`}
         confirmText="Confirm Change"
         cancelText="Cancel"
       />

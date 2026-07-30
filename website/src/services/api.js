@@ -27,6 +27,12 @@ export async function apiRequest(endpoint, options = {}) {
         errorMessage = errorData.message || errorMessage;
       } catch (e) {
         // Response is not JSON
+        try {
+          const text = await response.text();
+          if (text) errorMessage = text;
+        } catch (e2) {
+          // ignore
+        }
       }
       throw new Error(errorMessage);
     }
@@ -34,7 +40,7 @@ export async function apiRequest(endpoint, options = {}) {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error(`API Request Error [${endpoint}]:`, error);
+    // Throw the error to callers but avoid noisy console logs for expected HTTP errors.
     throw error;
   }
 }

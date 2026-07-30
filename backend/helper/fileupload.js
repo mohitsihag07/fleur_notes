@@ -94,8 +94,29 @@ const uploadMultiple = (fieldName, folder = 'misc', maxCount = 10) => {
   };
 };
 
+/**
+ * Middleware for named fields upload (e.g. two different image inputs)
+ * @param {Array} fields - Array of { name, maxCount } objects
+ * @param {string} folder - The subfolder name
+ */
+const uploadFields = (fields, folder = 'misc') => {
+  return (req, res, next) => {
+    req.uploadFolder = folder;
+    upload.fields(fields)(req, res, (err) => {
+      if (err) {
+        return res.status(400).json({
+          success: false,
+          message: err.message || 'File upload failed.'
+        });
+      }
+      next();
+    });
+  };
+};
+
 module.exports = {
   upload,
   uploadSingle,
-  uploadMultiple
+  uploadMultiple,
+  uploadFields
 };

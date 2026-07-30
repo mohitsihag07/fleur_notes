@@ -2,13 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import ApiInstance from '../../utils/ApiInstance';
 import ConfirmModal from '../../components/ConfirmModal';
-import { 
-  FiArrowLeft, 
-  FiEdit, 
-  FiTrash2, 
-  FiLayers, 
-  FiCheckCircle, 
-  FiXCircle, 
+import {
+  FiArrowLeft,
+  FiEdit,
+  FiTrash2,
+  FiLayers,
+  FiCheckCircle,
+  FiXCircle,
   FiArrowUpRight,
   FiCalendar,
   FiHash,
@@ -73,7 +73,7 @@ const GetBanner = () => {
         <p className="text-xs text-gray-400 mt-1">The banner you requested does not exist or was removed.</p>
         <Link
           to="/banners"
-          className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#7A0C1E] text-white text-xs font-black uppercase"
+          className="mt-4 inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-[#7A0C1E] hover:bg-[#5F0917] text-white text-xs font-black uppercase transition-all"
         >
           <FiArrowLeft className="w-4 h-4" />
           <span>Back to Banners</span>
@@ -90,14 +90,14 @@ const GetBanner = () => {
           to="/banners"
           className="inline-flex items-center gap-2 text-xs font-black text-gray-600 hover:text-[#7A0C1E] transition-colors"
         >
-          <FiArrowLeft className="w-4 h-4" />
+          <FiArrowLeft className="w-4 h-4 text-[#7A0C1E]" />
           <span>Back to Banners</span>
         </Link>
 
         <div className="flex items-center gap-3">
           <Link
-            to={`/banners/edit/${banner.id}`}
-            className="px-4 py-2 rounded-2xl bg-[#F2E6DA] hover:bg-[#FAF5EF] text-gray-800 text-xs font-black flex items-center gap-2 transition-colors"
+            to={`/banners/edit/${banner._id || banner.id}`}
+            className="px-4 py-2 rounded-2xl bg-[#FAF5EF] hover:bg-[#E8DACD] text-[#7A0C1E] text-xs font-black flex items-center gap-2 transition-colors border border-[#E8DACD]"
           >
             <FiEdit className="w-4 h-4 text-[#7A0C1E]" />
             <span>Edit Banner</span>
@@ -115,17 +115,18 @@ const GetBanner = () => {
 
       {/* Hero Banner Preview Card */}
       <div className="bg-white rounded-3xl border border-[#E8DACD] overflow-hidden shadow-sm">
-        <div className="p-6 bg-[#F2E6DA] border-b border-[#E8DACD] flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <FiLayers className="w-5 h-5 text-[#7A0C1E]" />
+        <div className="p-6 bg-[#FAF5EF] border-b border-[#E8DACD] flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-xl bg-white text-[#7A0C1E]">
+              <FiLayers className="w-5 h-5 text-[#7A0C1E]" />
+            </div>
             <h2 className="text-lg font-black text-gray-900">
               Live Banner Preview #{banner.id}
             </h2>
           </div>
-          <span className={`px-3 py-1 rounded-full text-xs font-black uppercase flex items-center gap-1.5 ${
-            banner.status === 'active' ? 'bg-[#FAF5EF] text-[#2B1B17]' : 'bg-gray-200 text-gray-600'
-          }`}>
-            {banner.status === 'active' ? <FiCheckCircle className="w-3.5 h-3.5" /> : <FiXCircle className="w-3.5 h-3.5" />}
+          <span className={`px-3.5 py-1 rounded-full text-xs font-black uppercase flex items-center gap-1.5 border ${banner.status === 'active' ? 'bg-white text-[#5F0917] border-[#E8DACD]' : 'bg-gray-200 text-gray-600'
+            }`}>
+            {banner.status === 'active' ? <FiCheckCircle className="w-3.5 h-3.5 text-[#5F0917]" /> : <FiXCircle className="w-3.5 h-3.5" />}
             <span>{banner.status}</span>
           </span>
         </div>
@@ -141,7 +142,7 @@ const GetBanner = () => {
 
           <div className="relative z-10 p-8 max-w-2xl text-center text-white space-y-3">
             {banner.tagline && (
-              <div className="text-xs font-black text-[#7A0C1E] uppercase tracking-widest drop-shadow-md">
+              <div className="text-xs font-black text-[#F2E6DA] uppercase tracking-widest drop-shadow-md">
                 {banner.tagline}
               </div>
             )}
@@ -161,7 +162,7 @@ const GetBanner = () => {
                   href={banner.primary_cta_link || banner.button_link || '#'}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#7A0C1E] text-white font-black text-xs uppercase tracking-wider shadow-lg hover:scale-105 transition-transform animate-fade-in"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#7A0C1E] hover:bg-[#5F0917] text-white font-black text-xs uppercase tracking-wider shadow-lg hover:scale-105 transition-transform animate-fade-in"
                 >
                   <span>{banner.primary_cta_text || banner.button_text}</span>
                   <FiArrowUpRight className="w-3.5 h-3.5" />
@@ -216,7 +217,7 @@ const GetBanner = () => {
 
           <div className="space-y-4 border-l border-[#E8DACD] pl-0 md:pl-6">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-2xl bg-[#F2E6DA] text-[#7A0C1E] flex items-center justify-center font-black">
+              <div className="w-9 h-9 rounded-2xl bg-[#FAF5EF] text-[#7A0C1E] border border-[#E8DACD] flex items-center justify-center font-black">
                 <FiLayers className="w-4 h-4" />
               </div>
               <div>
@@ -226,7 +227,7 @@ const GetBanner = () => {
             </div>
 
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-2xl bg-[#F2E6DA] text-gray-600 flex items-center justify-center font-black">
+              <div className="w-9 h-9 rounded-2xl bg-[#FAF5EF] text-[#7A0C1E] border border-[#E8DACD] flex items-center justify-center font-black">
                 <FiHash className="w-4 h-4" />
               </div>
               <div>
@@ -236,7 +237,7 @@ const GetBanner = () => {
             </div>
 
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-2xl bg-[#F2E6DA] text-gray-600 flex items-center justify-center font-black">
+              <div className="w-9 h-9 rounded-2xl bg-[#FAF5EF] text-[#7A0C1E] border border-[#E8DACD] flex items-center justify-center font-black">
                 <FiCalendar className="w-4 h-4" />
               </div>
               <div>
@@ -248,7 +249,7 @@ const GetBanner = () => {
             </div>
 
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-2xl bg-[#F2E6DA] text-gray-600 flex items-center justify-center font-black">
+              <div className="w-9 h-9 rounded-2xl bg-[#FAF5EF] text-[#7A0C1E] border border-[#E8DACD] flex items-center justify-center font-black">
                 <FiCalendar className="w-4 h-4" />
               </div>
               <div>

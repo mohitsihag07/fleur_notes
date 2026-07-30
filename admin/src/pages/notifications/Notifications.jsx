@@ -166,7 +166,7 @@ const Notifications = () => {
         title: title.trim(),
         message: message.trim(),
         type: notificationType.toLowerCase(),
-        user_id: sendTo === 'specific' ? selectedUser.id : null,
+        user_id: sendTo === 'specific' ? (selectedUser?._id || selectedUser?.id) : null,
       };
 
       const response = await ApiInstance.post('/notifications/push', payload);
@@ -234,15 +234,15 @@ const Notifications = () => {
   const getTypeBadgeStyle = (type) => {
     switch (type?.toLowerCase()) {
       case 'push':
-        return 'bg-[#E8DACD]/60 text-[#1E7741] border-[#E8DACD]';
+        return 'bg-[#FAF5EF] text-[#5F0917] border-[#E8DACD]';
       case 'sms':
-        return 'bg-[#5F0917]/60 text-[#C85523] border-[#5F0917]';
+        return 'bg-[#F2E6DA]/40 text-[#7A0C1E] border-[#E8DACD]';
       case 'whatsapp':
         return 'bg-emerald-100 text-emerald-800 border-emerald-200';
       case 'system':
-        return 'bg-purple-100 text-purple-800 border-purple-200';
+        return 'bg-[#FAF5EF] text-[#A87B39] border-[#E8DACD]';
       default:
-        return 'bg-[#FAF5EF] text-[#2B1B17] border-[#FAF5EF]';
+        return 'bg-[#FAF5EF] text-[#7A0C1E] border-[#E8DACD]';
     }
   };
 
@@ -252,7 +252,7 @@ const Notifications = () => {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-2xl bg-[#7A0C1E]/20 text-[#2B1B17]">
+            <div className="p-2.5 rounded-2xl bg-[#FAF5EF] text-[#7A0C1E]">
               <FiBell className="w-6 h-6 text-[#7A0C1E]" />
             </div>
             <h2 className="text-2xl font-black text-gray-900 tracking-tight">
@@ -273,7 +273,7 @@ const Notifications = () => {
             <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Total Sent</p>
             <h3 className="text-2xl font-black text-gray-900 mt-1">{stats.totalSent || 0}</h3>
           </div>
-          <div className="p-3 rounded-2xl bg-gray-50 text-gray-700">
+          <div className="p-3 rounded-2xl bg-[#FAF5EF] text-[#7A0C1E]">
             <FiBell className="w-5 h-5" />
           </div>
         </div>
@@ -284,7 +284,7 @@ const Notifications = () => {
             <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Unread</p>
             <h3 className="text-2xl font-black text-gray-900 mt-1">{stats.unread || 0}</h3>
           </div>
-          <div className="p-3 rounded-2xl bg-[#5F0917]/30 text-[#D96B3B]">
+          <div className="p-3 rounded-2xl bg-[#F2E6DA]/40 text-[#7A0C1E]">
             <FiAlertCircle className="w-5 h-5" />
           </div>
         </div>
@@ -295,7 +295,7 @@ const Notifications = () => {
             <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Push</p>
             <h3 className="text-2xl font-black text-gray-900 mt-1">{stats.push || 0}</h3>
           </div>
-          <div className="p-3 rounded-2xl bg-[#E8DACD]/40 text-[#1E7741]">
+          <div className="p-3 rounded-2xl bg-[#FAF5EF] text-[#5F0917]">
             <FiSend className="w-5 h-5" />
           </div>
         </div>
@@ -306,7 +306,7 @@ const Notifications = () => {
             <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">System</p>
             <h3 className="text-2xl font-black text-gray-900 mt-1">{stats.system || 0}</h3>
           </div>
-          <div className="p-3 rounded-2xl bg-purple-50 text-purple-600">
+          <div className="p-3 rounded-2xl bg-[#FAF5EF] text-[#A87B39]">
             <FiCheckCircle className="w-5 h-5" />
           </div>
         </div>
@@ -341,8 +341,8 @@ const Notifications = () => {
                     }}
                     className={`flex items-center justify-center gap-2 py-2.5 px-3 rounded-2xl text-xs font-black transition-all cursor-pointer border ${
                       sendTo === 'all'
-                        ? 'bg-[#E8DACD] text-[#2B1B17] border-[#E8DACD] shadow-xs'
-                        : 'bg-[#F2E6DA] text-gray-600 border-transparent hover:bg-gray-200'
+                        ? 'bg-[#7A0C1E] text-white border-[#7A0C1E] shadow-xs'
+                        : 'bg-[#FAF5EF] text-gray-700 border-transparent hover:bg-[#E8DACD]'
                     }`}
                   >
                     <FiUsers className="w-4 h-4" />
@@ -354,8 +354,8 @@ const Notifications = () => {
                     onClick={() => setSendTo('specific')}
                     className={`flex items-center justify-center gap-2 py-2.5 px-3 rounded-2xl text-xs font-black transition-all cursor-pointer border ${
                       sendTo === 'specific'
-                        ? 'bg-[#E8DACD] text-[#2B1B17] border-[#E8DACD] shadow-xs'
-                        : 'bg-[#F2E6DA] text-gray-600 border-transparent hover:bg-gray-200'
+                        ? 'bg-[#7A0C1E] text-white border-[#7A0C1E] shadow-xs'
+                        : 'bg-[#FAF5EF] text-gray-700 border-transparent hover:bg-[#E8DACD]'
                     }`}
                   >
                     <FiUser className="w-4 h-4" />
@@ -367,7 +367,7 @@ const Notifications = () => {
                 {sendTo === 'specific' && (
                   <div className="relative pt-2" ref={searchDropdownRef}>
                     {selectedUser ? (
-                      <div className="flex items-center justify-between p-3 rounded-2xl bg-[#FAF5EF]/60 border border-[#E8DACD]">
+                      <div className="flex items-center justify-between p-3 rounded-2xl bg-[#FAF5EF] border border-[#E8DACD]">
                         <div className="flex items-center gap-2.5 overflow-hidden">
                           <div className="w-8 h-8 rounded-full bg-[#7A0C1E] text-white flex items-center justify-center font-black text-xs shrink-0">
                             {selectedUser.name?.charAt(0) || 'U'}
@@ -397,7 +397,7 @@ const Notifications = () => {
                             onFocus={() => {
                               if (userSearchResults.length > 0) setShowUserDropdown(true);
                             }}
-                            className="w-full pl-10 pr-9 py-2.5 rounded-2xl bg-[#F2E6DA] text-xs font-semibold text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E]"
+                            className="w-full pl-10 pr-9 py-2.5 rounded-2xl bg-[#FAF5EF] text-xs font-semibold text-gray-800 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E]"
                           />
                           {isSearchingUsers && (
                             <FiLoader className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#7A0C1E] animate-spin" />
@@ -416,13 +416,13 @@ const Notifications = () => {
                                   setShowUserDropdown(false);
                                   setUserSearchInput('');
                                 }}
-                                className="w-full text-left p-3 hover:bg-[#F2E6DA] transition-colors flex items-center justify-between cursor-pointer"
+                                className="w-full text-left p-3 hover:bg-[#FAF5EF] transition-colors flex items-center justify-between cursor-pointer"
                               >
                                 <div>
                                   <p className="text-xs font-extrabold text-gray-900">{usr.name || 'Unnamed'}</p>
                                   <p className="text-[11px] text-gray-400">{usr.email}</p>
                                 </div>
-                                <span className="text-[10px] font-bold text-gray-400 uppercase bg-gray-100 px-2 py-0.5 rounded-full">
+                                <span className="text-[10px] font-bold text-[#7A0C1E] uppercase bg-[#FAF5EF] px-2 py-0.5 rounded-full border border-[#E8DACD]">
                                   {usr.role || 'User'}
                                 </span>
                               </button>
@@ -449,7 +449,7 @@ const Notifications = () => {
                       className={`py-2 px-1 rounded-xl text-[11px] font-black uppercase tracking-wider transition-all cursor-pointer text-center border ${
                         notificationType === type
                           ? 'bg-[#7A0C1E] text-white border-[#7A0C1E] shadow-2xs scale-[1.02]'
-                          : 'bg-[#F2E6DA] text-gray-600 border-transparent hover:bg-gray-200'
+                          : 'bg-[#FAF5EF] text-gray-700 border-transparent hover:bg-[#E8DACD]'
                       }`}
                     >
                       {type}
@@ -468,7 +468,7 @@ const Notifications = () => {
                   placeholder="Notification title..."
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  className="w-full px-4 py-3 rounded-2xl bg-[#F2E6DA] text-xs font-semibold text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all"
+                  className="w-full px-4 py-3 rounded-2xl bg-[#FAF5EF] text-xs font-semibold text-gray-800 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all"
                 />
               </div>
 
@@ -482,7 +482,7 @@ const Notifications = () => {
                   placeholder="Write your notification message..."
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
-                  className="w-full px-4 py-3 rounded-2xl bg-[#F2E6DA] text-xs font-semibold text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all resize-none"
+                  className="w-full px-4 py-3 rounded-2xl bg-[#FAF5EF] text-xs font-semibold text-gray-800 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all resize-none"
                 />
               </div>
 
@@ -490,7 +490,7 @@ const Notifications = () => {
               <button
                 type="submit"
                 disabled={isSending}
-                className="btn-primary w-full py-3.5 rounded-2xl font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-md cursor-pointer disabled:opacity-50 transition-all hover:scale-[1.01]"
+                className="bg-[#7A0C1E] hover:bg-[#5F0917] text-white w-full py-3.5 rounded-2xl font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-md cursor-pointer disabled:opacity-50 transition-all hover:scale-[1.01]"
               >
                 {isSending ? (
                   <>
@@ -536,7 +536,7 @@ const Notifications = () => {
                         setSearchTerm(e.target.value);
                         setCurrentPage(1);
                       }}
-                      className="w-full pl-8 pr-3 py-1.5 rounded-xl bg-[#F2E6DA] text-xs font-semibold text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E]"
+                      className="w-full pl-8 pr-3 py-1.5 rounded-xl bg-[#FAF5EF] text-xs font-semibold text-gray-700 border border-[#E8DACD] focus:outline-none focus:ring-2 focus:ring-[#7A0C1E]"
                     />
                   </div>
 
@@ -547,7 +547,7 @@ const Notifications = () => {
                       setTypeFilter(e.target.value);
                       setCurrentPage(1);
                     }}
-                    className="px-3 py-1.5 rounded-xl bg-[#F2E6DA] text-xs font-bold text-gray-700 focus:outline-none cursor-pointer border-none"
+                    className="px-3 py-1.5 rounded-xl bg-[#FAF5EF] text-xs font-bold text-gray-700 border border-[#E8DACD] focus:outline-none cursor-pointer"
                   >
                     <option value="all">All Types</option>
                     <option value="push">PUSH</option>
@@ -563,7 +563,7 @@ const Notifications = () => {
                       setTargetFilter(e.target.value);
                       setCurrentPage(1);
                     }}
-                    className="px-3 py-1.5 rounded-xl bg-[#F2E6DA] text-xs font-bold text-gray-700 focus:outline-none cursor-pointer border-none"
+                    className="px-3 py-1.5 rounded-xl bg-[#FAF5EF] text-xs font-bold text-gray-700 border border-[#E8DACD] focus:outline-none cursor-pointer"
                   >
                     <option value="all">All Targets</option>
                     <option value="all_users">Broadcast (All)</option>
@@ -584,7 +584,7 @@ const Notifications = () => {
                 )}
 
                 <table className="w-full text-left text-xs">
-                  <thead className="bg-[#F2E6DA] text-gray-400 font-extrabold text-[11px] uppercase tracking-wider">
+                  <thead className="bg-[#FAF5EF] text-[#7A0C1E] font-extrabold text-[11px] uppercase tracking-wider">
                     <tr>
                       <th className="py-3 px-4 rounded-l-xl">Title</th>
                       <th className="py-3 px-4">Recipient</th>
@@ -607,7 +607,7 @@ const Notifications = () => {
                         const isRead = item.is_read;
 
                         return (
-                          <tr key={item.id} className="hover:bg-gray-50/80 transition-colors">
+                          <tr key={item.id} className="hover:bg-[#FAF5EF]/40 transition-colors">
                             {/* Title & Message Snippet */}
                             <td className="py-3.5 px-4 max-w-[200px]">
                               <div className="font-extrabold text-gray-900 truncate">
@@ -630,7 +630,7 @@ const Notifications = () => {
                                   <span className="text-xs font-bold text-gray-800">
                                     {item.user?.name || `User #${item.user_id}`}
                                   </span>
-                                  <span className="ml-1.5 px-2 py-0.5 rounded-md text-[10px] font-black uppercase bg-sky-100 text-sky-700">
+                                  <span className="ml-1.5 px-2 py-0.5 rounded-md text-[10px] font-black uppercase bg-[#FAF5EF] text-[#7A0C1E]">
                                     {item.user?.role || 'Customer'}
                                   </span>
                                 </div>
@@ -647,11 +647,11 @@ const Notifications = () => {
                             {/* Status Badge */}
                             <td className="py-3.5 px-4">
                               {isRead ? (
-                                <span className="inline-block px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider bg-[#E8DACD]/50 text-[#1E7741]">
+                                <span className="inline-block px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider bg-[#FAF5EF] text-[#5F0917]">
                                   Read
                                 </span>
                               ) : (
-                                <span className="inline-block px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider bg-[#5F0917]/50 text-[#D96B3B]">
+                                <span className="inline-block px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider bg-[#F2E6DA]/40 text-[#7A0C1E]">
                                   Unread
                                 </span>
                               )}
@@ -683,7 +683,7 @@ const Notifications = () => {
 
             {/* Pagination Footer */}
             {totalPages > 1 && (
-              <div className="pt-3 border-t border-[#E8DACD] flex items-center justify-between text-xs font-bold text-gray-500">
+              <div className="pt-3 border-t border-[#E8DACD] flex items-center justify-between text-xs font-bold text-gray-600">
                 <span>
                   Showing page {currentPage} of {totalPages} ({totalItems} items)
                 </span>
@@ -691,17 +691,17 @@ const Notifications = () => {
                   <button
                     disabled={currentPage === 1}
                     onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                    className="p-1.5 rounded-xl bg-gray-100 text-gray-700 disabled:opacity-40 hover:bg-[#FAF5EF] hover:text-[#2B1B17] transition-all cursor-pointer"
+                    className="p-1.5 rounded-xl bg-[#FAF5EF] text-[#7A0C1E] border border-[#E8DACD] disabled:opacity-40 hover:bg-[#7A0C1E] hover:text-white transition-all cursor-pointer"
                   >
                     <FiChevronLeft className="w-4 h-4" />
                   </button>
-                  <span className="px-2.5 py-1 rounded-lg bg-gray-100 text-gray-800 font-black">
+                  <span className="px-2.5 py-1 rounded-lg bg-[#7A0C1E] text-white font-black">
                     {currentPage}
                   </span>
                   <button
                     disabled={currentPage === totalPages}
                     onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-                    className="p-1.5 rounded-xl bg-gray-100 text-gray-700 disabled:opacity-40 hover:bg-[#FAF5EF] hover:text-[#2B1B17] transition-all cursor-pointer"
+                    className="p-1.5 rounded-xl bg-[#FAF5EF] text-[#7A0C1E] border border-[#E8DACD] disabled:opacity-40 hover:bg-[#7A0C1E] hover:text-white transition-all cursor-pointer"
                   >
                     <FiChevronRight className="w-4 h-4" />
                   </button>

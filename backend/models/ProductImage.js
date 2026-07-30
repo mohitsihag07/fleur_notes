@@ -1,50 +1,19 @@
-'use strict';
-const { Model } = require('sequelize');
+const mongoose = require('mongoose');
+const { Schema } = mongoose;
 
-module.exports = (sequelize, DataTypes) => {
-  class ProductImage extends Model {
-    static associate(models) {
-      ProductImage.belongsTo(models.Product, { foreignKey: 'product_id', as: 'product' });
-    }
-  }
+const productImageSchema = new Schema({
+  product_id: { type: Schema.Types.ObjectId, ref: 'Product', required: true },
+  image: { type: String, required: true },
+  alt_text: { type: String, default: null },
+  is_thumbnail: { type: Boolean, default: false },
+  sort_order: { type: Number, default: 0 },
+}, {
+  timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true },
+});
 
-  ProductImage.init({
-    id: {
-      type: DataTypes.BIGINT.UNSIGNED,
-      autoIncrement: true,
-      primaryKey: true,
-    },
-    product_id: {
-      type: DataTypes.BIGINT.UNSIGNED,
-      allowNull: false,
-      references: { model: 'products', key: 'id' },
-    },
-    image: {
-      type: DataTypes.STRING(255),
-      allowNull: false,
-    },
-    alt_text: {
-      type: DataTypes.STRING(200),
-      allowNull: true,
-    },
-    is_thumbnail: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false,
-    },
-    sort_order: {
-      type: DataTypes.INTEGER.UNSIGNED,
-      defaultValue: 0,
-    },
-  }, {
-    sequelize,
-    modelName: 'ProductImage',
-    tableName: 'product_images',
-    timestamps: true,
-    underscored: true,
-    indexes: [
-      { fields: ['product_id'] },
-    ],
-  });
+productImageSchema.index({ product_id: 1 });
 
-  return ProductImage;
-};
+const ProductImage = mongoose.model('ProductImage', productImageSchema);
+module.exports = ProductImage;

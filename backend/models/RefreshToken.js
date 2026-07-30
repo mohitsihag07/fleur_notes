@@ -1,51 +1,18 @@
-'use strict';
-const { Model } = require('sequelize');
+const mongoose = require('mongoose');
+const { Schema } = mongoose;
 
-module.exports = (sequelize, DataTypes) => {
-  class RefreshToken extends Model {
-    static associate(models) {
-      RefreshToken.belongsTo(models.User, { foreignKey: 'user_id', as: 'user' });
-    }
-  }
+const refreshTokenSchema = new Schema({
+  user_id: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+  token: { type: String, required: true },
+  expires_at: { type: Date, required: true },
+  is_revoked: { type: Boolean, default: false },
+  ip_address: { type: String, default: null },
+  user_agent: { type: String, default: null },
+}, {
+  timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true },
+});
 
-  RefreshToken.init({
-    id: {
-      type: DataTypes.BIGINT.UNSIGNED,
-      autoIncrement: true,
-      primaryKey: true,
-    },
-    user_id: {
-      type: DataTypes.BIGINT.UNSIGNED,
-      allowNull: false,
-      references: { model: 'users', key: 'id' },
-    },
-    token: {
-      type: DataTypes.TEXT,
-      allowNull: false,
-    },
-    expires_at: {
-      type: DataTypes.DATE,
-      allowNull: false,
-    },
-    is_revoked: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false,
-    },
-    ip_address: {
-      type: DataTypes.STRING(45),
-      allowNull: true,
-    },
-    user_agent: {
-      type: DataTypes.TEXT,
-      allowNull: true,
-    },
-  }, {
-    sequelize,
-    modelName: 'RefreshToken',
-    tableName: 'refresh_tokens',
-    timestamps: true,
-    underscored: true,
-  });
-
-  return RefreshToken;
-};
+const RefreshToken = mongoose.model('RefreshToken', refreshTokenSchema);
+module.exports = RefreshToken;

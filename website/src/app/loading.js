@@ -8,7 +8,7 @@ export default function Loading() {
         <div className="w-12 h-12 rounded-full bg-[#F2E6DA] border border-[#E8DACD] flex items-center justify-center animate-spin">
           <Sparkles className="w-6 h-6 text-[#7A0C1E]" />
         </div>
-        <p className="font-serif-luxury text-sm text-[#7A0C1E] tracking-wider font-semibold">Fleur Notes</p>
+        <p className="font-serif-luxury text-sm text-[#7A0C1E] tracking-wider font-semibold">Caflore</p>
       </div>
     </div>
   );

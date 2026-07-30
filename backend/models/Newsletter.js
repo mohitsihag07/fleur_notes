@@ -1,49 +1,19 @@
-'use strict';
-const { Model } = require('sequelize');
+const mongoose = require('mongoose');
+const { Schema } = mongoose;
 
-module.exports = (sequelize, DataTypes) => {
-  class Newsletter extends Model {
-    static associate(models) {}
-  }
+const newsletterSchema = new Schema({
+  email: { type: String, required: true, unique: true, maxlength: 150 },
+  name: { type: String, default: null },
+  is_active: { type: Boolean, default: true },
+  subscribed_at: { type: Date, default: Date.now },
+  unsubscribed_at: { type: Date, default: null },
+}, {
+  timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true },
+});
 
-  Newsletter.init({
-    id: {
-      type: DataTypes.BIGINT.UNSIGNED,
-      autoIncrement: true,
-      primaryKey: true,
-    },
-    email: {
-      type: DataTypes.STRING(150),
-      allowNull: false,
-      unique: true,
-    },
-    name: {
-      type: DataTypes.STRING(100),
-      allowNull: true,
-    },
-    is_active: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: true,
-    },
-    subscribed_at: {
-      type: DataTypes.DATE,
-      allowNull: true,
-      defaultValue: DataTypes.NOW,
-    },
-    unsubscribed_at: {
-      type: DataTypes.DATE,
-      allowNull: true,
-    },
-  }, {
-    sequelize,
-    modelName: 'Newsletter',
-    tableName: 'newsletters',
-    timestamps: true,
-    underscored: true,
-    indexes: [
-      { fields: ['email'] },
-    ],
-  });
+newsletterSchema.index({ email: 1 });
 
-  return Newsletter;
-};
+const Newsletter = mongoose.model('Newsletter', newsletterSchema);
+module.exports = Newsletter;

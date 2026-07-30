@@ -28,9 +28,46 @@ import { ProductCard } from '@/components/shop/ProductCard';
 import { featuredProducts as staticFeaturedProducts } from '@/data/products';
 import { productService } from '@/services/productService';
 import { formatPrice } from '@/utils/formatPrice';
+import { useSettings } from '@/context/SettingsContext';
+import { useShop } from '@/context/ShopContext';
 import { getFormattedImage } from '@/utils/formatImage';
 
+function renderFormattedDescription(text) {
+  if (!text) return null;
+  const lines = text.split(/\r?\n/);
+  return (
+    <div className="space-y-2 text-xs text-gray-700 leading-relaxed">
+      {lines.map((line, idx) => {
+        const trimmed = line.trim();
+        if (!trimmed) {
+          return <div key={idx} className="h-2" />;
+        }
+
+        const isBullet = /^[•\-*]\s+/.test(trimmed) || /^\d+[\.\)]\s+/.test(trimmed);
+
+        if (isBullet) {
+          const cleanText = trimmed.replace(/^[•\-*]\s+/, '').replace(/^\d+[\.\)]\s+/, '');
+          return (
+            <div key={idx} className="flex items-start gap-2.5 my-1 pl-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#7A0C1E] mt-1.5 shrink-0" />
+              <span className="flex-1 font-medium">{cleanText}</span>
+            </div>
+          );
+        }
+
+        return (
+          <p key={idx} className="leading-relaxed">
+            {line}
+          </p>
+        );
+      })}
+    </div>
+  );
+}
+
 export default function ProductDetailPage() {
+  const { freeShippingThreshold, flatShippingRate, enableFreeShipping } = useSettings();
+  const { toggleWishlist, isInWishlist, addToCart } = useShop();
   const params = useParams();
   const slug = params?.slug;
 
@@ -75,8 +112,7 @@ export default function ProductDetailPage() {
     fetchRelated();
   }, []);
   const [quantity, setQuantity] = useState(1);
-  const [activeTab, setActiveTab] = useState('description');
-  const [isInWishlist, setIsInWishlist] = useState(false);
+  const [activeTab, setActiveTab] = useState('specifications');
 
   const [touchStartX, setTouchStartX] = useState(0);
   const [touchEndX, setTouchEndX] = useState(0);
@@ -88,9 +124,9 @@ export default function ProductDetailPage() {
       try {
         const res = await productService.getProductById(slug);
         let prodData = null;
-        if (res?.success && res?.data) {
+        if (res?.data) {
           prodData = res.data;
-        } else if (res && typeof res === 'object' && res.id) {
+        } else if (res && typeof res === 'object' && (res._id || res.id || res.name)) {
           prodData = res;
         }
         setProduct(prodData);
@@ -177,34 +213,18 @@ export default function ProductDetailPage() {
   const originalPrice = product.sale_price ? parseFloat(product.price) : null;
   const stockQuantity = product.inventory?.quantity ?? 10;
 
-  const reviewsList = (product?.reviews && product.reviews.length > 0) ? product.reviews : [
-    {
-      id: 'rev-1',
-      user: { name: 'Aditi Sharma' },
-      created_at: '2026-07-15',
-      rating: 5,
-      review: 'Absolutely gorgeous bouquet! The dried eucalyptus leaves smell divine and the packaging was extremely secure. Highly recommended.'
-    },
-    {
-      id: 'rev-2',
-      user: { name: 'Rohan Mehta' },
-      created_at: '2026-06-28',
-      rating: 4,
-      review: 'Very premium look and feel. It looks stunning on my dining table. Knocked off one star because shipping took a day longer than expected.'
-    },
-    {
-      id: 'rev-3',
-      user: { name: 'Priyanka Sen' },
-      created_at: '2026-06-10',
-      rating: 5,
-      review: 'The quality of Fleur Notes products is unmatched. Exceeded all my expectations. Will definitely buy more items soon!'
-    }
-  ];
+  const reviewsList = Array.isArray(product?.reviews) ? product.reviews : [];
 
-  const totalReviewsCount = product?.reviews?.length ? product.reviews.length : 126;
-  const avgRatingScore = product?.reviews?.length
-    ? (product.reviews.reduce((acc, r) => acc + (parseFloat(r.rating) || 5), 0) / product.reviews.length).toFixed(1)
-    : '4.8';
+  const totalReviewsCount = reviewsList.length;
+  const avgRatingScore = totalReviewsCount > 0
+    ? (reviewsList.reduce((acc, r) => acc + (parseFloat(r.rating) || 5), 0) / totalReviewsCount).toFixed(1)
+    : '0.0';
+
+  const starCounts = [5, 4, 3, 2, 1].map((stars) => {
+    const count = reviewsList.filter((r) => Math.round(parseFloat(r.rating) || 5) === stars).length;
+    const percentage = totalReviewsCount > 0 ? Math.round((count / totalReviewsCount) * 100) : 0;
+    return { stars, count, percentage };
+  });
 
   const specsList = [
     { label: 'Material', value: 'Ceramic / Stoneware' },
@@ -295,6 +315,11 @@ export default function ProductDetailPage() {
                     New
                   </span>
                 )}
+                {product.is_featured && (
+                  <span className="bg-[#5C3D8F] text-white text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider w-fit">
+                    Featured
+                  </span>
+                )}
                 {(product.is_best_seller || product.is_bestseller) && (
                   <span className="bg-[#A87B39] text-white text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider w-fit">
                     Bestseller
@@ -305,12 +330,12 @@ export default function ProductDetailPage() {
               <div className="absolute top-4 right-4 flex flex-col gap-3.5 z-10">
                 <button
                   type="button"
-                  onClick={() => setIsInWishlist(!isInWishlist)}
+                  onClick={() => product && toggleWishlist(product)}
                   className="text-[#2B1B17] hover:text-[#7A0C1E] hover:scale-110 active:scale-90 transition-all cursor-pointer drop-shadow-sm"
                   aria-label="Wishlist"
                 >
                   <Heart className={`w-5 h-5 transition-colors ${
-                    isInWishlist ? 'fill-[#7A0C1E] text-[#7A0C1E]' : 'text-[#2B1B17]'
+                    (product && (isInWishlist(product.id || product._id))) ? 'fill-[#7A0C1E] text-[#7A0C1E]' : 'text-[#2B1B17]'
                   }`} />
                 </button>
                 <button
@@ -345,6 +370,8 @@ export default function ProductDetailPage() {
 
           <div className="lg:col-span-5 space-y-6">
             <div>
+
+
               <h1 className="font-serif-luxury text-3xl sm:text-4xl font-bold text-[#2B1B17] tracking-tight">
                 {product.name}
               </h1>
@@ -372,9 +399,9 @@ export default function ProductDetailPage() {
               )}
             </div>
 
-            <p className="text-xs text-[#705B54] leading-relaxed">
-              {product.description || 'Handcrafted artisanal product made with premium materials for your home and lifestyle.'}
-            </p>
+            <div>
+              {renderFormattedDescription(product.description || 'Handcrafted artisanal product made with premium materials for your home and lifestyle.')}
+            </div>
 
             <div className="flex flex-wrap items-center gap-4 py-3 border-y border-[#E8DACD] text-[11px] text-[#705B54]">
               <span className={`flex items-center gap-1 font-bold ${stockQuantity > 0 ? 'text-green-700' : 'text-rose-600'}`}>
@@ -382,7 +409,7 @@ export default function ProductDetailPage() {
               </span>
               <span className="flex items-center gap-1">
                 <Truck className="w-3.5 h-3.5 text-[#7A0C1E]" />
-                Free Shipping over ₹1,500
+                {enableFreeShipping ? `Free Shipping over ${formatPrice(freeShippingThreshold)}` : `Flat Shipping ${formatPrice(flatShippingRate)}`}
               </span>
               <span className="flex items-center gap-1">
                 <RotateCcw className="w-3.5 h-3.5 text-[#7A0C1E]" />
@@ -410,11 +437,24 @@ export default function ProductDetailPage() {
             </div>
 
             <div className="space-y-3 pt-2">
-              <button className="w-full flex items-center justify-center gap-2 py-3 bg-[#7A0C1E] hover:bg-[#5F0917] text-white rounded-xl text-xs font-bold transition-colors cursor-pointer shadow-sm">
+              <button
+                type="button"
+                onClick={() => product && addToCart(product, quantity)}
+                className="w-full flex items-center justify-center gap-2 py-3 bg-[#7A0C1E] hover:bg-[#5F0917] text-white rounded-xl text-xs font-bold transition-colors cursor-pointer shadow-sm"
+              >
                 <ShoppingBag className="w-4 h-4" />
                 <span>Add to Cart</span>
               </button>
-              <button className="w-full py-3 bg-white border border-[#E8DACD] text-[#2B1B17] hover:bg-[#F2E6DA] rounded-xl text-xs font-bold transition-colors cursor-pointer">
+              <button
+                type="button"
+                onClick={() => {
+                  if (product) {
+                    addToCart(product, quantity);
+                    window.location.href = '/cart';
+                  }
+                }}
+                className="w-full py-3 bg-white border border-[#E8DACD] text-[#2B1B17] hover:bg-[#F2E6DA] rounded-xl text-xs font-bold transition-colors cursor-pointer"
+              >
                 Buy Now
               </button>
             </div>
@@ -440,7 +480,7 @@ export default function ProductDetailPage() {
 
         <div className="mt-16 bg-white rounded-2xl border border-[#E8DACD] p-6 sm:p-10 shadow-sm">
           <div className="flex border-b border-[#E8DACD] gap-8 text-xs font-bold text-gray-400 overflow-x-auto no-scrollbar pb-3 mb-6 relative">
-            {['description', 'specifications', 'reviews', 'shipping'].map((tab) => (
+            {['specifications', 'reviews', 'shipping'].map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
@@ -468,13 +508,6 @@ export default function ProductDetailPage() {
               exit={{ opacity: 0, y: -8 }}
               transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
             >
-              {activeTab === 'description' && (
-                <div className="space-y-4 text-xs text-gray-600 leading-relaxed max-w-3xl">
-                  <p>
-                    {product.description || 'This artisanal product brings elegance to your home space. Made with high-grade materials and exquisite craftsmanship.'}
-                  </p>
-                </div>
-              )}
 
               {activeTab === 'specifications' && (
                 <div className="max-w-md">
@@ -505,13 +538,7 @@ export default function ProductDetailPage() {
                     </div>
 
                     <div className="md:col-span-8 space-y-2.5 flex flex-col justify-center">
-                      {[
-                        { stars: 5, percentage: 85 },
-                        { stars: 4, percentage: 10 },
-                        { stars: 3, percentage: 3 },
-                        { stars: 2, percentage: 1 },
-                        { stars: 1, percentage: 1 }
-                      ].map((row) => (
+                      {starCounts.map((row) => (
                         <div key={row.stars} className="flex items-center gap-3 text-xs">
                           <span className="w-4 text-[#2B1B17] font-semibold">{row.stars}★</span>
                           <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
@@ -525,32 +552,47 @@ export default function ProductDetailPage() {
 
                   <div className="space-y-6">
                     <h4 className="font-serif-luxury text-lg font-bold text-[#2B1B17] mb-4">Customer Reviews</h4>
-                    <div className="divide-y divide-[#E8DACD]/40 space-y-6">
-                      {reviewsList.map((rev) => (
-                        <div key={rev.id} className="pt-6 first:pt-0">
-                          <div className="flex items-center justify-between gap-4 mb-2">
-                            <div className="flex items-center gap-3">
-                              <div className="w-8 h-8 rounded-full bg-[#7A0C1E] text-white flex items-center justify-center font-bold text-xs uppercase">
-                                {(rev.user?.name || 'Customer').charAt(0)}
+                    {reviewsList.length === 0 ? (
+                      <div className="bg-[#FAF5EF]/50 border border-[#E8DACD]/60 rounded-2xl p-8 text-center text-[#705B54]">
+                        <p className="font-bold text-sm text-[#2B1B17]">No customer reviews yet for this product.</p>
+                        <p className="text-xs mt-1 text-[#705B54]">Be the first customer to share your experience!</p>
+                      </div>
+                    ) : (
+                      <div className="divide-y divide-[#E8DACD]/40 space-y-6">
+                        {reviewsList.map((rev, idx) => (
+                          <div key={rev.id || rev._id || idx} className="pt-6 first:pt-0">
+                            <div className="flex items-center justify-between gap-4 mb-2">
+                              <div className="flex items-center gap-3">
+                                <div className="w-8 h-8 rounded-full bg-[#7A0C1E] text-white flex items-center justify-center font-bold text-xs uppercase">
+                                  {(rev.user?.name || 'Customer').charAt(0)}
+                                </div>
+                                <div>
+                                  <span className="block text-xs font-bold text-[#2B1B17]">{rev.user?.name || 'Verified Customer'}</span>
+                                  <span className="block text-[10px] text-gray-400">
+                                    {rev.created_at ? new Date(rev.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : 'Recently'}
+                                  </span>
+                                </div>
                               </div>
-                              <div>
-                                <span className="block text-xs font-bold text-[#2B1B17]">{rev.user?.name || 'Verified Customer'}</span>
-                                <span className="block text-[10px] text-gray-400">{new Date(rev.created_at || Date.now()).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
-                              </div>
-                            </div>
 
-                            <div className="flex gap-0.5 text-[#A87B39]">
-                              {[...Array(5)].map((_, i) => (
-                                <Star key={i} className={`w-3.5 h-3.5 ${i < (rev.rating || 5) ? 'fill-[#A87B39]' : 'fill-none'} text-[#A87B39]`} />
-                              ))}
+                              <div className="flex gap-0.5 text-[#A87B39]">
+                                {[...Array(5)].map((_, i) => (
+                                  <Star key={i} className={`w-3.5 h-3.5 ${i < (rev.rating || 5) ? 'fill-[#A87B39]' : 'text-gray-300 fill-none'} text-[#A87B39]`} />
+                                ))}
+                              </div>
                             </div>
+                            <p className="text-xs text-gray-600 leading-relaxed sm:pl-11">
+                              {rev.review || rev.comment}
+                            </p>
+                            {rev.admin_reply && (
+                              <div className="mt-3 ml-11 p-3 bg-[#FAF5EF] rounded-xl border border-[#E8DACD]/60 text-xs">
+                                <span className="font-bold text-[#7A0C1E] block mb-1">Response from Caflore:</span>
+                                <p className="text-gray-600">{rev.admin_reply}</p>
+                              </div>
+                            )}
                           </div>
-                          <p className="text-xs text-gray-600 leading-relaxed sm:pl-11">
-                            {rev.review || rev.comment}
-                          </p>
-                        </div>
-                      ))}
-                    </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </div>
               )}
@@ -560,7 +602,7 @@ export default function ProductDetailPage() {
                   <h4 className="font-bold text-[#2B1B17]">Standard Delivery</h4>
                   <p>Orders are dispatched within 24-48 business hours. Standard delivery usually arrives within 3-5 business days across India.</p>
                   <h4 className="font-bold text-[#2B1B17] mt-4">Easy Returns</h4>
-                  <p>If you receive a damaged product or want a replacement, submit a return request within 30 days of delivery.</p>
+                  <p>If you receive a damaged product or want a replacement, submit a return request within 5 days of delivery.</p>
                 </div>
               )}
             </motion.div>

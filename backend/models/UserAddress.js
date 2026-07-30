@@ -1,76 +1,25 @@
-'use strict';
-const { Model } = require('sequelize');
+const mongoose = require('mongoose');
+const { Schema } = mongoose;
 
-module.exports = (sequelize, DataTypes) => {
-  class UserAddress extends Model {
-    static associate(models) {
-      UserAddress.belongsTo(models.User, { foreignKey: 'user_id', as: 'user' });
-      UserAddress.hasMany(models.Order, { foreignKey: 'address_id', as: 'orders' });
-    }
-  }
+const userAddressSchema = new Schema({
+  user_id: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+  full_name: { type: String, required: true, maxlength: 100 },
+  phone: { type: String, required: true, maxlength: 20 },
+  address_line1: { type: String, required: true },
+  address_line2: { type: String, default: null },
+  city: { type: String, required: true, maxlength: 100 },
+  state: { type: String, required: true, maxlength: 100 },
+  pincode: { type: String, required: true, maxlength: 10 },
+  country: { type: String, required: true, default: 'India', maxlength: 100 },
+  is_default: { type: Boolean, default: false },
+  label: { type: String, enum: ['home', 'work', 'other'], default: 'home' },
+}, {
+  timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true },
+});
 
-  UserAddress.init({
-    id: {
-      type: DataTypes.BIGINT.UNSIGNED,
-      autoIncrement: true,
-      primaryKey: true,
-    },
-    user_id: {
-      type: DataTypes.BIGINT.UNSIGNED,
-      allowNull: false,
-      references: { model: 'users', key: 'id' },
-    },
-    full_name: {
-      type: DataTypes.STRING(100),
-      allowNull: false,
-    },
-    phone: {
-      type: DataTypes.STRING(20),
-      allowNull: false,
-    },
-    address_line1: {
-      type: DataTypes.STRING(255),
-      allowNull: false,
-    },
-    address_line2: {
-      type: DataTypes.STRING(255),
-      allowNull: true,
-    },
-    city: {
-      type: DataTypes.STRING(100),
-      allowNull: false,
-    },
-    state: {
-      type: DataTypes.STRING(100),
-      allowNull: false,
-    },
-    pincode: {
-      type: DataTypes.STRING(10),
-      allowNull: false,
-    },
-    country: {
-      type: DataTypes.STRING(100),
-      allowNull: false,
-      defaultValue: 'India',
-    },
-    is_default: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false,
-    },
-    label: {
-      type: DataTypes.ENUM('home', 'work', 'other'),
-      defaultValue: 'home',
-    },
-  }, {
-    sequelize,
-    modelName: 'UserAddress',
-    tableName: 'user_addresses',
-    timestamps: true,
-    underscored: true,
-    indexes: [
-      { fields: ['user_id'] },
-    ],
-  });
+userAddressSchema.index({ user_id: 1 });
 
-  return UserAddress;
-};
+const UserAddress = mongoose.model('UserAddress', userAddressSchema);
+module.exports = UserAddress;

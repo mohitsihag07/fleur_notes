@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { 
-  FiSearch, 
-  FiFilter, 
-  FiPlus, 
+import {
+  FiSearch,
+  FiFilter,
+  FiPlus,
   FiEye,
-  FiEdit2, 
-  FiTrash2, 
+  FiEdit2,
+  FiTrash2,
   FiLoader,
   FiChevronLeft,
   FiChevronRight,
@@ -120,14 +120,15 @@ const Coupons = () => {
 
   // Handle status toggle on click
   const handleToggleStatus = async (coupon) => {
+    const cId = coupon._id || coupon.id;
     try {
-      const response = await ApiInstance.put(`/coupons/update-status/${coupon.id}`);
+      const response = await ApiInstance.put(`/coupons/update-status/${cId}`);
       if (response.data.success) {
         const updatedCoupon = response.data.data;
         const newStatus = updatedCoupon.status || (coupon.status === 'active' ? 'inactive' : 'active');
         toast.success(`Coupon "${coupon.code}" status changed to ${newStatus.toUpperCase()}`);
         setCoupons((prev) =>
-          prev.map((c) => (c.id === coupon.id ? { ...c, status: newStatus } : c))
+          prev.map((c) => ((c._id || c.id) === cId ? { ...c, status: newStatus } : c))
         );
         fetchCoupons(currentPage, searchTerm, statusFilter);
       }
@@ -141,7 +142,7 @@ const Coupons = () => {
   const openDeleteModal = (coupon) => {
     setDeleteModalState({
       isOpen: true,
-      couponId: coupon.id,
+      couponId: coupon._id || coupon.id,
       couponCode: coupon.code,
       isDeleting: false
     });
@@ -182,14 +183,19 @@ const Coupons = () => {
       {/* Header section */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-black text-gray-900 tracking-tight">
-            Coupons & Discounts
-          </h2>
-          <p className="text-sm font-semibold text-gray-500 mt-1">
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 rounded-2xl bg-[#FAF5EF] text-[#7A0C1E] border border-[#E8DACD]">
+              <FiTag className="w-6 h-6 text-[#7A0C1E]" />
+            </div>
+            <h2 className="text-2xl font-black text-gray-900 tracking-tight">
+              Coupons & Discounts
+            </h2>
+          </div>
+          <p className="text-sm font-semibold text-gray-500 mt-1.5 pl-11">
             Manage promotional discount cards, usage limits, and expiration rules.
           </p>
         </div>
-        
+
         <div className="flex items-center gap-3">
           {/* Total Pill */}
           <div className="flex items-center gap-2 bg-white px-4 py-2.5 rounded-full border border-[#E8DACD] shadow-sm">
@@ -202,7 +208,7 @@ const Coupons = () => {
           {/* Add Coupon Button */}
           <button
             onClick={handleAddCoupon}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#7A0C1E] hover:bg-[#5F0917] text-white font-black text-xs shadow-md shadow-red-900/10 transition-all cursor-pointer"
+            className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#7A0C1E] hover:bg-[#5F0917] text-white font-black text-xs shadow-md transition-all cursor-pointer"
           >
             <FiPlus className="w-4 h-4" />
             <span>Add Coupon</span>
@@ -218,7 +224,7 @@ const Coupons = () => {
             <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Total Coupons</p>
             <h3 className="text-2xl font-black text-gray-900 mt-1">{stats.totalCoupons}</h3>
           </div>
-          <div className="p-3 rounded-2xl bg-purple-50 text-purple-600">
+          <div className="p-3 rounded-2xl bg-[#FAF5EF] text-[#7A0C1E]">
             <FiTag className="w-5 h-5" />
           </div>
         </div>
@@ -229,7 +235,7 @@ const Coupons = () => {
             <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Active Coupons</p>
             <h3 className="text-2xl font-black text-gray-900 mt-1">{stats.activeCoupons}</h3>
           </div>
-          <div className="p-3 rounded-2xl bg-[#E8DACD]/40 text-[#1E7741]">
+          <div className="p-3 rounded-2xl bg-[#FAF5EF] text-[#5F0917]">
             <FiCheckCircle className="w-5 h-5" />
           </div>
         </div>
@@ -240,7 +246,7 @@ const Coupons = () => {
             <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Inactive Coupons</p>
             <h3 className="text-2xl font-black text-gray-900 mt-1">{stats.inactiveCoupons}</h3>
           </div>
-          <div className="p-3 rounded-2xl bg-amber-50 text-amber-600">
+          <div className="p-3 rounded-2xl bg-[#F2E6DA]/40 text-[#7A0C1E]">
             <FiXCircle className="w-5 h-5" />
           </div>
         </div>
@@ -251,7 +257,7 @@ const Coupons = () => {
             <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Expired Coupons</p>
             <h3 className="text-2xl font-black text-gray-900 mt-1">{stats.expiredCoupons}</h3>
           </div>
-          <div className="p-3 rounded-2xl bg-rose-50 text-rose-600">
+          <div className="p-3 rounded-2xl bg-gray-100 text-gray-500">
             <FiClock className="w-5 h-5" />
           </div>
         </div>
@@ -270,22 +276,21 @@ const Coupons = () => {
               setSearchTerm(e.target.value);
               setCurrentPage(1);
             }}
-            className="w-full pl-11 pr-4 py-2.5 rounded-full bg-[#F2E6DA] text-sm font-semibold text-gray-700 border-none focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all"
+            className="w-full pl-11 pr-4 py-2.5 rounded-full bg-[#FAF5EF] text-sm font-semibold text-gray-700 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all"
           />
         </div>
 
         {/* Controls: View Mode & Status Filter */}
         <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto justify-end">
           {/* View Mode Toggle Switch (Cards / Table) */}
-          <div className="flex items-center bg-[#F2E6DA] p-1 rounded-full border border-[#E8DACD]">
+          <div className="flex items-center bg-[#FAF5EF] p-1 rounded-full border border-[#E8DACD]">
             <button
               type="button"
               onClick={() => setViewMode('grid')}
-              className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-black transition-all cursor-pointer ${
-                viewMode === 'grid'
+              className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-black transition-all cursor-pointer ${viewMode === 'grid'
                   ? 'bg-[#7A0C1E] text-white shadow-xs'
                   : 'text-gray-600 hover:text-gray-900'
-              }`}
+                }`}
             >
               <FiGrid className="w-3.5 h-3.5" />
               <span>Cards</span>
@@ -293,11 +298,10 @@ const Coupons = () => {
             <button
               type="button"
               onClick={() => setViewMode('table')}
-              className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-black transition-all cursor-pointer ${
-                viewMode === 'table'
+              className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-black transition-all cursor-pointer ${viewMode === 'table'
                   ? 'bg-[#7A0C1E] text-white shadow-xs'
                   : 'text-gray-600 hover:text-gray-900'
-              }`}
+                }`}
             >
               <FiList className="w-3.5 h-3.5" />
               <span>Table</span>
@@ -305,7 +309,7 @@ const Coupons = () => {
           </div>
 
           {/* Status Filter */}
-          <div className="relative flex items-center gap-2 bg-[#F2E6DA] px-4 py-2.5 rounded-full text-xs font-bold text-gray-600">
+          <div className="relative flex items-center gap-2 bg-[#FAF5EF] px-4 py-2.5 rounded-full text-xs font-bold text-gray-600 border border-[#E8DACD]">
             <FiFilter className="w-3.5 h-3.5 text-gray-400" />
             <span>Status:</span>
             <select
@@ -330,7 +334,7 @@ const Coupons = () => {
         {isLoading && (
           <div className="absolute inset-0 bg-white/70 backdrop-blur-xs flex items-center justify-center z-20 rounded-3xl">
             <div className="flex items-center gap-3 font-black text-[#7A0C1E] text-sm">
-              <FiLoader className="w-5 h-5 animate-spin" />
+              <FiLoader className="w-5 h-5 animate-spin text-[#7A0C1E]" />
               <span>Loading Coupons...</span>
             </div>
           </div>
@@ -363,16 +367,16 @@ const Coupons = () => {
                       <div className="flex items-center justify-between gap-3 mb-4 pt-1">
                         {/* Code Pill with Copy Action */}
                         <div className="flex items-center gap-2">
-                          <span className="px-3.5 py-1.5 rounded-2xl bg-[#F2E6DA] text-gray-900 font-mono font-black text-sm border border-[#E8DACD] tracking-wider uppercase shadow-2xs">
+                          <span className="px-3.5 py-1.5 rounded-2xl bg-[#FAF5EF] text-[#7A0C1E] font-mono font-black text-sm border border-[#E8DACD] tracking-wider uppercase shadow-2xs">
                             {coupon.code}
                           </span>
                           <button
                             onClick={() => handleCopyCode(coupon.code)}
-                            className="p-1.5 rounded-xl bg-gray-50 text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-all cursor-pointer"
+                            className="p-1.5 rounded-xl bg-[#FAF5EF]/60 text-[#7A0C1E] hover:bg-[#FAF5EF] transition-all cursor-pointer border border-[#E8DACD]"
                             title="Copy Code"
                           >
                             {copiedCode === coupon.code ? (
-                              <FiCheck className="w-3.5 h-3.5 text-emerald-600" />
+                              <FiCheck className="w-3.5 h-3.5 text-[#5F0917]" />
                             ) : (
                               <FiCopy className="w-3.5 h-3.5" />
                             )}
@@ -382,13 +386,12 @@ const Coupons = () => {
                         {/* Clickable Status Badge */}
                         <button
                           onClick={() => handleToggleStatus(coupon)}
-                          className={`px-3 py-1 rounded-full text-xs font-black transition-all cursor-pointer select-none uppercase ${
-                            isActive
-                              ? 'bg-[#E8DACD]/60 text-[#1E7741] hover:bg-[#E8DACD]'
+                          className={`px-3 py-1 rounded-full text-xs font-black transition-all cursor-pointer select-none uppercase ${isActive
+                              ? 'bg-[#FAF5EF] text-[#5F0917] border border-[#E8DACD] hover:bg-[#E8DACD]'
                               : coupon.status === 'expired'
-                              ? 'bg-amber-100 text-amber-700 hover:bg-amber-200'
-                              : 'bg-red-100 text-red-600 hover:bg-red-200'
-                          }`}
+                                ? 'bg-amber-100 text-amber-700 hover:bg-amber-200'
+                                : 'bg-red-100 text-red-600 hover:bg-red-200'
+                            }`}
                           title="Click to change status"
                         >
                           {coupon.status}
@@ -396,12 +399,12 @@ const Coupons = () => {
                       </div>
 
                       {/* Big Discount Hero Box with Rupee Sign */}
-                      <div className="p-4 rounded-2xl bg-[#F2E6DA]/80 border border-[#E8DACD] mb-4 flex items-center justify-between">
+                      <div className="p-4 rounded-2xl bg-[#FAF5EF]/50 border border-[#E8DACD] mb-4 flex items-center justify-between">
                         <div>
                           <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider block mb-0.5">
                             Discount Value
                           </span>
-                          <div className="text-2xl font-black text-emerald-600 tracking-tight flex items-center gap-1">
+                          <div className="text-2xl font-black text-[#7A0C1E] tracking-tight flex items-center gap-1">
                             {isPercentage ? (
                               <>
                                 <FiPercent className="w-5 h-5" />
@@ -409,7 +412,7 @@ const Coupons = () => {
                               </>
                             ) : (
                               <>
-                                <FiRuppeeSign className="w-5 h-5 text-emerald-600" />
+                                <FiRuppeeSign className="w-5 h-5 text-[#7A0C1E]" />
                                 <span>{coupon.value} OFF</span>
                               </>
                             )}
@@ -431,7 +434,7 @@ const Coupons = () => {
                       {/* Metadata Grid Info */}
                       <div className="grid grid-cols-2 gap-3 text-xs mb-5 font-semibold text-gray-600">
                         {/* Min Cart Required */}
-                        <div className="p-3 rounded-xl bg-gray-50/70 border border-[#E8DACD]">
+                        <div className="p-3 rounded-xl bg-[#FAF5EF]/30 border border-[#E8DACD]">
                           <span className="text-[10px] font-bold text-gray-400 block uppercase mb-0.5">Min Order</span>
                           <span className="font-extrabold text-gray-900 inline-flex items-center gap-0.5">
                             {coupon.minimum_amount > 0 ? (
@@ -446,15 +449,15 @@ const Coupons = () => {
                         </div>
 
                         {/* Usage Limits */}
-                        <div className="p-3 rounded-xl bg-gray-50/70 border border-[#E8DACD]">
+                        <div className="p-3 rounded-xl bg-[#FAF5EF]/30 border border-[#E8DACD]">
                           <span className="text-[10px] font-bold text-gray-400 block uppercase mb-0.5">Usage Used</span>
                           <span className="font-extrabold text-gray-900">{usageText}</span>
                         </div>
                       </div>
 
                       {/* Expiry Date Bar */}
-                      <div className="flex items-center gap-2 text-xs font-semibold text-gray-500 mb-6 bg-[#FAF5EF]/40 p-2.5 rounded-2xl">
-                        <FiCalendar className="w-4 h-4 text-[#88A626]" />
+                      <div className="flex items-center gap-2 text-xs font-semibold text-gray-500 mb-6 bg-[#FAF5EF]/40 p-2.5 rounded-2xl border border-[#E8DACD]">
+                        <FiCalendar className="w-4 h-4 text-[#7A0C1E]" />
                         <span>Expires: <strong>{formatDate(coupon.expiry_date)}</strong></span>
                       </div>
                     </div>
@@ -468,7 +471,7 @@ const Coupons = () => {
                         <button
                           onClick={() => handleViewCoupon(coupon.id)}
                           title="View Coupon Details"
-                          className="p-2 rounded-xl bg-gray-100 text-gray-600 hover:bg-[#FAF5EF] hover:text-[#2B1B17] transition-all cursor-pointer shadow-2xs"
+                          className="p-2 rounded-xl bg-white text-[#7A0C1E] hover:bg-[#7A0C1E] hover:text-white border border-[#E8DACD] transition-all cursor-pointer shadow-2xs"
                         >
                           <FiEye className="w-4 h-4" />
                         </button>
@@ -477,7 +480,7 @@ const Coupons = () => {
                         <button
                           onClick={() => handleEditCoupon(coupon.id)}
                           title="Edit Coupon Page"
-                          className="p-2 rounded-xl bg-gray-100 text-gray-600 hover:bg-[#FAF5EF] hover:text-[#2B1B17] transition-all cursor-pointer shadow-2xs"
+                          className="p-2 rounded-xl bg-white text-[#7A0C1E] hover:bg-[#7A0C1E] hover:text-white border border-[#E8DACD] transition-all cursor-pointer shadow-2xs"
                         >
                           <FiEdit2 className="w-4 h-4" />
                         </button>
@@ -502,7 +505,7 @@ const Coupons = () => {
           <div className="bg-white rounded-3xl shadow-sm border border-[#E8DACD] overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-sm">
-                <thead className="bg-[#F2E6DA] text-gray-400 font-bold text-xs uppercase tracking-wider">
+                <thead className="bg-[#FAF5EF] text-[#7A0C1E] font-extrabold text-xs uppercase tracking-wider">
                   <tr>
                     <th className="py-4 px-6">Coupon Code</th>
                     <th className="py-4 px-6">Discount</th>
@@ -514,7 +517,7 @@ const Coupons = () => {
                     <th className="py-4 px-6 text-right">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#E8DACD] font-medium text-gray-700">
+                <tbody className="divide-y divide-[#E8DACD]/60 font-medium text-gray-700">
                   {!isLoading && coupons.length === 0 ? (
                     <tr>
                       <td colSpan="8" className="py-12 text-center text-gray-400 font-bold">
@@ -526,18 +529,19 @@ const Coupons = () => {
                       const isActive = coupon.status === 'active';
                       const isPercentage = coupon.type === 'percentage';
                       const usageText = `${coupon.usage_count || 0} / ${coupon.usage_limit || '∞'}`;
+                      const cId = coupon._id || coupon.id;
 
                       return (
-                        <tr key={coupon.id} className="hover:bg-gray-50 transition-colors">
+                        <tr key={cId} className="hover:bg-[#FAF5EF]/40 transition-colors">
                           {/* Code */}
                           <td className="py-4 px-6">
-                            <span className="px-3 py-1.5 rounded-xl bg-[#F2E6DA] text-gray-900 font-mono font-black text-xs border border-[#E8DACD]">
+                            <span className="px-3 py-1.5 rounded-xl bg-[#FAF5EF] text-[#7A0C1E] font-mono font-black text-xs border border-[#E8DACD]">
                               {coupon.code}
                             </span>
                           </td>
 
                           {/* Discount Value */}
-                          <td className="py-4 px-6 font-black text-emerald-600">
+                          <td className="py-4 px-6 font-black text-[#7A0C1E]">
                             {isPercentage ? `${coupon.value}% OFF` : `₹${coupon.value} OFF`}
                           </td>
 
@@ -560,13 +564,12 @@ const Coupons = () => {
                           <td className="py-4 px-6">
                             <button
                               onClick={() => handleToggleStatus(coupon)}
-                              className={`px-3 py-1 rounded-full text-xs font-black uppercase transition-all cursor-pointer ${
-                                isActive
-                                  ? 'bg-[#E8DACD]/60 text-[#1E7741] hover:bg-[#E8DACD]'
+                              className={`px-3 py-1 rounded-full text-xs font-black uppercase transition-all cursor-pointer ${isActive
+                                  ? 'bg-[#FAF5EF] text-[#5F0917] hover:bg-[#E8DACD]'
                                   : coupon.status === 'expired'
-                                  ? 'bg-amber-100 text-amber-700 hover:bg-amber-200'
-                                  : 'bg-red-100 text-red-600 hover:bg-red-200'
-                              }`}
+                                    ? 'bg-amber-100 text-amber-700 hover:bg-amber-200'
+                                    : 'bg-red-100 text-red-600 hover:bg-red-200'
+                                }`}
                             >
                               {coupon.status}
                             </button>
@@ -581,16 +584,16 @@ const Coupons = () => {
                           <td className="py-4 px-6 text-right">
                             <div className="flex items-center justify-end gap-2">
                               <button
-                                onClick={() => handleViewCoupon(coupon.id)}
+                                onClick={() => handleViewCoupon(cId)}
                                 title="View Coupon"
-                                className="p-2 rounded-xl bg-gray-100 text-gray-600 hover:bg-[#FAF5EF] hover:text-[#2B1B17] transition-all cursor-pointer shadow-2xs"
+                                className="p-2 rounded-xl bg-[#FAF5EF] text-[#7A0C1E] hover:bg-[#7A0C1E] hover:text-white transition-all cursor-pointer shadow-2xs"
                               >
                                 <FiEye className="w-4 h-4" />
                               </button>
                               <button
-                                onClick={() => handleEditCoupon(coupon.id)}
+                                onClick={() => handleEditCoupon(cId)}
                                 title="Edit Coupon"
-                                className="p-2 rounded-xl bg-gray-100 text-gray-600 hover:bg-[#FAF5EF] hover:text-[#2B1B17] transition-all cursor-pointer shadow-2xs"
+                                className="p-2 rounded-xl bg-[#FAF5EF] text-[#7A0C1E] hover:bg-[#7A0C1E] hover:text-white transition-all cursor-pointer shadow-2xs"
                               >
                                 <FiEdit2 className="w-4 h-4" />
                               </button>
@@ -616,7 +619,7 @@ const Coupons = () => {
 
       {/* Pagination Footer */}
       {totalPages > 1 && (
-        <div className="bg-white rounded-3xl px-6 py-4 shadow-sm border border-[#E8DACD] flex items-center justify-between text-xs font-bold text-gray-500">
+        <div className="bg-white rounded-3xl px-6 py-4 shadow-sm border border-[#E8DACD] flex items-center justify-between text-xs font-bold text-gray-600">
           <span>
             Showing page {currentPage} of {totalPages} ({totalItems} total coupons)
           </span>
@@ -624,17 +627,17 @@ const Coupons = () => {
             <button
               disabled={currentPage === 1}
               onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-              className="p-2 rounded-xl bg-gray-100 text-gray-700 disabled:opacity-40 shadow-xs hover:bg-[#FAF5EF] hover:text-[#2B1B17] transition-all cursor-pointer"
+              className="p-2 rounded-xl bg-[#FAF5EF] text-[#7A0C1E] border border-[#E8DACD] disabled:opacity-40 shadow-xs hover:bg-[#7A0C1E] hover:text-white transition-all cursor-pointer"
             >
               <FiChevronLeft className="w-4 h-4" />
             </button>
-            <span className="px-3 py-1 rounded-lg bg-gray-100 text-gray-800 font-black">
+            <span className="px-3 py-1 rounded-lg bg-[#7A0C1E] text-white font-black">
               {currentPage}
             </span>
             <button
               disabled={currentPage === totalPages}
               onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-              className="p-2 rounded-xl bg-gray-100 text-gray-700 disabled:opacity-40 shadow-xs hover:bg-[#FAF5EF] hover:text-[#2B1B17] transition-all cursor-pointer"
+              className="p-2 rounded-xl bg-[#FAF5EF] text-[#7A0C1E] border border-[#E8DACD] disabled:opacity-40 shadow-xs hover:bg-[#7A0C1E] hover:text-white transition-all cursor-pointer"
             >
               <FiChevronRight className="w-4 h-4" />
             </button>

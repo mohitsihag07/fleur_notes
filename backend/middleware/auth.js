@@ -1,7 +1,6 @@
 const jwt = require('jsonwebtoken');
-const db = require('../models');
+const { User } = require('../models');
 const helper = require('../helper/helper');
-const { User } = db;
 
 // 1. General Authentication Middleware (Sets req.user)
 const authentication = async (req, res, next) => {
@@ -15,14 +14,13 @@ const authentication = async (req, res, next) => {
     const token = authHeader.split(' ')[1];
 
     try {
-      const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
-      const user = await User.findByPk(decodedToken.id);
+      const decodedToken = jwt.verify(token, process.env.JWT_SECRET || 'caflore_secret_jwt_key_2026');
+      const user = await User.findById(decodedToken.id);
 
       if (!user) {
         return helper.error(res, 'Invalid authentication token', 401);
       }
 
-      // Attach user to request
       req.user = user;
       next();
     } catch (error) {
@@ -62,19 +60,18 @@ const authenticateAdmin = async (req, res, next) => {
     const token = authHeader.split(' ')[1];
 
     try {
-      const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+      const decodedToken = jwt.verify(token, process.env.JWT_SECRET || 'caflore_secret_jwt_key_2026');
 
       if (decodedToken.role !== 'admin') {
         return helper.error(res, 'Access denied: Admins only', 403);
       }
 
-      const admin = await User.findByPk(decodedToken.id);
+      const admin = await User.findById(decodedToken.id);
 
       if (!admin || admin.role !== 'admin') {
         return helper.error(res, 'Access denied: Admins only', 403);
       }
 
-      // Attach both admin and user to request for flexibility
       req.admin = admin;
       req.user = admin;
       next();

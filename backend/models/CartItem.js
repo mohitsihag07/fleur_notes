@@ -1,56 +1,19 @@
-'use strict';
-const { Model } = require('sequelize');
+const mongoose = require('mongoose');
+const { Schema } = mongoose;
 
-module.exports = (sequelize, DataTypes) => {
-  class CartItem extends Model {
-    static associate(models) {
-      CartItem.belongsTo(models.Cart, { foreignKey: 'cart_id', as: 'cart' });
-      CartItem.belongsTo(models.Product, { foreignKey: 'product_id', as: 'product' });
-      CartItem.belongsTo(models.ProductVariant, { foreignKey: 'variant_id', as: 'variant' });
-    }
-  }
+const cartItemSchema = new Schema({
+  cart_id: { type: Schema.Types.ObjectId, ref: 'Cart', required: true },
+  product_id: { type: Schema.Types.ObjectId, ref: 'Product', required: true },
+  variant_id: { type: Schema.Types.ObjectId, ref: 'ProductVariant', default: null },
+  quantity: { type: Number, required: true, default: 1 },
+  price: { type: Number, required: true },
+}, {
+  timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true },
+});
 
-  CartItem.init({
-    id: {
-      type: DataTypes.BIGINT.UNSIGNED,
-      autoIncrement: true,
-      primaryKey: true,
-    },
-    cart_id: {
-      type: DataTypes.BIGINT.UNSIGNED,
-      allowNull: false,
-      references: { model: 'carts', key: 'id' },
-    },
-    product_id: {
-      type: DataTypes.BIGINT.UNSIGNED,
-      allowNull: false,
-      references: { model: 'products', key: 'id' },
-    },
-    variant_id: {
-      type: DataTypes.BIGINT.UNSIGNED,
-      allowNull: true,
-      references: { model: 'product_variants', key: 'id' },
-    },
-    quantity: {
-      type: DataTypes.INTEGER.UNSIGNED,
-      allowNull: false,
-      defaultValue: 1,
-    },
-    price: {
-      type: DataTypes.DECIMAL(10, 2),
-      allowNull: false,
-      comment: 'Snapshot of price at time of adding to cart',
-    },
-  }, {
-    sequelize,
-    modelName: 'CartItem',
-    tableName: 'cart_items',
-    timestamps: true,
-    underscored: true,
-    indexes: [
-      { fields: ['cart_id'] },
-    ],
-  });
+cartItemSchema.index({ cart_id: 1 });
 
-  return CartItem;
-};
+const CartItem = mongoose.model('CartItem', cartItemSchema);
+module.exports = CartItem;

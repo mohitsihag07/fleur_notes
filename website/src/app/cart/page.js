@@ -20,45 +20,99 @@ import {
 } from 'lucide-react';
 import { Container } from '@/components/ui/Container';
 import { ProductCard } from '@/components/shop/ProductCard';
-import { featuredProducts } from '@/data/products';
+import { productService } from '@/services/productService';
+import { getFormattedImage } from '@/utils/formatImage';
 import { formatPrice } from '@/utils/formatPrice';
+import { useShop } from '@/context/ShopContext';
+import { useSettings } from '@/context/SettingsContext';
 
 export default function CartPage() {
-  const [cartItems, setCartItems] = useState([
-    {
-      id: 'cart-1',
-      productId: 'prod-1',
-      name: 'Minimal Ceramic Vase',
-      slug: 'minimal-ceramic-vase',
-      color: 'Beige',
-      price: 28.00,
-      quantity: 1,
-      image: '/images/products/vase.jpg',
-      inStock: true
-    },
-    {
-      id: 'cart-2',
-      productId: 'prod-2',
-      name: 'Aromatherapy Soy Candle',
-      slug: 'aromatherapy-soy-candle',
-      color: 'Sandalwood & Lavender',
-      price: 18.00,
-      quantity: 2,
-      image: '/images/products/candle.jpg',
-      inStock: true
-    },
-    {
-      id: 'cart-3',
-      productId: 'prod-3',
-      name: 'Handwoven Wall Hanging',
-      slug: 'handwoven-wall-hanging',
-      color: 'Natural Cream',
-      price: 42.00,
-      quantity: 1,
-      image: '/images/products/wall_hanging.jpg',
-      inStock: true
+  const { freeShippingThreshold, flatShippingRate, enableFreeShipping } = useSettings();
+  const { setCartCount } = useShop();
+  const [cartItems, setCartItems] = useState([]);
+  const [frequentlyBought, setFrequentlyBought] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  React.useEffect(() => {
+    async function loadCartData() {
+      setLoading(true);
+      try {
+        const response = await productService.getProducts({ limit: 12, status: 'active' });
+        const realProducts = response?.data || [];
+
+        let formatted = [];
+        if (realProducts.length > 0) {
+          formatted = realProducts.map((p) => {
+            let imgUrl = null;
+            if (p.images && p.images.length > 0) {
+              const thumb = p.images.find((i) => i.is_thumbnail) || p.images[0];
+              imgUrl = thumb?.image;
+            } else if (p.image) {
+              imgUrl = p.image;
+            }
+
+            return {
+              id: `cart-${p.id || p._id}`,
+              productId: p.id || p._id,
+              name: p.name,
+              slug: p.slug || p.id || p._id,
+              color: p.category_id?.name || 'Artisanal',
+              price: p.sale_price ? parseFloat(p.sale_price) : parseFloat(p.price || 0),
+              originalPrice: p.sale_price ? parseFloat(p.price) : null,
+              quantity: 1,
+              image: getFormattedImage(imgUrl),
+              inStock: true,
+              isNew: Boolean(p.is_new_arrival || p.is_new),
+              isBestSeller: Boolean(p.is_best_seller || p.is_bestseller),
+              rating: 4.8
+            };
+          });
+
+          setFrequentlyBought(formatted.slice(3, 7));
+        }
+
+        const userToken = localStorage.getItem('user_token');
+        if (!userToken) {
+          localStorage.removeItem('cart_items');
+          setCartItems([]);
+          setLoading(false);
+          return;
+        }
+
+        const savedCart = localStorage.getItem('cart_items');
+        if (savedCart !== null) {
+          try {
+            const parsed = JSON.parse(savedCart);
+            if (Array.isArray(parsed)) {
+              const normalized = parsed.map((it) => ({
+                ...it,
+                image: getFormattedImage(it.image || (it.images && it.images[0]?.image) || null)
+              }));
+              setCartItems(normalized);
+            } else {
+              setCartItems([]);
+            }
+          } catch (e) {
+            setCartItems([]);
+          }
+        } else {
+          setCartItems([]);
+        }
+      } catch (err) {
+        console.error('Failed to load cart products:', err);
+      } finally {
+        setLoading(false);
+      }
     }
-  ]);
+    loadCartData();
+  }, []);
+
+  const saveCartState = (items) => {
+    setCartItems(items);
+    localStorage.setItem('cart_items', JSON.stringify(items));
+    const totalCount = items.reduce((acc, item) => acc + (item.quantity || 1), 0);
+    setCartCount(totalCount);
+  };
 
   const [promoCode, setPromoCode] = useState('');
   const [appliedDiscount, setAppliedDiscount] = useState(0);
@@ -68,39 +122,40 @@ export default function CartPage() {
 
   // Quantity updates
   const updateQuantity = (id, delta) => {
-    setCartItems(
-      cartItems
-        .map((item) => {
-          if (item.id === id) {
-            const newQty = item.quantity + delta;
-            return newQty > 0 ? { ...item, quantity: newQty } : item;
-          }
-          return item;
-        })
-        .filter((item) => item.quantity > 0)
-    );
+    const nextCart = cartItems
+      .map((item) => {
+        if (item.id === id) {
+          const newQty = item.quantity + delta;
+          return newQty > 0 ? { ...item, quantity: newQty } : item;
+        }
+        return item;
+      })
+      .filter((item) => item.quantity > 0);
+
+    saveCartState(nextCart);
   };
 
   const removeItem = (id) => {
-    setCartItems(cartItems.filter((item) => item.id !== id));
+    const nextCart = cartItems.filter((item) => item.id !== id);
+    saveCartState(nextCart);
   };
 
   const clearCart = () => {
-    setCartItems([]);
+    saveCartState([]);
   };
 
   // Calculations
   const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
-  const freeShippingThreshold = 1500;
+  const isFreeShipping = enableFreeShipping && subtotal >= freeShippingThreshold;
   const amountForFreeShipping = Math.max(0, freeShippingThreshold - subtotal);
-  const shippingCost = subtotal >= freeShippingThreshold || subtotal === 0 ? 0 : 150;
+  const shippingCost = subtotal === 0 || isFreeShipping ? 0 : flatShippingRate;
   const discountAmount = (subtotal * appliedDiscount) / 100;
   const estimatedTax = (subtotal - discountAmount) * 0.05;
   const grandTotal = Math.max(0, subtotal - discountAmount + shippingCost + estimatedTax);
 
   const handleApplyPromo = (e) => {
     e.preventDefault();
-    if (promoCode.trim().toUpperCase() === 'FLOREA10' || promoCode.trim().toUpperCase() === 'FLEUR10') {
+    if (promoCode.trim().toUpperCase() === 'CAFLORE10') {
       setAppliedDiscount(10);
       setPromoSuccess('Coupon applied! (10% OFF)');
       setPromoError('');
@@ -109,7 +164,7 @@ export default function CartPage() {
       setPromoSuccess('Coupon applied! (15% OFF)');
       setPromoError('');
     } else {
-      setPromoError('Invalid coupon code. Try FLEUR10');
+      setPromoError('Invalid coupon code. Try CAFLORE10');
       setPromoSuccess('');
     }
   };
@@ -193,11 +248,15 @@ export default function CartPage() {
                     {/* Image & Product Title */}
                     <div className="flex items-center gap-4 flex-1">
                       <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-xl overflow-hidden bg-[#FAF5EF] border border-[#E8DACD] shrink-0">
-                        <Image
-                          src={item.image}
-                          alt={item.name}
-                          fill
-                          className="object-cover"
+                        <img
+                          src={getFormattedImage(
+                            item.image || item.product?.image || (item.product && item.product.images && item.product.images[0]?.image) || null
+                          )}
+                          alt={item.name || 'Product'}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            e.currentTarget.src = 'https://images.unsplash.com/photo-1603006905003-be475563bc59?auto=format&fit=crop&q=80&w=600';
+                          }}
                         />
                       </div>
                       <div className="space-y-1">
@@ -336,7 +395,7 @@ export default function CartPage() {
                         type="text"
                         value={promoCode}
                         onChange={(e) => setPromoCode(e.target.value)}
-                        placeholder="e.g. FLEUR10"
+                        placeholder="e.g. CAFLORE10"
                         className="w-full pl-9 pr-3 py-2 text-xs rounded-xl border border-[#E8DACD] outline-none uppercase font-semibold text-[#2B1B17]"
                       />
                     </div>
@@ -379,17 +438,19 @@ export default function CartPage() {
           </div>
         )}
 
-        {/* You May Also Like Carousel */}
-        <div className="mt-20 pt-10 border-t border-[#E8DACD]">
-          <h3 className="font-serif-luxury text-2xl sm:text-3xl font-bold text-[#2B1B17] mb-6">
-            Frequently Bought Together
-          </h3>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6">
-            {featuredProducts.slice(0, 4).map((p) => (
-              <ProductCard key={p.id} product={p} />
-            ))}
+        {/* Frequently Bought Together Section with Real Products */}
+        {frequentlyBought.length > 0 && (
+          <div className="mt-20 pt-10 border-t border-[#E8DACD]">
+            <h3 className="font-serif-luxury text-2xl sm:text-3xl font-bold text-[#2B1B17] mb-6">
+              Frequently Bought Together
+            </h3>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6">
+              {frequentlyBought.map((p) => (
+                <ProductCard key={p.id} product={p} />
+              ))}
+            </div>
           </div>
-        </div>
+        )}
       </Container>
     </div>
   );

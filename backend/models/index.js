@@ -1,43 +1,76 @@
 'use strict';
 
-const fs = require('fs');
-const path = require('path');
-const Sequelize = require('sequelize');
-const process = require('process');
-const basename = path.basename(__filename);
-const env = process.env.NODE_ENV || 'development';
-const config = require(__dirname + '/../config/config.json')[env];
-const db = {};
+// Load all Mongoose models so they are registered with mongoose
+const User = require('./User');
+const UserProfile = require('./UserProfile');
+const UserAddress = require('./UserAddress');
+const Product = require('./Product');
+const ProductImage = require('./ProductImage');
+const ProductInventory = require('./ProductInventory');
+const ProductVariant = require('./ProductVariant');
+const ProductTag = require('./ProductTag');
+const ProductTagMap = require('./ProductTagMap');
+const Category = require('./Category');
+const Order = require('./Order');
+const OrderItem = require('./OrderItem');
+const OrderStatusHistory = require('./OrderStatusHistory');
+const Banner = require('./Banner');
+const Cart = require('./Cart');
+const CartItem = require('./CartItem');
+const Coupon = require('./Coupon');
+const CouponUsage = require('./CouponUsage');
+const Review = require('./Review');
+const Faq = require('./Faq');
+const Newsletter = require('./Newsletter');
+const Notification = require('./Notification');
+const Payment = require('./Payment');
+const PaymentTransaction = require('./PaymentTransaction');
+const Shipment = require('./Shipment');
+const SupportConversation = require('./SupportConversation');
+const SupportMessage = require('./SupportMessage');
+const ContactMessage = require('./ContactMessage');
+const AuditLog = require('./AuditLog');
+const CustomerActivity = require('./CustomerActivity');
+const PasswordReset = require('./PasswordReset');
+const RefreshToken = require('./RefreshToken');
+const Setting = require('./Setting');
+const Cms = require('./Cms');
+const WishlistItem = require('./WishlistItem');
 
-let sequelize;
-if (config.use_env_variable) {
-  sequelize = new Sequelize(process.env[config.use_env_variable], config);
-} else {
-  sequelize = new Sequelize(config.database, config.username, config.password, config);
-}
-
-fs
-  .readdirSync(__dirname)
-  .filter(file => {
-    return (
-      file.indexOf('.') !== 0 &&
-      file !== basename &&
-      file.slice(-3) === '.js' &&
-      file.indexOf('.test.js') === -1
-    );
-  })
-  .forEach(file => {
-    const model = require(path.join(__dirname, file))(sequelize, Sequelize.DataTypes);
-    db[model.name] = model;
-  });
-
-Object.keys(db).forEach(modelName => {
-  if (db[modelName].associate) {
-    db[modelName].associate(db);
-  }
-});
-
-db.sequelize = sequelize;
-db.Sequelize = Sequelize;
-
-module.exports = db;
+module.exports = {
+  User,
+  UserProfile,
+  UserAddress,
+  Product,
+  ProductImage,
+  ProductInventory,
+  ProductVariant,
+  ProductTag,
+  ProductTagMap,
+  Category,
+  Order,
+  OrderItem,
+  OrderStatusHistory,
+  Banner,
+  Cart,
+  CartItem,
+  Coupon,
+  CouponUsage,
+  Review,
+  Faq,
+  Newsletter,
+  Notification,
+  Payment,
+  PaymentTransaction,
+  Shipment,
+  SupportConversation,
+  SupportMessage,
+  ContactMessage,
+  AuditLog,
+  CustomerActivity,
+  PasswordReset,
+  RefreshToken,
+  Setting,
+  Cms,
+  WishlistItem,
+};

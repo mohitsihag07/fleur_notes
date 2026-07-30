@@ -66,7 +66,7 @@ export function Hero() {
   const slide = slides[currentIndex] || heroSlides[0];
 
   return (
-    <section className="relative overflow-hidden w-full h-[70vh] sm:h-[80vh] min-h-[580px] border-b border-[#E8DACD]/40 bg-[#FAF5EF] flex items-center">
+    <section className="relative overflow-hidden w-full h-[35vh] sm:h-[48vh] lg:h-[55vh] min-h-[260px] lg:min-h-[400px] border-b border-[#E8DACD]/40 bg-[#FAF5EF] flex items-center">
       {/* Background Banner Slideshow */}
       <div className="absolute inset-0 z-0">
         <AnimatePresence mode="wait">
@@ -93,7 +93,7 @@ export function Hero() {
 
       {/* Hero Content (Layered directly over the banner) */}
       <Container className="relative z-20 w-full flex justify-start items-center">
-        <div className="w-full max-w-xl md:max-w-2xl py-12 md:py-20">
+        <div className="w-full max-w-xl md:max-w-2xl py-6 sm:py-12 md:py-20">
           <AnimatePresence mode="wait">
             <motion.div
               key={currentIndex}
@@ -101,24 +101,24 @@ export function Hero() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -15 }}
               transition={{ duration: 0.5 }}
-              className="flex flex-col items-start space-y-6"
+              className="flex flex-col items-start space-y-2 sm:space-y-6"
             >
               {/* Tagline */}
               {slide.tagline && (
-                <div className="inline-flex items-center gap-2 text-xs font-semibold tracking-widest text-[#7A0C1E] uppercase">
-                  <Heart className="w-3.5 h-3.5 fill-[#7A0C1E] text-[#7A0C1E]" />
+                <div className="inline-flex items-center gap-1.5 text-[10px] sm:text-xs font-semibold tracking-widest text-[#7A0C1E] uppercase">
+                  <Heart className="w-3 h-3 fill-[#7A0C1E] text-[#7A0C1E]" />
                   <span>{slide.tagline}</span>
-                  <Heart className="w-3.5 h-3.5 fill-[#7A0C1E] text-[#7A0C1E]" />
+                  <Heart className="w-3 h-3 fill-[#7A0C1E] text-[#7A0C1E]" />
                 </div>
               )}
 
               {/* Title */}
-              <h1 className="font-serif-luxury text-4xl sm:text-5xl lg:text-6xl font-bold text-[#7A0C1E] leading-[1.15] tracking-tight">
+              <h1 className="font-serif-luxury text-2xl sm:text-5xl lg:text-6xl font-bold text-[#7A0C1E] leading-[1.15] tracking-tight">
                 {slide.title}
               </h1>
 
               {/* Subtitle */}
-              <p className="text-base sm:text-lg text-black font-medium leading-relaxed max-w-xl">
+              <p className="text-xs sm:text-base lg:text-lg text-black font-medium leading-normal sm:leading-relaxed max-w-xl">
                 {slide.description}
               </p>
 

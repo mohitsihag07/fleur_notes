@@ -1,123 +1,35 @@
-'use strict';
-const { Model } = require('sequelize');
+const mongoose = require('mongoose');
+const { Schema } = mongoose;
 
-module.exports = (sequelize, DataTypes) => {
-  class Product extends Model {
-    static associate(models) {
-      Product.belongsTo(models.Category, { foreignKey: 'category_id', as: 'category' });
-      Product.hasMany(models.ProductImage, { foreignKey: 'product_id', as: 'images' });
-      Product.hasOne(models.ProductInventory, { foreignKey: 'product_id', as: 'inventory' });
-      Product.hasMany(models.ProductVariant, { foreignKey: 'product_id', as: 'variants' });
-      Product.belongsToMany(models.ProductTag, {
-        through: models.ProductTagMap,
-        foreignKey: 'product_id',
-        otherKey: 'tag_id',
-        as: 'tags',
-      });
-      Product.hasMany(models.WishlistItem, { foreignKey: 'product_id', as: 'wishlistItems' });
-      Product.hasMany(models.CartItem, { foreignKey: 'product_id', as: 'cartItems' });
-      Product.hasMany(models.OrderItem, { foreignKey: 'product_id', as: 'orderItems' });
-      Product.hasMany(models.Review, { foreignKey: 'product_id', as: 'reviews' });
-    }
-  }
+const productSchema = new Schema({
+  category_id: { type: Schema.Types.ObjectId, ref: 'Category', required: true },
+  name: { type: String, required: true, maxlength: 200 },
+  slug: { type: String, required: true, unique: true, maxlength: 250 },
+  sku: { type: String, required: true, unique: true, maxlength: 100 },
+  short_description: { type: String, default: null },
+  description: { type: String, default: null },
+  price: { type: Number, required: true },
+  sale_price: { type: Number, default: null },
+  weight: { type: Number, default: null },
+  length: { type: Number, default: null },
+  width: { type: Number, default: null },
+  height: { type: Number, default: null },
+  color: { type: String, default: null },
+  is_featured: { type: Boolean, default: false },
+  is_best_seller: { type: Boolean, default: false },
+  is_new_arrival: { type: Boolean, default: false },
+  status: { type: String, enum: ['active', 'inactive'], default: 'active' },
+  deleted_at: { type: Date, default: null },
+}, {
+  timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true },
+});
 
-  Product.init({
-    id: {
-      type: DataTypes.BIGINT.UNSIGNED,
-      autoIncrement: true,
-      primaryKey: true,
-    },
-    category_id: {
-      type: DataTypes.BIGINT.UNSIGNED,
-      allowNull: false,
-      references: { model: 'categories', key: 'id' },
-    },
-    name: {
-      type: DataTypes.STRING(200),
-      allowNull: false,
-    },
-    slug: {
-      type: DataTypes.STRING(250),
-      allowNull: false,
-      unique: true,
-    },
-    sku: {
-      type: DataTypes.STRING(100),
-      allowNull: false,
-      unique: true,
-    },
-    short_description: {
-      type: DataTypes.STRING(500),
-      allowNull: true,
-    },
-    description: {
-      type: DataTypes.TEXT,
-      allowNull: true,
-    },
-    price: {
-      type: DataTypes.DECIMAL(10, 2),
-      allowNull: false,
-    },
-    sale_price: {
-      type: DataTypes.DECIMAL(10, 2),
-      allowNull: true,
-      comment: 'Discounted price; if null, full price applies',
-    },
-    weight: {
-      type: DataTypes.DECIMAL(8, 3),
-      allowNull: true,
-      comment: 'Weight in kg',
-    },
-    length: {
-      type: DataTypes.DECIMAL(8, 2),
-      allowNull: true,
-    },
-    width: {
-      type: DataTypes.DECIMAL(8, 2),
-      allowNull: true,
-    },
-    height: {
-      type: DataTypes.DECIMAL(8, 2),
-      allowNull: true,
-    },
-    color: {
-      type: DataTypes.STRING(100),
-      allowNull: true,
-    },
-    is_featured: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false,
-    },
-    is_best_seller: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false,
-    },
-    is_new_arrival: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false,
-    },
-    status: {
-      type: DataTypes.ENUM('active', 'inactive'),
-      defaultValue: 'active',
-    },
-    deleted_at: {
-      type: DataTypes.DATE,
-      allowNull: true,
-    },
-  }, {
-    sequelize,
-    modelName: 'Product',
-    tableName: 'products',
-    timestamps: true,
-    underscored: true,
-    paranoid: true,
-    indexes: [
-      { fields: ['slug'] },
-      { fields: ['sku'] },
-      { fields: ['category_id'] },
-      { fields: ['status'] },
-    ],
-  });
+productSchema.index({ slug: 1 });
+productSchema.index({ sku: 1 });
+productSchema.index({ category_id: 1 });
+productSchema.index({ status: 1 });
 
-  return Product;
-};
+const Product = mongoose.model('Product', productSchema);
+module.exports = Product;

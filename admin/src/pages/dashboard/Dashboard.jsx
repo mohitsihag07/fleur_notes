@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { 
-  FiShoppingBag, 
-  FiUsers, 
-  FiBox, 
-  FiXCircle, 
-  FiTrendingUp, 
-  FiDollarSign, 
-  FiArrowRight, 
-  FiEye, 
+import {
+  FiShoppingBag,
+  FiUsers,
+  FiBox,
+  FiXCircle,
+  FiTrendingUp,
+  FiDollarSign,
+  FiArrowRight,
+  FiEye,
   FiLoader,
   FiPlus,
   FiTag,
@@ -91,69 +91,43 @@ const Dashboard = () => {
   const getStatusBadgeStyle = (status) => {
     switch (status?.toLowerCase()) {
       case 'delivered':
-        return 'bg-[#E8DACD]/50 text-[#1E7741] border-[#E8DACD]';
+        return 'bg-[#FAF5EF] text-[#5F0917] border-[#E8DACD]';
       case 'shipped':
       case 'out_for_delivery':
       case 'confirmed':
       case 'packed':
-        return 'bg-blue-100 text-blue-700 border-blue-200';
+        return 'bg-[#FAF5EF] text-[#7A0C1E] border-[#E8DACD]';
       case 'cancelled':
         return 'bg-red-100 text-red-700 border-red-200';
       case 'pending':
       default:
-        return 'bg-[#5F0917]/40 text-[#D96B3B] border-[#5F0917]';
+        return 'bg-[#F2E6DA]/40 text-[#7A0C1E] border-[#E8DACD]';
     }
   };
 
   return (
     <div className="space-y-8 pb-10">
       {/* Top Welcome Banner */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white rounded-3xl p-6 shadow-sm border border-[#E8DACD]">
-        <div>
-          <h2 className="text-2xl font-black text-gray-900 tracking-tight">
-            Welcome back, Fleur Admin! 👋
-          </h2>
-          <p className="text-xs font-semibold text-gray-500 mt-1">
-            Here is your live e-commerce store overview for <span className="text-gray-900 font-bold">{new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</span>.
-          </p>
-        </div>
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => navigate('/products/add')}
-            className="py-2.5 px-4 rounded-2xl bg-[#FAF5EF] text-[#2B1B17] font-black text-xs hover:bg-[#7A0C1E] hover:text-white transition-all cursor-pointer flex items-center gap-2 shadow-2xs"
-          >
-            <FiPlus className="w-4 h-4" />
-            <span>Add Product</span>
-          </button>
-          <button
-            onClick={() => navigate('/orders')}
-            className="py-2.5 px-4 rounded-2xl bg-[#7A0C1E] text-white font-black text-xs hover:bg-[#5F0917] transition-all cursor-pointer flex items-center gap-2 shadow-2xs"
-          >
-            <FiShoppingBag className="w-4 h-4" />
-            <span>Manage Orders</span>
-          </button>
-        </div>
-      </div>
 
       {/* 4 Stat Overview Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {/* Card 1: Monthly Revenue */}
-        <div 
+        <div
           onClick={() => navigate('/orders')}
-          className="bg-[#F5E1E3] text-[#7A0C1E] rounded-3xl p-6 shadow-lg shadow-[#F5E1E3]/50 flex items-center justify-between transition-transform duration-300 hover:-translate-y-1 cursor-pointer"
+          className="bg-gradient-to-br from-[#7A0C1E] to-[#5F0917] text-white rounded-3xl p-6 shadow-lg shadow-[#7A0C1E]/20 flex items-center justify-between transition-transform duration-300 hover:-translate-y-1 cursor-pointer"
         >
           <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-2xl bg-[#7A0C1E]/10 flex items-center justify-center shrink-0">
-              <FiRuppeeSign className="w-7 h-7 text-[#7A0C1E]" />
+            <div className="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center shrink-0">
+              <FiRuppeeSign className="w-7 h-7 text-white" />
             </div>
             <div>
-              <p className="text-xs font-black text-[#7A0C1E]/80 tracking-wide uppercase">
+              <p className="text-xs font-black text-white/80 tracking-wide uppercase">
                 Monthly Revenue
               </p>
-              <h3 className="text-2xl font-black mt-1 tracking-tight text-[#7A0C1E]">
-                ₹{monthlyRevenue.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+              <h3 className="text-2xl font-black mt-1 tracking-tight text-white">
+                {monthlyRevenue.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
               </h3>
-              <span className="text-[11px] font-bold text-[#7A0C1E]/70 block mt-0.5">
+              <span className="text-[11px] font-bold text-white/70 block mt-0.5">
                 Orders: {monthlyOrders}
               </span>
             </div>
@@ -161,22 +135,22 @@ const Dashboard = () => {
         </div>
 
         {/* Card 2: Today's Orders */}
-        <div 
+        <div
           onClick={() => navigate('/orders')}
-          className="bg-[#FCEAD9] text-[#5F0917] rounded-3xl p-6 shadow-lg shadow-[#FCEAD9]/50 flex items-center justify-between transition-transform duration-300 hover:-translate-y-1 cursor-pointer"
+          className="bg-gradient-to-br from-[#A87B39] to-[#7A0C1E] text-white rounded-3xl p-6 shadow-lg shadow-[#A87B39]/20 flex items-center justify-between transition-transform duration-300 hover:-translate-y-1 cursor-pointer"
         >
           <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-2xl bg-[#5F0917]/10 flex items-center justify-center shrink-0">
-              <FiShoppingBag className="w-7 h-7 text-[#5F0917]" />
+            <div className="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center shrink-0">
+              <FiShoppingBag className="w-7 h-7 text-white" />
             </div>
             <div>
-              <p className="text-xs font-black text-[#5F0917]/80 tracking-wide uppercase">
+              <p className="text-xs font-black text-white/80 tracking-wide uppercase">
                 Today's Orders
               </p>
-              <h3 className="text-3xl font-black mt-1 tracking-tight text-[#5F0917]">
+              <h3 className="text-3xl font-black mt-1 tracking-tight text-white">
                 {todayOrders}
               </h3>
-              <span className="text-[11px] font-bold text-[#5F0917]/70 block mt-0.5">
+              <span className="text-[11px] font-bold text-white/70 block mt-0.5">
                 Total: {totalOrders}
               </span>
             </div>
@@ -184,22 +158,22 @@ const Dashboard = () => {
         </div>
 
         {/* Card 3: Today's New Users */}
-        <div 
+        <div
           onClick={() => navigate('/users')}
-          className="bg-[#C0E1D2] text-[#4A725E] rounded-3xl p-6 shadow-lg shadow-[#C0E1D2]/30 flex items-center justify-between transition-transform duration-300 hover:-translate-y-1 cursor-pointer"
+          className="bg-gradient-to-br from-[#F2E6DA] to-[#A87B39] text-[#2B1B17] rounded-3xl p-6 shadow-lg shadow-[#F2E6DA]/20 flex items-center justify-between transition-transform duration-300 hover:-translate-y-1 cursor-pointer"
         >
           <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-2xl bg-[#4A725E]/10 backdrop-blur-md flex items-center justify-center shrink-0">
-              <FiUsers className="w-7 h-7 text-[#4A725E]" />
+            <div className="w-14 h-14 rounded-2xl bg-[#2B1B17]/10 backdrop-blur-md flex items-center justify-center shrink-0">
+              <FiUsers className="w-7 h-7 text-[#2B1B17]" />
             </div>
             <div>
-              <p className="text-xs font-black text-[#4A725E]/80 tracking-wide uppercase">
+              <p className="text-xs font-black text-[#2B1B17]/80 tracking-wide uppercase">
                 Today New Users
               </p>
-              <h3 className="text-3xl font-black mt-1 tracking-tight text-[#4A725E]">
+              <h3 className="text-3xl font-black mt-1 tracking-tight text-[#2B1B17]">
                 {todayNewUsers}
               </h3>
-              <span className="text-[11px] font-bold text-[#4A725E]/70 block mt-0.5">
+              <span className="text-[11px] font-bold text-[#2B1B17]/70 block mt-0.5">
                 Total Users: {totalUsers}
               </span>
             </div>
@@ -207,22 +181,22 @@ const Dashboard = () => {
         </div>
 
         {/* Card 4: Today's Cancellation Percentage with Count */}
-        <div 
+        <div
           onClick={() => navigate('/orders')}
-          className="bg-[#E8DACD] text-[#2B1B17] rounded-3xl p-6 shadow-lg shadow-[#E8DACD]/30 flex items-center justify-between transition-transform duration-300 hover:-translate-y-1 cursor-pointer"
+          className="bg-white text-[#7A0C1E] border-2 border-[#E8DACD] rounded-3xl p-6 shadow-sm flex items-center justify-between transition-transform duration-300 hover:-translate-y-1 cursor-pointer"
         >
           <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-2xl bg-[#2B1B17]/10 backdrop-blur-md flex items-center justify-center shrink-0">
-              <FiXCircle className="w-7 h-7 text-[#2B1B17]" />
+            <div className="w-14 h-14 rounded-2xl bg-[#FAF5EF] backdrop-blur-md flex items-center justify-center shrink-0">
+              <FiXCircle className="w-7 h-7 text-[#7A0C1E]" />
             </div>
             <div>
-              <p className="text-xs font-black text-[#2B1B17]/80 tracking-wide uppercase">
+              <p className="text-xs font-black text-gray-500 tracking-wide uppercase">
                 Today Cancellation
               </p>
-              <h3 className="text-3xl font-black mt-1 tracking-tight text-[#2B1B17]">
+              <h3 className="text-3xl font-black mt-1 tracking-tight text-[#7A0C1E]">
                 {todayCancellationPercentage}%
               </h3>
-              <span className="text-[11px] font-bold text-[#2B1B17]/70 block mt-0.5">
+              <span className="text-[11px] font-bold text-gray-400 block mt-0.5">
                 Cancelled Count: {todayCancelledOrders}
               </span>
             </div>
@@ -247,27 +221,27 @@ const Dashboard = () => {
               </div>
 
               <div className="flex items-center gap-4 text-xs font-black">
-                <div className="flex items-center gap-2 bg-[#F2E6DA] px-3 py-1.5 rounded-full text-gray-700">
+                <div className="flex items-center gap-2 bg-[#FAF5EF] px-3 py-1.5 rounded-full text-[#7A0C1E]">
                   <span className="w-3 h-3 rounded-full bg-[#7A0C1E]" />
                   <span>Revenue (₹)</span>
                 </div>
-                <div className="flex items-center gap-2 bg-[#F2E6DA] px-3 py-1.5 rounded-full text-gray-700">
-                  <span className="w-3 h-3 rounded-full bg-[#E8DACD]" />
+                <div className="flex items-center gap-2 bg-[#FAF5EF] px-3 py-1.5 rounded-full text-[#A87B39]">
+                  <span className="w-3 h-3 rounded-full bg-[#A87B39]" />
                   <span>Products Sold</span>
                 </div>
               </div>
             </div>
 
             {/* Total Revenue Callout Bar */}
-            <div className="grid grid-cols-2 gap-4 mb-6 p-4 rounded-2xl bg-[#F2E6DA] border border-[#E8DACD] text-xs">
+            <div className="grid grid-cols-2 gap-4 mb-6 p-4 rounded-2xl bg-[#FAF5EF] border border-[#E8DACD] text-xs">
               <div>
-                <span className="text-gray-400 font-bold uppercase tracking-wider text-[10px]">Annual Revenue</span>
+                <span className="text-[#7A0C1E] font-bold uppercase tracking-wider text-[10px]">Annual Revenue</span>
                 <p className="text-xl font-black text-gray-900 mt-0.5">
                   ₹{yearlyRevenue.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                 </p>
               </div>
               <div>
-                <span className="text-gray-400 font-bold uppercase tracking-wider text-[10px]">Annual Products Sold</span>
+                <span className="text-[#A87B39] font-bold uppercase tracking-wider text-[10px]">Annual Products Sold</span>
                 <p className="text-xl font-black text-gray-900 mt-0.5">
                   {yearlyProductsSold} Units
                 </p>
@@ -287,19 +261,19 @@ const Dashboard = () => {
                       {/* Hover Tooltip */}
                       <div className="absolute -top-12 opacity-0 group-hover:opacity-100 transition-opacity bg-gray-900 text-white rounded-xl p-2 text-[10px] font-bold z-20 pointer-events-none shadow-lg text-center whitespace-nowrap">
                         <p>{dataItem.month} {dataItem.year}</p>
-                        <p className="text-[#7A0C1E]">₹{dataItem.totalSales.toLocaleString()}</p>
-                        <p className="text-[#E8DACD]">{dataItem.productsSold} items</p>
+                        <p className="text-[#F2E6DA]">₹{dataItem.totalSales.toLocaleString()}</p>
+                        <p className="text-[#A87B39]">{dataItem.productsSold} items</p>
                       </div>
 
                       {/* Dual Bar */}
                       <div className="w-full flex items-end justify-center gap-1 h-44">
                         <div
                           style={{ height: `${barHeightPercent}%` }}
-                          className="w-full max-w-[14px] bg-[#7A0C1E] rounded-t-lg transition-all group-hover:bg-[#FF8585]"
+                          className="w-full max-w-[14px] bg-[#7A0C1E] rounded-t-lg transition-all group-hover:bg-[#A87B39]"
                         />
                         <div
                           style={{ height: `${Math.min((dataItem.productsSold / (yearlyProductsSold || 1)) * 300, 100)}%` }}
-                          className="w-full max-w-[10px] bg-[#E8DACD] rounded-t-lg transition-all"
+                          className="w-full max-w-[10px] bg-[#F2E6DA] rounded-t-lg transition-all"
                         />
                       </div>
                       <span className="text-[10px] font-extrabold text-gray-400 group-hover:text-gray-900">
@@ -332,7 +306,7 @@ const Dashboard = () => {
 
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
-                <thead className="bg-[#F2E6DA] text-gray-400 font-extrabold text-[11px] uppercase tracking-wider">
+                <thead className="bg-[#FAF5EF] text-[#7A0C1E] font-extrabold text-[11px] uppercase tracking-wider">
                   <tr>
                     <th className="py-3 px-4">Order ID</th>
                     <th className="py-3 px-4">Customer</th>
@@ -350,7 +324,7 @@ const Dashboard = () => {
                     </tr>
                   ) : (
                     recentOrders.map((ord) => (
-                      <tr key={ord.id} className="hover:bg-gray-50">
+                      <tr key={ord.id} className="hover:bg-[#FAF5EF]/30">
                         <td className="py-3.5 px-4 font-mono font-black text-gray-900">
                           #{ord.order_number || `ORD-${ord.id}`}
                         </td>
@@ -368,7 +342,7 @@ const Dashboard = () => {
                         <td className="py-3.5 px-4 text-right">
                           <button
                             onClick={() => navigate(`/orders/${ord.id}`)}
-                            className="p-2 rounded-xl bg-[#FAF5EF] text-[#2B1B17] hover:bg-[#7A0C1E] transition-all cursor-pointer font-bold text-xs inline-flex items-center gap-1"
+                            className="p-2 rounded-xl bg-[#FAF5EF] text-[#7A0C1E] hover:bg-[#7A0C1E] hover:text-white transition-all cursor-pointer font-bold text-xs inline-flex items-center gap-1"
                           >
                             <FiEye className="w-3.5 h-3.5" />
                             <span>Details</span>
@@ -394,80 +368,80 @@ const Dashboard = () => {
             <div className="space-y-3">
               <button
                 onClick={() => navigate('/products')}
-                className="w-full p-4 rounded-2xl bg-[#F2E6DA] hover:bg-[#FAF5EF] text-gray-800 transition-all flex items-center justify-between font-extrabold text-xs cursor-pointer group"
+                className="w-full p-4 rounded-2xl bg-[#FAF5EF] hover:bg-[#F2E6DA]/40 text-gray-800 border border-[#E8DACD]/60 transition-all flex items-center justify-between font-extrabold text-xs cursor-pointer group"
               >
                 <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-xl bg-[#7A0C1E]/20 text-[#7A0C1E] group-hover:bg-white">
+                  <div className="p-2 rounded-xl bg-[#7A0C1E] text-white shadow-xs">
                     <FiBox className="w-4 h-4" />
                   </div>
                   <span>Products Catalog ({totalProducts})</span>
                 </div>
-                <FiArrowRight className="w-4 h-4 text-gray-400 group-hover:translate-x-1 transition-transform" />
+                <FiArrowRight className="w-4 h-4 text-[#7A0C1E] group-hover:translate-x-1 transition-transform" />
               </button>
 
               <button
                 onClick={() => navigate('/categories')}
-                className="w-full p-4 rounded-2xl bg-[#F2E6DA] hover:bg-[#FAF5EF] text-gray-800 transition-all flex items-center justify-between font-extrabold text-xs cursor-pointer group"
+                className="w-full p-4 rounded-2xl bg-[#FAF5EF] hover:bg-[#F2E6DA]/40 text-gray-800 border border-[#E8DACD]/60 transition-all flex items-center justify-between font-extrabold text-xs cursor-pointer group"
               >
                 <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-xl bg-[#E8DACD]/40 text-[#1E7741] group-hover:bg-white">
+                  <div className="p-2 rounded-xl bg-[#A87B39] text-white shadow-xs">
                     <FiTag className="w-4 h-4" />
                   </div>
                   <span>Categories Management</span>
                 </div>
-                <FiArrowRight className="w-4 h-4 text-gray-400 group-hover:translate-x-1 transition-transform" />
+                <FiArrowRight className="w-4 h-4 text-[#7A0C1E] group-hover:translate-x-1 transition-transform" />
               </button>
 
               <button
-                onClick={() => navigate('/contact-support')}
-                className="w-full p-4 rounded-2xl bg-[#F2E6DA] hover:bg-[#FAF5EF] text-gray-800 transition-all flex items-center justify-between font-extrabold text-xs cursor-pointer group"
+                onClick={() => navigate('/support/chat')}
+                className="w-full p-4 rounded-2xl bg-[#FAF5EF] hover:bg-[#F2E6DA]/40 text-gray-800 border border-[#E8DACD]/60 transition-all flex items-center justify-between font-extrabold text-xs cursor-pointer group"
               >
                 <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-xl bg-purple-100 text-purple-600 group-hover:bg-white">
+                  <div className="p-2 rounded-xl bg-[#7A0C1E] text-white shadow-xs">
                     <FiMessageSquare className="w-4 h-4" />
                   </div>
                   <span>Support Messages</span>
                 </div>
-                <FiArrowRight className="w-4 h-4 text-gray-400 group-hover:translate-x-1 transition-transform" />
+                <FiArrowRight className="w-4 h-4 text-[#7A0C1E] group-hover:translate-x-1 transition-transform" />
               </button>
 
               <button
                 onClick={() => navigate('/cms')}
-                className="w-full p-4 rounded-2xl bg-[#F2E6DA] hover:bg-[#FAF5EF] text-gray-800 transition-all flex items-center justify-between font-extrabold text-xs cursor-pointer group"
+                className="w-full p-4 rounded-2xl bg-[#FAF5EF] hover:bg-[#F2E6DA]/40 text-gray-800 border border-[#E8DACD]/60 transition-all flex items-center justify-between font-extrabold text-xs cursor-pointer group"
               >
                 <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-xl bg-blue-100 text-blue-600 group-hover:bg-white">
+                  <div className="p-2 rounded-xl bg-[#A87B39] text-white shadow-xs">
                     <FiFileText className="w-4 h-4" />
                   </div>
                   <span>CMS Content Pages</span>
                 </div>
-                <FiArrowRight className="w-4 h-4 text-gray-400 group-hover:translate-x-1 transition-transform" />
+                <FiArrowRight className="w-4 h-4 text-[#7A0C1E] group-hover:translate-x-1 transition-transform" />
               </button>
 
               <button
                 onClick={() => navigate('/reviews')}
-                className="w-full p-4 rounded-2xl bg-[#F2E6DA] hover:bg-[#FAF5EF] text-gray-800 transition-all flex items-center justify-between font-extrabold text-xs cursor-pointer group"
+                className="w-full p-4 rounded-2xl bg-[#FAF5EF] hover:bg-[#F2E6DA]/40 text-gray-800 border border-[#E8DACD]/60 transition-all flex items-center justify-between font-extrabold text-xs cursor-pointer group"
               >
                 <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-xl bg-amber-100 text-amber-600 group-hover:bg-white">
+                  <div className="p-2 rounded-xl bg-[#7A0C1E] text-white shadow-xs">
                     <FiStar className="w-4 h-4" />
                   </div>
                   <span>Product Reviews</span>
                 </div>
-                <FiArrowRight className="w-4 h-4 text-gray-400 group-hover:translate-x-1 transition-transform" />
+                <FiArrowRight className="w-4 h-4 text-[#7A0C1E] group-hover:translate-x-1 transition-transform" />
               </button>
 
               <button
                 onClick={() => navigate('/settings')}
-                className="w-full p-4 rounded-2xl bg-[#F2E6DA] hover:bg-[#FAF5EF] text-gray-800 transition-all flex items-center justify-between font-extrabold text-xs cursor-pointer group"
+                className="w-full p-4 rounded-2xl bg-[#FAF5EF] hover:bg-[#F2E6DA]/40 text-gray-800 border border-[#E8DACD]/60 transition-all flex items-center justify-between font-extrabold text-xs cursor-pointer group"
               >
                 <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-xl bg-emerald-100 text-emerald-600 group-hover:bg-white">
+                  <div className="p-2 rounded-xl bg-[#A87B39] text-white shadow-xs">
                     <FiSettings className="w-4 h-4" />
                   </div>
                   <span>Store Settings</span>
                 </div>
-                <FiArrowRight className="w-4 h-4 text-gray-400 group-hover:translate-x-1 transition-transform" />
+                <FiArrowRight className="w-4 h-4 text-[#7A0C1E] group-hover:translate-x-1 transition-transform" />
               </button>
             </div>
           </div>

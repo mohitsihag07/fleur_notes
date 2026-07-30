@@ -1,47 +1,17 @@
-'use strict';
-const { Model } = require('sequelize');
+const mongoose = require('mongoose');
+const { Schema } = mongoose;
 
-module.exports = (sequelize, DataTypes) => {
-  class PasswordReset extends Model {
-    static associate(models) {
-      PasswordReset.belongsTo(models.User, { foreignKey: 'user_id', as: 'user' });
-    }
-  }
+const passwordResetSchema = new Schema({
+  user_id: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+  token: { type: String, required: true },
+  otp: { type: String, default: null },
+  expires_at: { type: Date, required: true },
+  is_used: { type: Boolean, default: false },
+}, {
+  timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true },
+});
 
-  PasswordReset.init({
-    id: {
-      type: DataTypes.BIGINT.UNSIGNED,
-      autoIncrement: true,
-      primaryKey: true,
-    },
-    user_id: {
-      type: DataTypes.BIGINT.UNSIGNED,
-      allowNull: false,
-      references: { model: 'users', key: 'id' },
-    },
-    token: {
-      type: DataTypes.STRING(255),
-      allowNull: false,
-    },
-    otp: {
-      type: DataTypes.STRING(10),
-      allowNull: true,
-    },
-    expires_at: {
-      type: DataTypes.DATE,
-      allowNull: false,
-    },
-    is_used: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false,
-    },
-  }, {
-    sequelize,
-    modelName: 'PasswordReset',
-    tableName: 'password_resets',
-    timestamps: true,
-    underscored: true,
-  });
-
-  return PasswordReset;
-};
+const PasswordReset = mongoose.model('PasswordReset', passwordResetSchema);
+module.exports = PasswordReset;

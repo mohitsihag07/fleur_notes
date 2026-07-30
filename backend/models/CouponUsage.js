@@ -1,47 +1,16 @@
-'use strict';
-const { Model } = require('sequelize');
+const mongoose = require('mongoose');
+const { Schema } = mongoose;
 
-module.exports = (sequelize, DataTypes) => {
-  class CouponUsage extends Model {
-    static associate(models) {
-      CouponUsage.belongsTo(models.Coupon, { foreignKey: 'coupon_id', as: 'coupon' });
-      CouponUsage.belongsTo(models.User, { foreignKey: 'user_id', as: 'user' });
-      CouponUsage.belongsTo(models.Order, { foreignKey: 'order_id', as: 'order' });
-    }
-  }
+const couponUsageSchema = new Schema({
+  coupon_id: { type: Schema.Types.ObjectId, ref: 'Coupon', required: true },
+  user_id: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+  order_id: { type: Schema.Types.ObjectId, ref: 'Order', default: null },
+  discount_amount: { type: Number, required: true },
+}, {
+  timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true },
+});
 
-  CouponUsage.init({
-    id: {
-      type: DataTypes.BIGINT.UNSIGNED,
-      autoIncrement: true,
-      primaryKey: true,
-    },
-    coupon_id: {
-      type: DataTypes.BIGINT.UNSIGNED,
-      allowNull: false,
-      references: { model: 'coupons', key: 'id' },
-    },
-    user_id: {
-      type: DataTypes.BIGINT.UNSIGNED,
-      allowNull: false,
-      references: { model: 'users', key: 'id' },
-    },
-    order_id: {
-      type: DataTypes.BIGINT.UNSIGNED,
-      allowNull: true,
-      references: { model: 'orders', key: 'id' },
-    },
-    discount_amount: {
-      type: DataTypes.DECIMAL(10, 2),
-      allowNull: false,
-    },
-  }, {
-    sequelize,
-    modelName: 'CouponUsage',
-    tableName: 'coupon_usages',
-    timestamps: true,
-    underscored: true,
-  });
-
-  return CouponUsage;
-};
+const CouponUsage = mongoose.model('CouponUsage', couponUsageSchema);
+module.exports = CouponUsage;

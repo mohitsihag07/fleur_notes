@@ -1,45 +1,21 @@
-'use strict';
-const { Model } = require('sequelize');
+const mongoose = require('mongoose');
+const { Schema } = mongoose;
 
-module.exports = (sequelize, DataTypes) => {
-  class Faq extends Model {
-    static associate(models) {}
-  }
+const faqSchema = new Schema({
+  question: { type: String, required: true },
+  answer: { type: String, required: true },
+  category: {
+    type: String,
+    enum: ['General', 'Shipping', 'Returns', 'Orders', 'Payment', 'Account'],
+    default: 'General'
+  },
+  sort_order: { type: Number, default: 0 },
+  status: { type: String, enum: ['active', 'inactive'], default: 'active' },
+}, {
+  timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true },
+});
 
-  Faq.init({
-    id: {
-      type: DataTypes.BIGINT.UNSIGNED,
-      autoIncrement: true,
-      primaryKey: true,
-    },
-    question: {
-      type: DataTypes.TEXT,
-      allowNull: false,
-    },
-    answer: {
-      type: DataTypes.TEXT,
-      allowNull: false,
-    },
-    category: {
-      type: DataTypes.STRING(100),
-      allowNull: true,
-      comment: 'e.g. Shipping, Returns, Payment',
-    },
-    sort_order: {
-      type: DataTypes.INTEGER.UNSIGNED,
-      defaultValue: 0,
-    },
-    status: {
-      type: DataTypes.ENUM('active', 'inactive'),
-      defaultValue: 'active',
-    },
-  }, {
-    sequelize,
-    modelName: 'Faq',
-    tableName: 'faqs',
-    timestamps: true,
-    underscored: true,
-  });
-
-  return Faq;
-};
+const Faq = mongoose.model('Faq', faqSchema);
+module.exports = Faq;

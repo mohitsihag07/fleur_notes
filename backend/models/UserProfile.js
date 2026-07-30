@@ -1,48 +1,17 @@
-'use strict';
-const { Model } = require('sequelize');
+const mongoose = require('mongoose');
+const { Schema } = mongoose;
 
-module.exports = (sequelize, DataTypes) => {
-  class UserProfile extends Model {
-    static associate(models) {
-      UserProfile.belongsTo(models.User, { foreignKey: 'user_id', as: 'user' });
-    }
-  }
+const userProfileSchema = new Schema({
+  user_id: { type: Schema.Types.ObjectId, ref: 'User', required: true, unique: true },
+  profile_picture: { type: String, default: null },
+  gender: { type: String, enum: ['male', 'female', 'other', null], default: null },
+  date_of_birth: { type: Date, default: null },
+  bio: { type: String, default: null },
+}, {
+  timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true },
+});
 
-  UserProfile.init({
-    id: {
-      type: DataTypes.BIGINT.UNSIGNED,
-      autoIncrement: true,
-      primaryKey: true,
-    },
-    user_id: {
-      type: DataTypes.BIGINT.UNSIGNED,
-      allowNull: false,
-      unique: true,
-      references: { model: 'users', key: 'id' },
-    },
-    profile_picture: {
-      type: DataTypes.STRING(255),
-      allowNull: true,
-    },
-    gender: {
-      type: DataTypes.ENUM('male', 'female', 'other'),
-      allowNull: true,
-    },
-    date_of_birth: {
-      type: DataTypes.DATEONLY,
-      allowNull: true,
-    },
-    bio: {
-      type: DataTypes.TEXT,
-      allowNull: true,
-    },
-  }, {
-    sequelize,
-    modelName: 'UserProfile',
-    tableName: 'user_profiles',
-    timestamps: true,
-    underscored: true,
-  });
-
-  return UserProfile;
-};
+const UserProfile = mongoose.model('UserProfile', userProfileSchema);
+module.exports = UserProfile;

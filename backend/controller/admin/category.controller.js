@@ -1,21 +1,11 @@
-const { Op } = require("sequelize");
 const db = require("../../models");
 const helper = require("../../helper/helper");
 const { Category, Product, ProductImage, ProductInventory, AuditLog } = db;
 
-// Helper to log administrative activities in audit logs table
 const logActivity = async (userId, action, description, req) => {
   try {
-    await AuditLog.create({
-      user_id: userId,
-      action: action,
-      module: 'admin_categories',
-      new_values: { description },
-      ip_address: req ? (req.ip || req.connection?.remoteAddress) : null
-    });
-  } catch (error) {
-    console.error("Failed to log activity:", error);
-  }
+    await AuditLog.create({ user_id: userId, action, module: 'admin_categories', new_values: { description }, ip_address: req ? (req.ip || req.connection?.remoteAddress) : null });
+  } catch (e) { console.error("Failed to log activity:", e); }
 };
 
 const getCategoriesList = async (req, res) => {
@@ -24,225 +14,147 @@ const getCategoriesList = async (req, res) => {
     const limit = parseInt(req.query.limit) || 10;
     const search = req.query.search || '';
     const status = req.query.status || '';
-    const offset = (page - 1) * limit;
+    const skip = (page - 1) * limit;
 
-    const whereClause = {
-      [Op.or]: [
-        { name: { [Op.like]: `%${search}%` } },
-        { slug: { [Op.like]: `%${search}%` } }
-      ]
-    };
+    const query = {};
+    if (search) query.$or = [{ name: { $regex: search, $options: 'i' } }, { slug: { $regex: search, $options: 'i' } }];
+    if (status) query.status = status;
 
-    if (status) {
-      whereClause.status = status;
-    }
+    const [rows, count, totalCategories, activeCategories, inactiveCategories, totalProducts] = await Promise.all([
+      Category.find(query).sort({ _id: -1 }).skip(skip).limit(limit).lean({ virtuals: true }),
+      Category.countDocuments(query),
+      Category.countDocuments(),
+      Category.countDocuments({ status: 'active' }),
+      Category.countDocuments({ status: 'inactive' }),
+      Product.countDocuments()
+    ]);
 
-    const { count, rows } = await Category.findAndCountAll({
-      where: whereClause,
-      limit,
-      offset,
-      order: [['id', 'DESC']],
-      attributes: ['id', 'name', 'slug', 'image', 'description', 'status', 'created_at', 'updated_at'],
+    const rowsWithId = rows.map(cat => ({
+      ...cat,
+      id: cat._id
+    }));
+
+    await logActivity(req.user._id, 'VIEW_CATEGORIES', 'Categories list viewed', req);
+    return helper.success(res, 'Successfully fetched list of categories', {
+      data: rowsWithId,
+      meta: { totalItems: count, totalPages: Math.ceil(count / limit), currentPage: page, limit, stats: { totalCategories, activeCategories, inactiveCategories, totalProducts } }
     });
-    
-    // Calculate category statistics
-    const totalCategories = await Category.count();
-    const activeCategories = await Category.count({ where: { status: 'active' } });
-    const inactiveCategories = await Category.count({ where: { status: 'inactive' } });
-    const totalProducts = await Product.count();
-
-    await logActivity(req.user.id, 'VIEW_CATEGORIES', 'Categories list viewed', req);
-    
-    return helper.success(res, `Successfully fetched list of categories`, {
-      data: rows,
-      meta: {
-        totalItems: count,
-        totalPages: Math.ceil(count / limit),
-        currentPage: page,
-        limit,
-        stats: {
-          totalCategories,
-          activeCategories,
-          inactiveCategories,
-          totalProducts
-        }
-      }
-    });
-  } catch (error) {
-    console.error(`Error loading categories:`, error);
-    return helper.error(res, 'Server error loading categories', 500);
-  }
-}; 
+  } catch (e) { console.error('Error loading categories:', e); return helper.error(res, 'Server error loading categories', 500); }
+};
 
 const getCategory = async (req, res) => {
-    try {
-        const category = await Category.findOne({
-            where: { id: req.params.id },
-            attributes: ['id', 'name', 'slug', 'image', 'description', 'status', 'created_at', 'updated_at'],
-            include: [
-                {
-                    model: Product,
-                    as: 'products',
-                    required: false,
-                    attributes: ['id', 'name', 'slug', 'price', 'sale_price', 'status', 'created_at'],
-                    include: [
-                        {
-                            model: ProductImage,
-                            as: 'images',
-                            required: false,
-                            attributes: ['id', 'image', 'is_thumbnail']
-                        },
-                        {
-                            model: ProductInventory,
-                            as: 'inventory',
-                            required: false,
-                            attributes: ['quantity', 'reserved_quantity']
-                        }
-                    ]
-                }
-            ]
-        });
-        if (!category) {
-            return helper.error(res, "Category not found", 404);
-        }
-        await logActivity(req.user.id, 'VIEW_CATEGORY', `Category details viewed for ID ${req.params.id}`, req);
-        return helper.success(res, "Category found", category, 200);
-    } catch (error) {
-        console.error("Error fetching category:", error);
-        return helper.error(res, "Server error loading category", 500);
+  try {
+    const { id } = req.params;
+    if (!id || id === 'undefined' || id === 'null') {
+      return helper.error(res, "Invalid category ID specified", 400);
     }
-}
+
+    const mongoose = require('mongoose');
+    let category = null;
+
+    if (mongoose.Types.ObjectId.isValid(id)) {
+      category = await Category.findById(id).lean({ virtuals: true });
+    }
+
+    if (!category) {
+      category = await Category.findOne({ slug: id }).lean({ virtuals: true });
+    }
+
+    if (!category) return helper.error(res, "Category not found", 404);
+
+    const products = await Product.find({ category_id: category._id }, 'id name slug price sale_price status created_at').lean({ virtuals: true });
+    const productIds = products.map(p => p._id);
+    const [images, inventories] = await Promise.all([
+      ProductImage.find({ product_id: { $in: productIds } }, 'id image is_thumbnail product_id').lean({ virtuals: true }),
+      ProductInventory.find({ product_id: { $in: productIds } }, 'quantity reserved_quantity product_id').lean({ virtuals: true })
+    ]);
+
+    const productsWithData = products.map(p => ({
+      ...p,
+      id: p._id,
+      images: images.filter(img => String(img.product_id) === String(p._id)),
+      inventory: inventories.find(inv => String(inv.product_id) === String(p._id)) || null
+    }));
+
+    if (req.user) await logActivity(req.user._id, 'VIEW_CATEGORY', `Category details viewed for ID ${id}`, req);
+    return helper.success(res, "Category found", { ...category, id: category._id, products: productsWithData }, 200);
+  } catch (e) { console.error("Error fetching category:", e); return helper.error(res, "Server error loading category", 500); }
+};
 
 const addCategory = async (req, res) => {
-    try {
-        const { name, slug, description, status } = req.body;
-        if (!name) {
-            return helper.error(res, "Category name is required", 400);
-        }
+  try {
+    const { name, slug, description, status } = req.body;
+    if (!name) return helper.error(res, "Category name is required", 400);
 
-        const existingCategory = await Category.findOne({ where: { name } });
-        if(existingCategory){
-            return helper.error(res, "Category name already exists", 400);
-        }
+    const existingCategory = await Category.findOne({ name });
+    if (existingCategory) return helper.error(res, "Category name already exists", 400);
 
-        const finalSlug = slug || name.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-        const slugCheck = await Category.findOne({ where: { slug: finalSlug } });
-        if (slugCheck) {
-            return helper.error(res, "Category slug already exists", 400);
-        }
+    const finalSlug = slug || name.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    const slugCheck = await Category.findOne({ slug: finalSlug });
+    if (slugCheck) return helper.error(res, "Category slug already exists", 400);
 
-        let imagePath = req.body.image || null;
-        if (req.file) {
-            imagePath = `/images/categories/${req.file.filename}`;
-        }
+    let imagePath = req.body.image || null;
+    if (req.file) imagePath = `/images/categories/${req.file.filename}`;
 
-        const category = await Category.create({
-            name,
-            slug: finalSlug,
-            image: imagePath,
-            description: description || '',
-            status: status || 'active'
-        });
-    
-        await logActivity(req.user.id, 'ADD_CATEGORY', `Category '${name}' added successfully`, req);
-        return helper.success(res, "Category added successfully", category, 200);
-    } catch (error) {
-        console.error(`Error adding category:`, error);
-        return helper.error(res, "Server error adding category", 500);
-    }
-}
+    const category = await Category.create({ name, slug: finalSlug, image: imagePath, description: description || '', status: status || 'active' });
+    await logActivity(req.user._id, 'ADD_CATEGORY', `Category '${name}' added successfully`, req);
+    return helper.success(res, "Category added successfully", category, 200);
+  } catch (e) { console.error('Error adding category:', e); return helper.error(res, "Server error adding category", 500); }
+};
 
 const updateCategory = async (req, res) => {
-    try {
-        const { name, slug, description, status } = req.body;
-        const category = await Category.findOne({ where: { id: req.params.id } });
-        if (!category) {
-            return helper.error(res, "Category not found", 404);
-        }
+  try {
+    const { name, slug, description, status } = req.body;
+    const category = await Category.findById(req.params.id);
+    if (!category) return helper.error(res, "Category not found", 404);
 
-        if (name) {
-            const existingCategory = await Category.findOne({ where: { name, id: { [Op.ne]: req.params.id } } });
-            if(existingCategory){
-                return helper.error(res, "Category already exists with this name", 400);
-            }
-        }
-
-        let finalSlug = slug;
-        if (name && !slug) {
-            finalSlug = name.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-        }
-
-        if (finalSlug) {
-            const slugCheck = await Category.findOne({ where: { slug: finalSlug, id: { [Op.ne]: req.params.id } } });
-            if (slugCheck) {
-                return helper.error(res, "Category slug already in use", 400);
-            }
-        }
-
-        let imagePath = req.body.image !== undefined ? req.body.image : category.image;
-        if (req.file) {
-            imagePath = `/images/categories/${req.file.filename}`;
-        }
-
-        await category.update({
-            ...(name && { name }),
-            ...(finalSlug && { slug: finalSlug }),
-            image: imagePath,
-            ...(description !== undefined && { description }),
-            ...(status && { status })
-        });
-
-        await logActivity(req.user.id, 'EDIT_CATEGORY', `Category '${category.name}' edited successfully`, req);
-        return helper.success(res, "Category edited successfully", category, 200);
-    } catch (error) {
-        console.error(`Error editing category:`, error);
-        return helper.error(res, "Server error editing category", 500);
+    if (name) {
+      const existingCategory = await Category.findOne({ name, _id: { $ne: req.params.id } });
+      if (existingCategory) return helper.error(res, "Category already exists with this name", 400);
     }
-}
+
+    let finalSlug = slug;
+    if (name && !slug) finalSlug = name.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    if (finalSlug) {
+      const slugCheck = await Category.findOne({ slug: finalSlug, _id: { $ne: req.params.id } });
+      if (slugCheck) return helper.error(res, "Category slug already in use", 400);
+    }
+
+    let imagePath = req.body.image !== undefined ? req.body.image : category.image;
+    if (req.file) imagePath = `/images/categories/${req.file.filename}`;
+
+    if (name) category.name = name;
+    if (finalSlug) category.slug = finalSlug;
+    category.image = imagePath;
+    if (description !== undefined) category.description = description;
+    if (status) category.status = status;
+    await category.save();
+
+    await logActivity(req.user._id, 'EDIT_CATEGORY', `Category '${category.name}' edited`, req);
+    return helper.success(res, "Category edited successfully", category, 200);
+  } catch (e) { console.error('Error editing category:', e); return helper.error(res, "Server error editing category", 500); }
+};
 
 const deleteCategory = async (req, res) => {
-    try {
-        const category = await Category.findOne({ where: { id: req.params.id } });
-        if (!category) {
-            return helper.error(res, "Category not found", 404);
-        }
-        await category.destroy();
-        await logActivity(req.user.id, 'DELETE_CATEGORY', `Category deleted with ID ${req.params.id}`, req);
-        return helper.success(res, "Category deleted", {}, 200);
-    } catch (error) {
-        return helper.error(res, "Server error deleting category", 500);
-    }
-}
+  try {
+    const category = await Category.findById(req.params.id);
+    if (!category) return helper.error(res, "Category not found", 404);
+    await Category.findByIdAndDelete(req.params.id);
+    await logActivity(req.user._id, 'DELETE_CATEGORY', `Category deleted with ID ${req.params.id}`, req);
+    return helper.success(res, "Category deleted", {}, 200);
+  } catch (e) { return helper.error(res, "Server error deleting category", 500); }
+};
 
 const categoryStatusUpdate = async (req, res) => {
-    try {
-        const category = await Category.findOne({
-            where: { id: req.params.id }
-        });
-        if (!category) {
-            return helper.error(res, "Category not found", 404);
-        }
-        
-        const oldStatus = category.status;
-        const newStatus = oldStatus === 'active' ? 'inactive' : 'active';
-        
-        await category.update({
-            status: newStatus
-        });
-        
-        await logActivity(req.user.id, 'UPDATE_CATEGORY_STATUS', `Category status updated from ${oldStatus} to ${newStatus} for category ID ${category.id}`, req);
-        return helper.success(res, "Category status updated successfully", category);
-    } catch (error) {
-        console.error("Error updating category status:", error);
-        return helper.error(res, "Failed to update category status", 500);
-    }
-}
+  try {
+    const category = await Category.findById(req.params.id);
+    if (!category) return helper.error(res, "Category not found", 404);
+    const oldStatus = category.status;
+    category.status = oldStatus === 'active' ? 'inactive' : 'active';
+    await category.save();
+    await logActivity(req.user._id, 'UPDATE_CATEGORY_STATUS', `Category status updated from ${oldStatus} to ${category.status}`, req);
+    return helper.success(res, "Category status updated successfully", category);
+  } catch (e) { return helper.error(res, "Failed to update category status", 500); }
+};
 
-module.exports = {
-    getCategoriesList,
-    getCategory,
-    addCategory,
-    updateCategory,
-    deleteCategory,
-    categoryStatusUpdate
-}
+module.exports = { getCategoriesList, getCategory, addCategory, updateCategory, deleteCategory, categoryStatusUpdate };

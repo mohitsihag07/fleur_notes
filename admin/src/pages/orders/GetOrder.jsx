@@ -96,7 +96,7 @@ const GetOrder = () => {
         <p className="text-xs font-semibold text-gray-400">The requested order ID does not exist.</p>
         <button
           onClick={() => navigate('/orders')}
-          className="btn-primary py-2.5 px-6 rounded-2xl text-xs font-black"
+          className="py-2.5 px-6 rounded-2xl bg-[#7A0C1E] hover:bg-[#5F0917] text-white text-xs font-black"
         >
           Return to Orders
         </button>
@@ -115,16 +115,17 @@ const GetOrder = () => {
         <div className="flex items-center gap-4">
           <button
             onClick={() => navigate('/orders')}
-            className="p-3 rounded-2xl bg-white border border-[#E8DACD] text-gray-700 hover:bg-[#FAF5EF] hover:text-[#2B1B17] transition-all cursor-pointer shadow-2xs"
+            className="p-3 rounded-2xl bg-white border border-[#E8DACD] text-gray-700 hover:bg-[#FAF5EF] hover:text-[#7A0C1E] transition-all cursor-pointer shadow-2xs"
+            title="Back to Orders"
           >
             <FiArrowLeft className="w-5 h-5" />
           </button>
           <div>
             <div className="flex items-center gap-3">
               <h2 className="text-2xl font-black text-gray-900 tracking-tight">
-                Order #{order.order_number || `ORD-${order.id}`}
+                Order #{order.order_number || order.id}
               </h2>
-              <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-[#FAF5EF] text-[#2B1B17]">
+              <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-[#FAF5EF] text-[#5F0917] border border-[#E8DACD]">
                 {order.status || 'pending'}
               </span>
             </div>
@@ -192,7 +193,7 @@ const GetOrder = () => {
               <select
                 value={selectedStatus}
                 onChange={(e) => setSelectedStatus(e.target.value)}
-                className="w-full mt-1 p-2.5 rounded-xl bg-[#F2E6DA] text-xs font-black text-gray-800 border-none focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] cursor-pointer"
+                className="w-full mt-1 p-2.5 rounded-xl bg-[#FAF5EF] text-xs font-black text-gray-800 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] cursor-pointer"
               >
                 <option value="pending">Pending</option>
                 <option value="confirmed">Confirmed</option>
@@ -211,7 +212,7 @@ const GetOrder = () => {
               <select
                 value={selectedPaymentStatus}
                 onChange={(e) => setSelectedPaymentStatus(e.target.value)}
-                className="w-full mt-1 p-2.5 rounded-xl bg-[#F2E6DA] text-xs font-black text-gray-800 border-none focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] cursor-pointer"
+                className="w-full mt-1 p-2.5 rounded-xl bg-[#FAF5EF] text-xs font-black text-gray-800 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] cursor-pointer"
               >
                 <option value="pending">Pending</option>
                 <option value="paid">Paid</option>
@@ -223,7 +224,7 @@ const GetOrder = () => {
             <button
               type="submit"
               disabled={isUpdating}
-              className="w-full py-2.5 px-4 rounded-xl bg-[#FAF5EF] text-[#2B1B17] font-black text-xs uppercase tracking-wider hover:bg-[#7A0C1E] transition-all cursor-pointer flex items-center justify-center gap-2 shadow-2xs mt-2"
+              className="w-full py-2.5 px-4 rounded-xl bg-[#7A0C1E] hover:bg-[#5F0917] text-white font-black text-xs uppercase tracking-wider transition-all cursor-pointer flex items-center justify-center gap-2 shadow-2xs mt-2"
             >
               {isUpdating ? <FiLoader className="w-4 h-4 animate-spin" /> : <FiSave className="w-4 h-4" />}
               <span>Save Changes</span>
@@ -243,7 +244,7 @@ const GetOrder = () => {
 
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-[#F2E6DA] text-gray-400 font-extrabold text-xs uppercase tracking-wider">
+            <thead className="bg-[#FAF5EF] text-[#7A0C1E] font-extrabold text-xs uppercase tracking-wider">
               <tr>
                 <th className="py-3 px-4">Item</th>
                 <th className="py-3 px-4">Price</th>
@@ -251,7 +252,7 @@ const GetOrder = () => {
                 <th className="py-3 px-4 text-right">Total</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#E8DACD] font-medium text-gray-700">
+            <tbody className="divide-y divide-[#E8DACD]/60 font-medium text-gray-700">
               {items.length === 0 ? (
                 <tr>
                   <td colSpan="4" className="py-8 text-center text-gray-400 font-bold">
@@ -266,7 +267,7 @@ const GetOrder = () => {
                   const total = price * qty;
 
                   return (
-                    <tr key={idx} className="hover:bg-gray-50">
+                    <tr key={idx} className="hover:bg-[#FAF5EF]/40 transition-colors">
                       <td className="py-4 px-4 font-bold text-gray-900">
                         {productTitle}
                       </td>
@@ -289,7 +290,7 @@ const GetOrder = () => {
 
         {/* Order Totals Summary */}
         <div className="pt-4 border-t border-[#E8DACD] flex justify-end">
-          <div className="w-full sm:w-72 bg-[#F2E6DA] p-5 rounded-2xl space-y-3 text-xs">
+          <div className="w-full sm:w-72 bg-[#FAF5EF]/50 border border-[#E8DACD] p-5 rounded-2xl space-y-3 text-xs">
             <div className="flex items-center justify-between text-gray-600 font-semibold">
               <span>Subtotal:</span>
               <span>₹{parseFloat(order.subtotal || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>

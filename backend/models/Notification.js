@@ -1,56 +1,20 @@
-'use strict';
-const { Model } = require('sequelize');
+const mongoose = require('mongoose');
+const { Schema } = mongoose;
 
-module.exports = (sequelize, DataTypes) => {
-  class Notification extends Model {
-    static associate(models) {
-      Notification.belongsTo(models.User, { foreignKey: 'user_id', as: 'user' });
-    }
-  }
+const notificationSchema = new Schema({
+  user_id: { type: Schema.Types.ObjectId, ref: 'User', default: null },
+  title: { type: String, required: true, maxlength: 200 },
+  message: { type: String, required: true },
+  type: { type: String, default: 'push', maxlength: 50 },
+  reference_id: { type: Schema.Types.ObjectId, default: null },
+  is_read: { type: Boolean, default: false },
+}, {
+  timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true },
+});
 
-  Notification.init({
-    id: {
-      type: DataTypes.BIGINT.UNSIGNED,
-      autoIncrement: true,
-      primaryKey: true,
-    },
-    user_id: {
-      type: DataTypes.BIGINT.UNSIGNED,
-      allowNull: true,
-      references: { model: 'users', key: 'id' },
-      comment: 'Null means broadcast / admin-wide notification',
-    },
-    title: {
-      type: DataTypes.STRING(200),
-      allowNull: false,
-    },
-    message: {
-      type: DataTypes.TEXT,
-      allowNull: false,
-    },
-    type: {
-      type: DataTypes.STRING(50),
-      defaultValue: 'push',
-    },
-    reference_id: {
-      type: DataTypes.BIGINT.UNSIGNED,
-      allowNull: true,
-      comment: 'e.g. order_id or product_id for deep linking',
-    },
-    is_read: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false,
-    },
-  }, {
-    sequelize,
-    modelName: 'Notification',
-    tableName: 'notifications',
-    timestamps: true,
-    underscored: true,
-    indexes: [
-      { fields: ['user_id', 'is_read'] },
-    ],
-  });
+notificationSchema.index({ user_id: 1, is_read: 1 });
 
-  return Notification;
-};
+const Notification = mongoose.model('Notification', notificationSchema);
+module.exports = Notification;

@@ -1,40 +1,16 @@
-'use strict';
-const { Model } = require('sequelize');
+const mongoose = require('mongoose');
+const { Schema } = mongoose;
 
-module.exports = (sequelize, DataTypes) => {
-  class WishlistItem extends Model {
-    static associate(models) {
-      WishlistItem.belongsTo(models.User, { foreignKey: 'user_id', as: 'user' });
-      WishlistItem.belongsTo(models.Product, { foreignKey: 'product_id', as: 'product' });
-    }
-  }
+const wishlistItemSchema = new Schema({
+  user_id: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+  product_id: { type: Schema.Types.ObjectId, ref: 'Product', required: true },
+}, {
+  timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true },
+});
 
-  WishlistItem.init({
-    id: {
-      type: DataTypes.BIGINT.UNSIGNED,
-      autoIncrement: true,
-      primaryKey: true,
-    },
-    user_id: {
-      type: DataTypes.BIGINT.UNSIGNED,
-      allowNull: false,
-      references: { model: 'users', key: 'id' },
-    },
-    product_id: {
-      type: DataTypes.BIGINT.UNSIGNED,
-      allowNull: false,
-      references: { model: 'products', key: 'id' },
-    },
-  }, {
-    sequelize,
-    modelName: 'WishlistItem',
-    tableName: 'wishlist_items',
-    timestamps: true,
-    underscored: true,
-    indexes: [
-      { unique: true, fields: ['user_id', 'product_id'] },
-    ],
-  });
+wishlistItemSchema.index({ user_id: 1, product_id: 1 }, { unique: true });
 
-  return WishlistItem;
-};
+const WishlistItem = mongoose.model('WishlistItem', wishlistItemSchema);
+module.exports = WishlistItem;

@@ -1,56 +1,20 @@
-'use strict';
-const { Model } = require('sequelize');
+const mongoose = require('mongoose');
+const { Schema } = mongoose;
 
-module.exports = (sequelize, DataTypes) => {
-  class PaymentTransaction extends Model {
-    static associate(models) {
-      PaymentTransaction.belongsTo(models.Payment, { foreignKey: 'payment_id', as: 'payment' });
-    }
-  }
+const paymentTransactionSchema = new Schema({
+  payment_id: { type: Schema.Types.ObjectId, ref: 'Payment', required: true },
+  type: { type: String, enum: ['charge', 'refund', 'webhook'], default: 'charge' },
+  request: { type: Schema.Types.Mixed, default: null },
+  response: { type: Schema.Types.Mixed, default: null },
+  status: { type: String, default: null },
+  gateway_event_id: { type: String, default: null },
+}, {
+  timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true },
+});
 
-  PaymentTransaction.init({
-    id: {
-      type: DataTypes.BIGINT.UNSIGNED,
-      autoIncrement: true,
-      primaryKey: true,
-    },
-    payment_id: {
-      type: DataTypes.BIGINT.UNSIGNED,
-      allowNull: false,
-      references: { model: 'payments', key: 'id' },
-    },
-    type: {
-      type: DataTypes.ENUM('charge', 'refund', 'webhook'),
-      defaultValue: 'charge',
-    },
-    request: {
-      type: DataTypes.JSON,
-      allowNull: true,
-      comment: 'Full gateway request payload',
-    },
-    response: {
-      type: DataTypes.JSON,
-      allowNull: true,
-      comment: 'Full gateway response payload',
-    },
-    status: {
-      type: DataTypes.STRING(50),
-      allowNull: true,
-    },
-    gateway_event_id: {
-      type: DataTypes.STRING(200),
-      allowNull: true,
-    },
-  }, {
-    sequelize,
-    modelName: 'PaymentTransaction',
-    tableName: 'payment_transactions',
-    timestamps: true,
-    underscored: true,
-    indexes: [
-      { fields: ['payment_id'] },
-    ],
-  });
+paymentTransactionSchema.index({ payment_id: 1 });
 
-  return PaymentTransaction;
-};
+const PaymentTransaction = mongoose.model('PaymentTransaction', paymentTransactionSchema);
+module.exports = PaymentTransaction;

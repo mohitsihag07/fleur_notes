@@ -1,47 +1,17 @@
-'use strict';
-const { Model } = require('sequelize');
+const mongoose = require('mongoose');
+const { Schema } = mongoose;
 
-module.exports = (sequelize, DataTypes) => {
-  class Setting extends Model {
-    static associate(models) {}
-  }
+const settingSchema = new Schema({
+  key: { type: String, required: true, unique: true, maxlength: 100 },
+  value: { type: String, default: null },
+  type: { type: String, enum: ['string', 'number', 'boolean', 'json', 'image'], default: 'string' },
+  group: { type: String, default: null, maxlength: 80 },
+  description: { type: String, default: null },
+}, {
+  timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true },
+});
 
-  Setting.init({
-    id: {
-      type: DataTypes.BIGINT.UNSIGNED,
-      autoIncrement: true,
-      primaryKey: true,
-    },
-    key: {
-      type: DataTypes.STRING(100),
-      allowNull: false,
-      unique: true,
-      comment: 'e.g. site_name, logo, contact_email, gst_rate, shipping_charge',
-    },
-    value: {
-      type: DataTypes.TEXT,
-      allowNull: true,
-    },
-    type: {
-      type: DataTypes.ENUM('string', 'number', 'boolean', 'json', 'image'),
-      defaultValue: 'string',
-    },
-    group: {
-      type: DataTypes.STRING(80),
-      allowNull: true,
-      comment: 'e.g. general, payment, shipping, social',
-    },
-    description: {
-      type: DataTypes.STRING(255),
-      allowNull: true,
-    },
-  }, {
-    sequelize,
-    modelName: 'Setting',
-    tableName: 'settings',
-    timestamps: true,
-    underscored: true,
-  });
-
-  return Setting;
-};
+const Setting = mongoose.model('Setting', settingSchema);
+module.exports = Setting;

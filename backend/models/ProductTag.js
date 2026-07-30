@@ -1,44 +1,16 @@
-'use strict';
-const { Model } = require('sequelize');
+const mongoose = require('mongoose');
+const { Schema } = mongoose;
 
-module.exports = (sequelize, DataTypes) => {
-  class ProductTag extends Model {
-    static associate(models) {
-      ProductTag.belongsToMany(models.Product, {
-        through: models.ProductTagMap,
-        foreignKey: 'tag_id',
-        otherKey: 'product_id',
-        as: 'products',
-      });
-    }
-  }
+const productTagSchema = new Schema({
+  name: { type: String, required: true, unique: true, maxlength: 100 },
+  slug: { type: String, required: true, unique: true, maxlength: 150 },
+}, {
+  timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true },
+});
 
-  ProductTag.init({
-    id: {
-      type: DataTypes.BIGINT.UNSIGNED,
-      autoIncrement: true,
-      primaryKey: true,
-    },
-    name: {
-      type: DataTypes.STRING(100),
-      allowNull: false,
-      unique: true,
-    },
-    slug: {
-      type: DataTypes.STRING(150),
-      allowNull: false,
-      unique: true,
-    },
-  }, {
-    sequelize,
-    modelName: 'ProductTag',
-    tableName: 'product_tags',
-    timestamps: true,
-    underscored: true,
-    indexes: [
-      { fields: ['slug'] },
-    ],
-  });
+productTagSchema.index({ slug: 1 });
 
-  return ProductTag;
-};
+const ProductTag = mongoose.model('ProductTag', productTagSchema);
+module.exports = ProductTag;

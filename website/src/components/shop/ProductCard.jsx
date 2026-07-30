@@ -8,7 +8,10 @@ import { Heart, ShoppingBag, Check } from 'lucide-react';
 import { Rating } from '@/components/common/Rating';
 import { formatPrice } from '@/utils/formatPrice';
 
+import { useShop } from '@/context/ShopContext';
+
 export function ProductCard({ product, layout = 'grid' }) {
+  const { toggleWishlist, isInWishlist, addToCart } = useShop();
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [isAdded, setIsAdded] = useState(false);
 
@@ -19,11 +22,16 @@ export function ProductCard({ product, layout = 'grid' }) {
     if (product?.image) {
       setImgSrc(product.image);
     }
-  }, [product?.image]);
+    const pId = product?.id || product?._id;
+    if (pId) {
+      setIsWishlisted(isInWishlist(pId));
+    }
+  }, [product?.image, product?.id, product?._id, isInWishlist]);
 
   const handleAddToCart = (e) => {
     e.preventDefault();
     e.stopPropagation();
+    addToCart(product);
     setIsAdded(true);
     setTimeout(() => setIsAdded(false), 2000);
   };
@@ -31,7 +39,8 @@ export function ProductCard({ product, layout = 'grid' }) {
   const handleWishlistToggle = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    setIsWishlisted(!isWishlisted);
+    const added = toggleWishlist(product);
+    setIsWishlisted(added);
   };
 
   if (layout === 'list') {
@@ -71,6 +80,11 @@ export function ProductCard({ product, layout = 'grid' }) {
             {product.isBestSeller && (
               <span className="bg-[#A87B39] text-white text-[8px] font-bold px-1.5 py-0.5 rounded-full uppercase tracking-wider w-fit">
                 Bestseller
+              </span>
+            )}
+            {product.isFeatured && (
+              <span className="bg-[#5C3D8F] text-white text-[8px] font-bold px-1.5 py-0.5 rounded-full uppercase tracking-wider w-fit">
+                Featured
               </span>
             )}
           </div>
@@ -167,6 +181,11 @@ export function ProductCard({ product, layout = 'grid' }) {
           {product.isBestSeller && (
             <span className="bg-[#A87B39] text-white text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider w-fit">
               Bestseller
+            </span>
+          )}
+          {product.isFeatured && (
+            <span className="bg-[#5C3D8F] text-white text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider w-fit">
+              Featured
             </span>
           )}
         </div>

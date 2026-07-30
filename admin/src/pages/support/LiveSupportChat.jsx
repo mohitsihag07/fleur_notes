@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { 
-  FiMessageSquare, 
-  FiSearch, 
-  FiFilter, 
-  FiSend, 
-  FiTrash2, 
-  FiCheckCircle, 
-  FiClock, 
-  FiRefreshCw, 
+import {
+  FiMessageSquare,
+  FiSearch,
+  FiFilter,
+  FiSend,
+  FiTrash2,
+  FiCheckCircle,
+  FiClock,
+  FiRefreshCw,
   FiLoader,
   FiUser,
   FiXCircle,
@@ -209,10 +209,15 @@ const LiveSupportChat = () => {
       {/* Header section */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-black text-gray-900 tracking-tight">
-            Live Customer Support Chat
-          </h2>
-          <p className="text-sm font-semibold text-gray-500 mt-1">
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 rounded-2xl bg-[#FAF5EF] text-[#7A0C1E] border border-[#E8DACD]">
+              <FiMessageSquare className="w-6 h-6 text-[#7A0C1E]" />
+            </div>
+            <h2 className="text-2xl font-black text-gray-900 tracking-tight">
+              Live Customer Support Chat
+            </h2>
+          </div>
+          <p className="text-sm font-semibold text-gray-500 mt-1.5 pl-11">
             Real-time live messaging module with active store customers.
           </p>
         </div>
@@ -234,7 +239,7 @@ const LiveSupportChat = () => {
             <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Total Chats</p>
             <h3 className="text-2xl font-black text-gray-900 mt-1">{stats.totalConversations}</h3>
           </div>
-          <div className="p-3 rounded-2xl bg-purple-50 text-purple-600">
+          <div className="p-3 rounded-2xl bg-[#FAF5EF] text-[#7A0C1E]">
             <FiMessageSquare className="w-5 h-5" />
           </div>
         </div>
@@ -245,7 +250,7 @@ const LiveSupportChat = () => {
             <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Active Chats</p>
             <h3 className="text-2xl font-black text-gray-900 mt-1">{stats.activeCount}</h3>
           </div>
-          <div className="p-3 rounded-2xl bg-[#E8DACD]/40 text-[#1E7741]">
+          <div className="p-3 rounded-2xl bg-[#FAF5EF] text-[#5F0917]">
             <FiCheckCircle className="w-5 h-5" />
           </div>
         </div>
@@ -254,9 +259,9 @@ const LiveSupportChat = () => {
         <div className="bg-white rounded-3xl p-5 shadow-xs border border-[#E8DACD] flex items-center justify-between">
           <div>
             <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Unread Messages</p>
-            <h3 className="text-2xl font-black text-rose-600 mt-1">{stats.unreadCount}</h3>
+            <h3 className="text-2xl font-black text-[#7A0C1E] mt-1">{stats.unreadCount}</h3>
           </div>
-          <div className="p-3 rounded-2xl bg-rose-50 text-rose-600">
+          <div className="p-3 rounded-2xl bg-[#F2E6DA]/40 text-[#7A0C1E]">
             <FiAlertCircle className="w-5 h-5" />
           </div>
         </div>
@@ -286,21 +291,20 @@ const LiveSupportChat = () => {
                 placeholder="Search customer name or email..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 rounded-full bg-[#F2E6DA] text-xs font-semibold text-gray-700 border-none focus:outline-none focus:ring-2 focus:ring-[#7A0C1E]"
+                className="w-full pl-10 pr-4 py-2 rounded-full bg-[#FAF5EF] text-xs font-semibold text-gray-700 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E]"
               />
             </div>
 
             {/* Filter Tabs */}
-            <div className="flex items-center gap-1 bg-[#F2E6DA] p-1 rounded-full text-xs font-bold">
+            <div className="flex items-center gap-1 bg-[#FAF5EF] p-1 rounded-full text-xs font-bold border border-[#E8DACD]">
               {['all', 'active', 'closed'].map((st) => (
                 <button
                   key={st}
                   onClick={() => setStatusFilter(st)}
-                  className={`flex-1 py-1 rounded-full text-[11px] font-black capitalize transition-all cursor-pointer ${
-                    statusFilter === st
+                  className={`flex-1 py-1 rounded-full text-[11px] font-black capitalize transition-all cursor-pointer ${statusFilter === st
                       ? 'bg-[#7A0C1E] text-white shadow-xs'
                       : 'text-gray-600 hover:text-gray-900'
-                  }`}
+                    }`}
                 >
                   {st}
                 </button>
@@ -329,14 +333,13 @@ const LiveSupportChat = () => {
                   <div
                     key={conv.id}
                     onClick={() => handleSelectConversation(conv)}
-                    className={`p-4 transition-colors cursor-pointer flex items-start gap-3 relative ${
-                      isSelected
-                        ? 'bg-[#F2E6DA] border-l-4 border-l-[#7A0C1E]'
+                    className={`p-4 transition-colors cursor-pointer flex items-start gap-3 relative ${isSelected
+                        ? 'bg-[#FAF5EF] border-l-4 border-l-[#7A0C1E]'
                         : 'hover:bg-white'
-                    }`}
+                      }`}
                   >
                     {/* User Avatar */}
-                    <div className="w-10 h-10 rounded-2xl bg-[#7A0C1E]/10 text-[#7A0C1E] flex items-center justify-center font-black shrink-0 border border-[#E8DACD]">
+                    <div className="w-10 h-10 rounded-2xl bg-[#7A0C1E] text-white flex items-center justify-center font-black shrink-0 border border-[#E8DACD]">
                       {conv.user_name?.charAt(0)?.toUpperCase() || 'U'}
                     </div>
 
@@ -355,16 +358,15 @@ const LiveSupportChat = () => {
                       </p>
 
                       <div className="flex items-center justify-between mt-2">
-                        <span className={`px-2 py-0.5 rounded-full text-[9px] font-black uppercase ${
-                          conv.status === 'active'
-                            ? 'bg-[#E8DACD]/60 text-[#1E7741]'
+                        <span className={`px-2 py-0.5 rounded-full text-[9px] font-black uppercase ${conv.status === 'active'
+                            ? 'bg-[#FAF5EF] text-[#5F0917]'
                             : 'bg-gray-200 text-gray-600'
-                        }`}>
+                          }`}>
                           {conv.status}
                         </span>
 
                         {hasUnread && (
-                          <span className="px-2 py-0.5 rounded-full bg-rose-600 text-white font-black text-[9px] animate-pulse">
+                          <span className="px-2 py-0.5 rounded-full bg-[#7A0C1E] text-white font-black text-[9px] animate-pulse">
                             {conv.unread_admin} NEW
                           </span>
                         )}
@@ -415,11 +417,10 @@ const LiveSupportChat = () => {
                   {/* Toggle Status Button */}
                   <button
                     onClick={() => handleToggleStatus(selectedConversation.id, selectedConversation.status)}
-                    className={`px-3 py-1.5 rounded-full text-xs font-black uppercase transition-all cursor-pointer flex items-center gap-1.5 ${
-                      selectedConversation.status === 'active'
+                    className={`px-3 py-1.5 rounded-full text-xs font-black uppercase transition-all cursor-pointer flex items-center gap-1.5 ${selectedConversation.status === 'active'
                         ? 'bg-amber-100 text-amber-800 hover:bg-amber-200'
                         : 'bg-emerald-100 text-emerald-800 hover:bg-emerald-200'
-                    }`}
+                      }`}
                   >
                     {selectedConversation.status === 'active' ? (
                       <>
@@ -469,7 +470,7 @@ const LiveSupportChat = () => {
                     if (isSystem) {
                       return (
                         <div key={msg.id} className="text-center my-2">
-                          <span className="px-3 py-1 bg-[#F2E6DA] text-[#7A0C1E] text-[10px] font-bold rounded-full border border-[#E8DACD]">
+                          <span className="px-3 py-1 bg-[#FAF5EF] text-[#7A0C1E] text-[10px] font-bold rounded-full border border-[#E8DACD]">
                             {msg.message}
                           </span>
                         </div>
@@ -482,25 +483,23 @@ const LiveSupportChat = () => {
                         className={`flex gap-3 ${isAdmin ? 'justify-end' : 'justify-start'}`}
                       >
                         {!isAdmin && (
-                          <div className="w-7 h-7 rounded-full bg-[#7A0C1E]/10 text-[#7A0C1E] flex items-center justify-center font-black text-[10px] shrink-0 border border-[#E8DACD]">
+                          <div className="w-7 h-7 rounded-full bg-[#7A0C1E]/20 text-[#7A0C1E] flex items-center justify-center font-black text-[10px] shrink-0 border border-[#E8DACD]">
                             {msg.sender_name?.charAt(0)?.toUpperCase() || 'U'}
                           </div>
                         )}
 
                         <div
-                          className={`max-w-[70%] rounded-2xl px-4 py-3 text-xs leading-relaxed shadow-2xs ${
-                            isAdmin
+                          className={`max-w-[70%] rounded-2xl px-4 py-3 text-xs leading-relaxed shadow-2xs ${isAdmin
                               ? 'bg-[#7A0C1E] text-white rounded-tr-none'
                               : 'bg-white border border-[#E8DACD] text-gray-900 rounded-tl-none'
-                          }`}
+                            }`}
                         >
                           <div className="font-extrabold text-[10px] opacity-80 mb-0.5">
-                            {isAdmin ? 'Fleur Support Agent' : msg.sender_name}
+                            {isAdmin ? 'CafloreSupport Agent' : msg.sender_name}
                           </div>
                           <p className="whitespace-pre-wrap">{msg.message}</p>
-                          <span className={`block text-[9px] text-right mt-1 font-semibold ${
-                            isAdmin ? 'text-white/70' : 'text-gray-400'
-                          }`}>
+                          <span className={`block text-[9px] text-right mt-1 font-semibold ${isAdmin ? 'text-white/70' : 'text-gray-400'
+                            }`}>
                             {formatTime(msg.created_at)}
                           </span>
                         </div>
@@ -518,7 +517,7 @@ const LiveSupportChat = () => {
                   'Hello! How can I assist you today?',
                   'Let me check your order details right away.',
                   'Your request has been processed successfully! 🌸',
-                  'Thank you for reaching out to Fleur Notes Support!'
+                  'Thank you for reaching out to Caflore Support!'
                 ].map((tmpl) => (
                   <button
                     key={tmpl}
@@ -538,7 +537,7 @@ const LiveSupportChat = () => {
                   placeholder="Type your live support response here..."
                   value={replyText}
                   onChange={(e) => setReplyText(e.target.value)}
-                  className="flex-1 px-4 py-2.5 rounded-2xl bg-[#F2E6DA] text-xs font-semibold text-gray-800 border-none focus:outline-none focus:ring-2 focus:ring-[#7A0C1E]"
+                  className="flex-1 px-4 py-2.5 rounded-2xl bg-[#FAF5EF] text-xs font-semibold text-gray-800 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E]"
                 />
 
                 <button

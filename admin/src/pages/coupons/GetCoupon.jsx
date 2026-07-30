@@ -88,7 +88,7 @@ const GetCoupon = () => {
     return (
       <div className="flex h-[70vh] items-center justify-center">
         <div className="flex items-center gap-3 font-black text-[#7A0C1E] text-base">
-          <FiLoader className="w-6 h-6 animate-spin" />
+          <FiLoader className="w-6 h-6 animate-spin text-[#7A0C1E]" />
           <span>Loading Coupon Details...</span>
         </div>
       </div>
@@ -108,7 +108,7 @@ const GetCoupon = () => {
         <div className="flex items-center gap-3">
           <button
             onClick={() => navigate('/coupons')}
-            className="p-2.5 rounded-2xl bg-white text-gray-700 border border-[#E8DACD] hover:bg-[#FAF5EF] hover:text-[#2B1B17] shadow-sm transition-all cursor-pointer"
+            className="p-2.5 rounded-2xl bg-white text-gray-700 border border-[#E8DACD] hover:bg-[#FAF5EF] hover:text-[#7A0C1E] shadow-sm transition-all cursor-pointer"
             title="Back to Coupons"
           >
             <FiArrowLeft className="w-5 h-5" />
@@ -127,9 +127,9 @@ const GetCoupon = () => {
         <div className="flex items-center gap-3">
           <button
             onClick={() => navigate(`/coupons/edit/${coupon.id}`)}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-[#FAF5EF] hover:bg-[#E8DACD] text-[#2B1B17] font-black text-xs shadow-xs transition-all cursor-pointer"
+            className="flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-[#FAF5EF] hover:bg-[#E8DACD] text-[#7A0C1E] border border-[#E8DACD] font-black text-xs shadow-xs transition-all cursor-pointer"
           >
-            <FiEdit2 className="w-4 h-4 text-[#88A626]" />
+            <FiEdit2 className="w-4 h-4 text-[#7A0C1E]" />
             <span>Edit Coupon</span>
           </button>
 
@@ -148,11 +148,11 @@ const GetCoupon = () => {
         {/* Header row: Code Badge, Status */}
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#E8DACD] pb-5">
           <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-3xl bg-[#FAF5EF] text-[#2B1B17] flex items-center justify-center font-black border border-[#FAF5EF] shadow-sm">
-              <FiTag className="w-7 h-7 text-[#88A626]" />
+            <div className="w-14 h-14 rounded-3xl bg-[#FAF5EF] text-[#7A0C1E] flex items-center justify-center font-black border border-[#E8DACD] shadow-sm">
+              <FiTag className="w-7 h-7 text-[#7A0C1E]" />
             </div>
             <div>
-              <span className="px-4 py-1.5 rounded-2xl bg-[#F2E6DA] text-gray-900 font-mono font-black text-xl border border-[#E8DACD] uppercase tracking-widest block w-fit">
+              <span className="px-4 py-1.5 rounded-2xl bg-[#FAF5EF] text-[#7A0C1E] font-mono font-black text-xl border border-[#E8DACD] uppercase tracking-widest block w-fit">
                 {coupon.code}
               </span>
               <span className="text-xs font-semibold text-gray-400 mt-1 block">
@@ -164,7 +164,7 @@ const GetCoupon = () => {
           <span
             className={`px-4 py-1.5 rounded-full text-xs font-black uppercase ${
               isActive
-                ? 'bg-[#E8DACD]/60 text-[#1E7741]'
+                ? 'bg-[#FAF5EF] text-[#5F0917] border border-[#E8DACD]'
                 : coupon.status === 'expired'
                 ? 'bg-amber-100 text-amber-700'
                 : 'bg-red-100 text-red-600'
@@ -177,11 +177,11 @@ const GetCoupon = () => {
         {/* Stats Grid Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
           {/* Value */}
-          <div className="p-4 rounded-2xl bg-[#F2E6DA] border border-[#E8DACD]">
+          <div className="p-4 rounded-2xl bg-[#FAF5EF] border border-[#E8DACD]">
             <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider block mb-1">
               Discount Value
             </span>
-            <span className="text-2xl font-black text-emerald-600 flex items-center gap-1">
+            <span className="text-2xl font-black text-[#7A0C1E] flex items-center gap-1">
               {isPercentage ? (
                 <>
                   <FiPercent className="w-5 h-5" />
@@ -189,7 +189,7 @@ const GetCoupon = () => {
                 </>
               ) : (
                 <>
-                  <FiRuppeeSign className="w-5 h-5 text-emerald-600" />
+                  <FiRuppeeSign className="w-5 h-5 text-[#7A0C1E]" />
                   <span>{coupon.value} OFF</span>
                 </>
               )}
@@ -197,7 +197,7 @@ const GetCoupon = () => {
           </div>
 
           {/* Min Cart Amount */}
-          <div className="p-4 rounded-2xl bg-[#F2E6DA] border border-[#E8DACD]">
+          <div className="p-4 rounded-2xl bg-[#FAF5EF] border border-[#E8DACD]">
             <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider block mb-1">
               Minimum Cart Required
             </span>
@@ -214,7 +214,7 @@ const GetCoupon = () => {
           </div>
 
           {/* Max Discount Cap */}
-          <div className="p-4 rounded-2xl bg-[#F2E6DA] border border-[#E8DACD]">
+          <div className="p-4 rounded-2xl bg-[#FAF5EF] border border-[#E8DACD]">
             <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider block mb-1">
               Max Discount Cap
             </span>
@@ -231,7 +231,7 @@ const GetCoupon = () => {
           </div>
 
           {/* Total Usages */}
-          <div className="p-4 rounded-2xl bg-[#F2E6DA] border border-[#E8DACD]">
+          <div className="p-4 rounded-2xl bg-[#FAF5EF] border border-[#E8DACD]">
             <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider block mb-1">
               Usage Count / Limit
             </span>
@@ -242,7 +242,7 @@ const GetCoupon = () => {
         </div>
 
         {/* Details List */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-gray-50/70 p-5 rounded-2xl border border-[#E8DACD] text-sm font-semibold text-gray-700">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-[#FAF5EF]/50 p-5 rounded-2xl border border-[#E8DACD] text-sm font-semibold text-gray-700">
           <div>
             <span className="text-xs text-gray-400 font-bold block mb-0.5">Per User Limit:</span>
             <span>{coupon.per_user_limit || 1} use(s) per customer</span>
@@ -269,8 +269,8 @@ const GetCoupon = () => {
       {/* Redemption History / Coupon Usages */}
       <div className="bg-white rounded-3xl p-8 shadow-sm border border-[#E8DACD] space-y-6">
         <div className="flex items-center gap-3 border-b border-[#E8DACD] pb-5">
-          <div className="w-10 h-10 rounded-2xl bg-[#FAF5EF] text-[#2B1B17] flex items-center justify-center font-black">
-            <FiUsers className="w-5 h-5 text-[#88A626]" />
+          <div className="w-10 h-10 rounded-2xl bg-[#FAF5EF] text-[#7A0C1E] border border-[#E8DACD] flex items-center justify-center font-black">
+            <FiUsers className="w-5 h-5 text-[#7A0C1E]" />
           </div>
           <div>
             <h3 className="text-lg font-black text-gray-900 tracking-tight">
@@ -290,7 +290,7 @@ const GetCoupon = () => {
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
-              <thead className="bg-[#F2E6DA] text-gray-400 font-bold text-xs uppercase tracking-wider">
+              <thead className="bg-[#FAF5EF] text-[#7A0C1E] font-extrabold text-xs uppercase tracking-wider">
                 <tr>
                   <th className="py-3.5 px-4">Customer</th>
                   <th className="py-3.5 px-4">Order ID</th>
@@ -298,13 +298,13 @@ const GetCoupon = () => {
                   <th className="py-3.5 px-4 text-right">Redeemed At</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#E8DACD] font-medium text-gray-700">
+              <tbody className="divide-y divide-[#E8DACD]/60 font-medium text-gray-700">
                 {usagesList.map((usage) => (
-                  <tr key={usage.id} className="hover:bg-gray-50 transition-colors">
+                  <tr key={usage.id} className="hover:bg-[#FAF5EF]/40 transition-colors">
                     <td className="py-3.5 px-4">
                       <div className="flex items-center gap-2.5">
-                        <div className="w-8 h-8 rounded-xl bg-gray-100 text-gray-600 flex items-center justify-center font-black text-xs">
-                          <FiUser className="w-4 h-4" />
+                        <div className="w-8 h-8 rounded-xl bg-[#FAF5EF] text-[#7A0C1E] border border-[#E8DACD] flex items-center justify-center font-black text-xs">
+                          <FiUser className="w-4 h-4 text-[#7A0C1E]" />
                         </div>
                         <div>
                           <div className="font-extrabold text-gray-900 text-xs">
@@ -319,7 +319,7 @@ const GetCoupon = () => {
                     <td className="py-3.5 px-4 font-mono font-bold text-xs text-gray-800">
                       {usage.order_id ? `#${usage.order_id}` : 'N/A'}
                     </td>
-                    <td className="py-3.5 px-4 font-black text-emerald-600 text-xs">
+                    <td className="py-3.5 px-4 font-black text-[#7A0C1E] text-xs">
                       ₹{usage.discount_amount}
                     </td>
                     <td className="py-3.5 px-4 text-right text-gray-400 text-xs font-semibold">

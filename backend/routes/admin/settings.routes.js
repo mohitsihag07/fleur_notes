@@ -4,10 +4,15 @@ const settingsController = require("../../controller/admin/settings.controller")
 const { authenticateAdmin } = require("../../middleware/auth");
 const { uploadSingle } = require("../../helper/fileupload");
 
-router.use(authenticateAdmin);
-
+// Public GET settings (for website & admin panel logo, site info, etc.)
+router.get("/public", settingsController.getSettings);
 router.get("/", settingsController.getSettings);
-router.put("/", uploadSingle('logo', 'settings'), settingsController.updateSettings);
-router.post("/", uploadSingle('logo', 'settings'), settingsController.updateSettings);
+
+// Public newsletter subscription
+router.post("/subscribe", settingsController.subscribeNewsletter);
+
+// Admin-only updates
+router.put("/", authenticateAdmin, uploadSingle('logo', 'settings'), settingsController.updateSettings);
+router.post("/", authenticateAdmin, uploadSingle('logo', 'settings'), settingsController.updateSettings);
 
 module.exports = router;

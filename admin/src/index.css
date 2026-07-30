@@ -3,10 +3,16 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
+  --font-sans: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-serif-luxury: 'Playfair Display', Georgia, serif;
+
   --color-brand-primary: #7A0C1E;
   --color-brand-secondary: #5F0917;
-  --color-brand-hover: #FAF5EF;
-  --color-brand-mint: #E8DACD;
+  --color-brand-hover: #A87B39;
+  --color-brand-teal: #7A0C1E;
+  --color-brand-sageteal: #A87B39;
+  --color-brand-mint: #F2E6DA;
+  --color-brand-yellow: #FAF5EF;
 
   --color-app-bg: #FAF5EF;
   --color-app-card: #FFFFFF;
@@ -15,12 +21,12 @@
   --color-app-text-muted: #705B54;
 }
 
-/* Base Theme Variables (Light Theme) */
+/* Base Theme Variables (Cheery Red Background Theme) */
 :root {
   --coral: #7A0C1E;
-  --peach: #5F0917;
-  --lime: #FAF5EF;
-  --mint: #E8DACD;
+  --peach: #A87B39;
+  --lime: #f1e0ce;
+  --mint: #FAF5EF;
 
   --background: #FAF5EF;
   --card: #FFFFFF;
@@ -29,39 +35,44 @@
   --text-muted: #705B54;
 
   --primary: #7A0C1E;
-  --secondary: #5F0917;
+  --secondary: #A87B39;
   --hover-bg: #5F0917;
   --sidebar-bg: #7A0C1E;
-  --sidebar-text: #2B1B17;
-  --sidebar-text-muted: #61434B;
+  --sidebar-text: #FAF5EF;
+  --sidebar-text-muted: #F2E6DA;
 }
 
-/* Dark Theme Palette Override */
+/* Dark Theme Override */
 .dark,
 .dark-theme {
-  --background: #140E13;
-  --card: #1E1622;
-  --border: #2E2333;
-  --text: #F8F5F9;
-  --text-muted: #A396A6;
+  --background: #1C0509;
+  --card: #2B0A10;
+  --border: #4A121A;
+  --text: #FAF5EF;
+  --text-muted: #E8DACD;
 
   --primary: #7A0C1E;
-  --secondary: #5F0917;
-  --hover-bg: #3D3524;
-  --sidebar-bg: #1E1622;
-  --sidebar-text: #FFFFFF;
-  --sidebar-text-muted: #A396A6;
+  --secondary: #A87B39;
+  --hover-bg: #5F0917;
+  --sidebar-bg: #1C0509;
+  --sidebar-text: #FAF5EF;
+  --sidebar-text-muted: #E8DACD;
 }
 
 /* Global Styles */
 body {
-  background-color: var(--background);
+  background-color: #FAF5EF;
   color: var(--text);
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
   transition: background-color 0.3s ease, color 0.3s ease;
   min-height: 100vh;
   margin: 0;
   overflow-x: hidden;
+}
+
+/* All Headings & Card Titles use Normal Sans-Serif Font */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
 }
 
 /* Hide scrollbar utility while maintaining scrollability */
@@ -74,18 +85,18 @@ body {
   scrollbar-width: none;
 }
 
-/* Standard Scrollbar Styling for main pages */
+/* Standard Scrollbar Styling */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--background);
+  background: #FAF5EF;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #5F0917;
+  background: #E8DACD;
   border-radius: 9999px;
 }
 
@@ -93,58 +104,60 @@ body {
   background: #7A0C1E;
 }
 
-/* Card Styling */
+/* Card Styling - Clean White Cards on Light Warm Background */
 .jobie-card {
-  background-color: var(--card);
-  border: 1px solid var(--border);
+  background-color: #FFFFFF;
+  border: 1px solid #E8DACD;
   border-radius: 1.25rem;
-  box-shadow: 0 4px 20px -2px rgba(44, 26, 46, 0.04), 0 2px 6px -1px rgba(0, 0, 0, 0.02);
+  box-shadow: 0 4px 15px -2px rgba(122, 12, 30, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.02);
   padding: 1.5rem;
   transition: all 0.25s ease;
 }
 
 .jobie-card:hover {
-  box-shadow: 0 10px 25px -5px rgba(255, 157, 157, 0.2), 0 8px 10px -6px rgba(0, 0, 0, 0.03);
+  box-shadow: 0 10px 25px -5px rgba(122, 12, 30, 0.15), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
 }
 
-/* 4-Color Stat Header Cards */
+/* Stat Cards */
 .stat-card-coral {
   background: linear-gradient(135deg, #7A0C1E 0%, #5F0917 100%);
-  color: #2B1B17;
+  color: #FFFFFF;
 }
 
 .stat-card-peach {
-  background: linear-gradient(135deg, #5F0917 0%, #5F0917 100%);
-  color: #2B1B17;
+  background: linear-gradient(135deg, #A87B39 0%, #7A0C1E 100%);
+  color: #FFFFFF;
 }
 
 .stat-card-lime {
-  background: linear-gradient(135deg, #FAF5EF 0%, #E8DACD 100%);
+  background: linear-gradient(135deg, #FAF5EF 0%, #F2E6DA 100%);
   color: #2B1B17;
 }
 
 .stat-card-mint {
-  background: linear-gradient(135deg, #E8DACD 0%, #E8DACD 100%);
+  background: linear-gradient(135deg, #F2E6DA 0%, #A87B39 100%);
   color: #2B1B17;
 }
 
 /* Primary Button */
 .btn-purple,
 .btn-primary {
-  background-color: #7A0C1E;
-  color: #2B1B17;
-  font-weight: 800;
+  background: linear-gradient(135deg, #7A0C1E 0%, #5F0917 100%);
+  color: #FFFFFF;
+  font-weight: 700;
   border-radius: 0.75rem;
   padding: 0.625rem 1.25rem;
   transition: all 0.2s ease;
-  box-shadow: 0 4px 12px rgba(255, 157, 157, 0.35);
+  box-shadow: 0 4px 12px rgba(122, 12, 30, 0.25);
+  border: 1px solid rgba(232, 218, 205, 0.4);
 }
 
 .btn-purple:hover,
 .btn-primary:hover {
-  background-color: #5F0917;
-  color: #2B1B17;
+  background: linear-gradient(135deg, #8F1025 0%, #7A0C1E 100%);
+  color: #FFFFFF;
   transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(122, 12, 30, 0.35);
 }
 
 /* Page transition animation */

@@ -1,60 +1,21 @@
-'use strict';
-const { Model } = require('sequelize');
+const mongoose = require('mongoose');
+const { Schema } = mongoose;
 
-module.exports = (sequelize, DataTypes) => {
-  class Shipment extends Model {
-    static associate(models) {
-      Shipment.belongsTo(models.Order, { foreignKey: 'order_id', as: 'order' });
-    }
-  }
+const shipmentSchema = new Schema({
+  order_id: { type: Schema.Types.ObjectId, ref: 'Order', required: true, unique: true },
+  tracking_number: { type: String, default: null },
+  shipping_company: { type: String, default: null },
+  tracking_url: { type: String, default: null },
+  expected_delivery: { type: Date, default: null },
+  shipped_at: { type: Date, default: null },
+  delivered_at: { type: Date, default: null },
+}, {
+  timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true },
+});
 
-  Shipment.init({
-    id: {
-      type: DataTypes.BIGINT.UNSIGNED,
-      autoIncrement: true,
-      primaryKey: true,
-    },
-    order_id: {
-      type: DataTypes.BIGINT.UNSIGNED,
-      allowNull: false,
-      unique: true,
-      references: { model: 'orders', key: 'id' },
-    },
-    tracking_number: {
-      type: DataTypes.STRING(100),
-      allowNull: true,
-    },
-    shipping_company: {
-      type: DataTypes.STRING(100),
-      allowNull: true,
-      comment: 'e.g. Delhivery, Shiprocket, BlueDart',
-    },
-    tracking_url: {
-      type: DataTypes.STRING(500),
-      allowNull: true,
-    },
-    expected_delivery: {
-      type: DataTypes.DATEONLY,
-      allowNull: true,
-    },
-    shipped_at: {
-      type: DataTypes.DATE,
-      allowNull: true,
-    },
-    delivered_at: {
-      type: DataTypes.DATE,
-      allowNull: true,
-    },
-  }, {
-    sequelize,
-    modelName: 'Shipment',
-    tableName: 'shipments',
-    timestamps: true,
-    underscored: true,
-    indexes: [
-      { fields: ['tracking_number'] },
-    ],
-  });
+shipmentSchema.index({ tracking_number: 1 });
 
-  return Shipment;
-};
+const Shipment = mongoose.model('Shipment', shipmentSchema);
+module.exports = Shipment;

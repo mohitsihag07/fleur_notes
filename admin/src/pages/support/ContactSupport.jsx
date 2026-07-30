@@ -15,7 +15,8 @@ import {
   FiPhone,
   FiUser,
   FiX,
-  FiCornerDownRight
+  FiCornerDownRight,
+  FiHeadphones
 } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import ApiInstance from '../../utils/ApiInstance';
@@ -166,12 +167,12 @@ const ContactSupport = () => {
   const getStatusBadgeStyle = (status) => {
     switch (status?.toLowerCase()) {
       case 'closed':
-        return 'bg-[#E8DACD]/50 text-[#1E7741] border-[#E8DACD]';
+        return 'bg-[#FAF5EF] text-[#5F0917] border-[#E8DACD]';
       case 'in_progress':
-        return 'bg-blue-100 text-blue-700 border-blue-200';
+        return 'bg-[#FAF5EF] text-[#A87B39] border-[#E8DACD]';
       case 'open':
       default:
-        return 'bg-[#5F0917]/40 text-[#D96B3B] border-[#5F0917]';
+        return 'bg-[#F2E6DA]/40 text-[#7A0C1E] border-[#E8DACD]';
     }
   };
 
@@ -193,8 +194,8 @@ const ContactSupport = () => {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-2xl bg-[#7A0C1E]/20 text-[#2B1B17]">
-              <FiMessageSquare className="w-6 h-6 text-[#7A0C1E]" />
+            <div className="p-2.5 rounded-2xl bg-[#FAF5EF] text-[#7A0C1E] border border-[#E8DACD]">
+              <FiHeadphones className="w-6 h-6 text-[#7A0C1E]" />
             </div>
             <h2 className="text-2xl font-black text-gray-900 tracking-tight">
               Contact Support & Inquiries
@@ -214,7 +215,7 @@ const ContactSupport = () => {
             <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Total Messages</p>
             <h3 className="text-2xl font-black text-gray-900 mt-1">{stats.totalMessages || 0}</h3>
           </div>
-          <div className="p-3 rounded-2xl bg-purple-50 text-purple-600">
+          <div className="p-3 rounded-2xl bg-[#FAF5EF] text-[#7A0C1E]">
             <FiMessageSquare className="w-5 h-5" />
           </div>
         </div>
@@ -225,7 +226,7 @@ const ContactSupport = () => {
             <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Open Inquiries</p>
             <h3 className="text-2xl font-black text-gray-900 mt-1">{stats.openCount || 0}</h3>
           </div>
-          <div className="p-3 rounded-2xl bg-[#5F0917]/30 text-[#D96B3B]">
+          <div className="p-3 rounded-2xl bg-[#F2E6DA]/40 text-[#7A0C1E]">
             <FiClock className="w-5 h-5" />
           </div>
         </div>
@@ -236,18 +237,18 @@ const ContactSupport = () => {
             <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">In Progress</p>
             <h3 className="text-2xl font-black text-gray-900 mt-1">{stats.inProgressCount || 0}</h3>
           </div>
-          <div className="p-3 rounded-2xl bg-blue-50 text-blue-600">
+          <div className="p-3 rounded-2xl bg-[#FAF5EF] text-[#A87B39]">
             <FiRefreshCw className="w-5 h-5" />
           </div>
         </div>
 
-        {/* Closed / Resolved */}
+        {/* Resolved / Closed */}
         <div className="bg-white rounded-3xl p-5 shadow-xs border border-[#E8DACD] flex items-center justify-between transition-all hover:shadow-md">
           <div>
-            <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Closed / Resolved</p>
+            <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Resolved</p>
             <h3 className="text-2xl font-black text-gray-900 mt-1">{stats.closedCount || 0}</h3>
           </div>
-          <div className="p-3 rounded-2xl bg-[#E8DACD]/40 text-[#1E7741]">
+          <div className="p-3 rounded-2xl bg-[#FAF5EF] text-[#5F0917]">
             <FiCheckCircle className="w-5 h-5" />
           </div>
         </div>
@@ -266,13 +267,13 @@ const ContactSupport = () => {
               setSearchTerm(e.target.value);
               setCurrentPage(1);
             }}
-            className="w-full pl-11 pr-4 py-2.5 rounded-full bg-[#F2E6DA] text-xs font-semibold text-gray-700 border-none focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all"
+            className="w-full pl-11 pr-4 py-2.5 rounded-full bg-[#FAF5EF] text-xs font-semibold text-gray-700 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all"
           />
         </div>
 
         {/* Status Filter */}
         <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
-          <div className="flex items-center gap-2 bg-[#F2E6DA] px-4 py-2.5 rounded-full text-xs font-bold text-gray-600">
+          <div className="flex items-center gap-2 bg-[#FAF5EF] px-4 py-2.5 rounded-full text-xs font-bold text-gray-600 border border-[#E8DACD]">
             <FiFilter className="w-3.5 h-3.5 text-gray-400" />
             <span>Status:</span>
             <select
@@ -305,7 +306,7 @@ const ContactSupport = () => {
 
         <div className="overflow-x-auto min-h-[380px]">
           <table className="w-full text-left text-xs">
-            <thead className="bg-[#F2E6DA] text-gray-400 font-extrabold text-xs uppercase tracking-wider">
+            <thead className="bg-[#FAF5EF] text-[#7A0C1E] font-extrabold text-xs uppercase tracking-wider">
               <tr>
                 <th className="py-4 px-6">Customer</th>
                 <th className="py-4 px-6">Subject</th>
@@ -315,7 +316,7 @@ const ContactSupport = () => {
                 <th className="py-4 px-6 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#E8DACD] font-medium text-gray-700">
+            <tbody className="divide-y divide-[#E8DACD]/60 font-medium text-gray-700">
               {!isLoading && messages.length === 0 ? (
                 <tr>
                   <td colSpan="6" className="py-12 text-center text-gray-400 font-bold">
@@ -324,10 +325,10 @@ const ContactSupport = () => {
                 </tr>
               ) : (
                 messages.map((msg) => {
-                  const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(msg.name || 'User')}&background=FF9D9D&color=2D252E`;
+                  const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(msg.name || 'User')}&background=E6F5F3&color=1C8B82`;
                   
                   return (
-                    <tr key={msg.id} className="hover:bg-gray-50 transition-colors">
+                    <tr key={msg.id} className="hover:bg-[#FAF5EF]/40 transition-colors">
                       {/* Customer Info */}
                       <td className="py-4 px-6">
                         <div className="flex items-center gap-3">
@@ -341,12 +342,12 @@ const ContactSupport = () => {
                               {msg.name}
                             </p>
                             <p className="text-[11px] text-gray-400 font-semibold flex items-center gap-1">
-                              <FiMail className="w-3 h-3" />
+                              <FiMail className="w-3 h-3 text-[#7A0C1E]" />
                               <span>{msg.email}</span>
                             </p>
                             {msg.phone && (
                               <p className="text-[10px] text-gray-400 font-semibold flex items-center gap-1">
-                                <FiPhone className="w-3 h-3" />
+                                <FiPhone className="w-3 h-3 text-[#7A0C1E]" />
                                 <span>{msg.phone}</span>
                               </p>
                             )}
@@ -363,11 +364,11 @@ const ContactSupport = () => {
 
                       {/* Message Content */}
                       <td className="py-4 px-6 max-w-[280px]">
-                        <p className="text-xs text-gray-700 italic bg-[#F2E6DA] p-2.5 rounded-xl border border-[#E8DACD] line-clamp-2 leading-relaxed">
+                        <p className="text-xs text-gray-700 italic bg-[#FAF5EF] p-2.5 rounded-xl border border-[#E8DACD] line-clamp-2 leading-relaxed">
                           "{msg.message}"
                         </p>
                         {msg.admin_reply && (
-                          <div className="mt-1 flex items-center gap-1 text-[10px] font-bold text-[#1E7741]">
+                          <div className="mt-1 flex items-center gap-1 text-[10px] font-bold text-[#5F0917]">
                             <FiCornerDownRight className="w-3 h-3" />
                             <span>Replied</span>
                           </div>
@@ -392,7 +393,7 @@ const ContactSupport = () => {
                           <button
                             onClick={() => openReplyModal(msg)}
                             title="Reply & Manage Message"
-                            className="p-2 rounded-xl bg-[#FAF5EF] text-[#2B1B17] hover:bg-[#7A0C1E] transition-all cursor-pointer shadow-2xs font-bold text-xs flex items-center gap-1"
+                            className="p-2 rounded-xl bg-[#FAF5EF] text-[#7A0C1E] hover:bg-[#7A0C1E] hover:text-white transition-all cursor-pointer shadow-2xs font-bold text-xs flex items-center gap-1"
                           >
                             <FiSend className="w-3.5 h-3.5" />
                             <span>Reply</span>
@@ -417,7 +418,7 @@ const ContactSupport = () => {
 
         {/* Pagination Footer */}
         {totalPages > 1 && (
-          <div className="px-6 py-4 bg-[#F2E6DA] flex items-center justify-between border-t border-[#E8DACD] text-xs font-bold text-gray-500">
+          <div className="px-6 py-4 bg-[#FAF5EF] flex items-center justify-between border-t border-[#E8DACD] text-xs font-bold text-gray-600">
             <span>
               Showing page {currentPage} of {totalPages} ({totalItems} total messages)
             </span>
@@ -425,17 +426,17 @@ const ContactSupport = () => {
               <button
                 disabled={currentPage === 1}
                 onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                className="p-2 rounded-xl bg-white text-gray-700 disabled:opacity-40 shadow-xs hover:bg-[#FAF5EF] hover:text-[#2B1B17] transition-all cursor-pointer"
+                className="p-2 rounded-xl bg-white text-gray-700 border border-[#E8DACD] disabled:opacity-40 shadow-xs hover:bg-[#7A0C1E] hover:text-white transition-all cursor-pointer"
               >
                 <FiChevronLeft className="w-4 h-4" />
               </button>
-              <span className="px-3 py-1 rounded-lg bg-white text-gray-800 font-black">
+              <span className="px-3 py-1 rounded-lg bg-[#7A0C1E] text-white font-black">
                 {currentPage}
               </span>
               <button
                 disabled={currentPage === totalPages}
                 onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-                className="p-2 rounded-xl bg-white text-gray-700 disabled:opacity-40 shadow-xs hover:bg-[#FAF5EF] hover:text-[#2B1B17] transition-all cursor-pointer"
+                className="p-2 rounded-xl bg-white text-gray-700 border border-[#E8DACD] disabled:opacity-40 shadow-xs hover:bg-[#7A0C1E] hover:text-white transition-all cursor-pointer"
               >
                 <FiChevronRight className="w-4 h-4" />
               </button>
@@ -451,8 +452,8 @@ const ContactSupport = () => {
             {/* Modal Header */}
             <div className="flex items-center justify-between pb-4 border-b border-[#E8DACD]">
               <div className="flex items-center gap-3">
-                <div className="p-2.5 rounded-2xl bg-[#FAF5EF] text-[#2B1B17]">
-                  <FiSend className="w-5 h-5" />
+                <div className="p-2.5 rounded-2xl bg-[#FAF5EF] text-[#7A0C1E] border border-[#E8DACD]">
+                  <FiSend className="w-5 h-5 text-[#7A0C1E]" />
                 </div>
                 <div>
                   <h3 className="text-lg font-black text-gray-900">
@@ -473,7 +474,7 @@ const ContactSupport = () => {
             </div>
 
             {/* Customer Details Box */}
-            <div className="p-4 rounded-2xl bg-[#F2E6DA] space-y-2 border border-[#E8DACD]">
+            <div className="p-4 rounded-2xl bg-[#FAF5EF] space-y-2 border border-[#E8DACD]">
               <div className="flex items-center justify-between flex-wrap gap-2 text-xs">
                 <div className="font-extrabold text-gray-900 flex items-center gap-2">
                   <FiUser className="w-4 h-4 text-[#7A0C1E]" />
@@ -500,7 +501,7 @@ const ContactSupport = () => {
               <label className="text-xs font-black text-gray-400 uppercase tracking-wider">
                 Customer Message
               </label>
-              <div className="p-4 rounded-2xl bg-gray-50 text-xs font-semibold text-gray-800 leading-relaxed whitespace-pre-line border border-[#E8DACD]">
+              <div className="p-4 rounded-2xl bg-[#FAF5EF]/50 text-xs font-semibold text-gray-800 leading-relaxed whitespace-pre-line border border-[#E8DACD]">
                 "{replyModalState.messageItem.message}"
               </div>
             </div>
@@ -517,7 +518,7 @@ const ContactSupport = () => {
                   placeholder="Type your response to the customer..."
                   value={replyModalState.adminReply}
                   onChange={(e) => setReplyModalState((prev) => ({ ...prev, adminReply: e.target.value }))}
-                  className="w-full p-4 rounded-2xl bg-[#F2E6DA] text-xs font-semibold text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all resize-y"
+                  className="w-full p-4 rounded-2xl bg-[#FAF5EF] text-xs font-semibold text-gray-800 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all resize-y"
                 />
               </div>
 
@@ -529,7 +530,7 @@ const ContactSupport = () => {
                 <select
                   value={replyModalState.status}
                   onChange={(e) => setReplyModalState((prev) => ({ ...prev, status: e.target.value }))}
-                  className="w-full p-3 rounded-2xl bg-[#F2E6DA] text-xs font-extrabold text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] cursor-pointer"
+                  className="w-full p-3 rounded-2xl bg-[#FAF5EF] text-xs font-extrabold text-gray-800 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] cursor-pointer"
                 >
                   <option value="open">Open</option>
                   <option value="in_progress">In Progress</option>
@@ -542,7 +543,7 @@ const ContactSupport = () => {
                 <button
                   type="button"
                   onClick={() => setReplyModalState({ isOpen: false, messageItem: null, adminReply: '', status: 'closed', isSubmitting: false })}
-                  className="py-3 px-5 rounded-2xl bg-[#F2E6DA] text-xs font-black text-gray-700 hover:bg-gray-200 transition-all cursor-pointer"
+                  className="py-3 px-5 rounded-2xl bg-[#FAF5EF] border border-[#E8DACD] text-xs font-black text-[#7A0C1E] hover:bg-[#E8DACD] transition-all cursor-pointer"
                 >
                   Cancel
                 </button>
@@ -550,7 +551,7 @@ const ContactSupport = () => {
                 <button
                   type="submit"
                   disabled={replyModalState.isSubmitting}
-                  className="btn-primary py-3 px-6 rounded-2xl font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-md cursor-pointer disabled:opacity-50 transition-all hover:scale-[1.01]"
+                  className="py-3 px-6 rounded-2xl bg-[#7A0C1E] hover:bg-[#5F0917] text-white font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-md cursor-pointer disabled:opacity-50 transition-all hover:scale-[1.01]"
                 >
                   {replyModalState.isSubmitting ? (
                     <>

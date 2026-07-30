@@ -1,56 +1,20 @@
-'use strict';
-const { Model } = require('sequelize');
+const mongoose = require('mongoose');
+const { Schema } = mongoose;
 
-module.exports = (sequelize, DataTypes) => {
-  class ContactMessage extends Model {
-    static associate(models) {}
-  }
+const contactMessageSchema = new Schema({
+  name: { type: String, required: true, maxlength: 100 },
+  email: { type: String, required: true, maxlength: 150 },
+  phone: { type: String, default: null },
+  subject: { type: String, default: null },
+  message: { type: String, required: true },
+  status: { type: String, enum: ['open', 'in_progress', 'closed'], default: 'open' },
+  admin_reply: { type: String, default: null },
+  replied_at: { type: Date, default: null },
+}, {
+  timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true },
+});
 
-  ContactMessage.init({
-    id: {
-      type: DataTypes.BIGINT.UNSIGNED,
-      autoIncrement: true,
-      primaryKey: true,
-    },
-    name: {
-      type: DataTypes.STRING(100),
-      allowNull: false,
-    },
-    email: {
-      type: DataTypes.STRING(150),
-      allowNull: false,
-    },
-    phone: {
-      type: DataTypes.STRING(20),
-      allowNull: true,
-    },
-    subject: {
-      type: DataTypes.STRING(200),
-      allowNull: true,
-    },
-    message: {
-      type: DataTypes.TEXT,
-      allowNull: false,
-    },
-    status: {
-      type: DataTypes.ENUM('open', 'in_progress', 'closed'),
-      defaultValue: 'open',
-    },
-    admin_reply: {
-      type: DataTypes.TEXT,
-      allowNull: true,
-    },
-    replied_at: {
-      type: DataTypes.DATE,
-      allowNull: true,
-    },
-  }, {
-    sequelize,
-    modelName: 'ContactMessage',
-    tableName: 'contact_messages',
-    timestamps: true,
-    underscored: true,
-  });
-
-  return ContactMessage;
-};
+const ContactMessage = mongoose.model('ContactMessage', contactMessageSchema);
+module.exports = ContactMessage;

@@ -100,13 +100,13 @@ const GetUsers = () => {
   const getStatusColorClass = (status) => {
     switch (status) {
       case 'active':
-        return 'bg-[#E8DACD]/50 text-[#1E7741] border-[#E8DACD]';
+        return 'bg-[#FAF5EF] text-[#5F0917] border-[#E8DACD]';
       case 'blocked':
         return 'bg-red-100 text-red-700 border-red-200';
       case 'inactive':
-        return 'bg-gray-200 text-gray-700 border-[#E8DACD]';
+        return 'bg-gray-100 text-gray-600 border-gray-200';
       default:
-        return 'bg-[#5F0917]/50 text-[#D96B3B] border-[#5F0917]';
+        return 'bg-[#F2E6DA]/40 text-[#7A0C1E] border-[#E8DACD]';
     }
   };
 
@@ -123,7 +123,7 @@ const GetUsers = () => {
 
   if (!user) return null;
 
-  const avatarUrl = user.profile?.profile_picture || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || 'User')}&background=FF9D9D&color=2D252E&size=128`;
+  const avatarUrl = user.profile?.profile_picture || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || 'User')}&background=9FE3D9&color=1C8B82&size=128`;
 
   return (
     <div className="space-y-6 pb-12">
@@ -132,7 +132,7 @@ const GetUsers = () => {
         <div className="flex items-center gap-3">
           <button
             onClick={() => navigate('/users')}
-            className="p-2.5 rounded-2xl bg-white text-gray-700 border border-[#E8DACD] hover:bg-[#FAF5EF] hover:text-[#2B1B17] shadow-sm transition-all cursor-pointer"
+            className="p-2.5 rounded-2xl bg-white text-gray-700 border border-[#E8DACD] hover:bg-[#FAF5EF] hover:text-[#7A0C1E] shadow-xs transition-all cursor-pointer"
             title="Back to Users"
           >
             <FiArrowLeft className="w-5 h-5" />
@@ -142,7 +142,7 @@ const GetUsers = () => {
               User Overview
             </h2>
             <p className="text-xs font-semibold text-gray-500 mt-0.5">
-              Viewing account credentials and shipping profile for ID #{user.id}
+              Viewing account credentials and shipping profile for ID #{user._id || user.id}
             </p>
           </div>
         </div>
@@ -168,7 +168,7 @@ const GetUsers = () => {
             className="w-24 h-24 rounded-3xl object-cover p-1 ring-4 ring-[#7A0C1E] shadow-md shrink-0"
             onError={(e) => {
               e.target.onerror = null;
-              e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || 'User')}&background=FF9D9D&color=2D252E&size=128`;
+              e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || 'User')}&background=9FE3D9&color=1C8B82&size=128`;
             }}
           />
           <div className="space-y-1.5">
@@ -177,7 +177,7 @@ const GetUsers = () => {
                 {user.name || 'Unnamed User'}
               </h3>
               {user.is_email_verified ? (
-                <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-[11px] font-black bg-[#E8DACD]/40 text-[#249454]">
+                <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-[11px] font-black bg-[#FAF5EF] text-[#5F0917] border border-[#E8DACD]">
                   <FiCheckCircle className="w-3.5 h-3.5" />
                   Verified
                 </span>
@@ -202,7 +202,7 @@ const GetUsers = () => {
         </div>
 
         {/* Change Status Dropdown Widget */}
-        <div className="bg-[#F2E6DA] p-4 rounded-2xl flex flex-col items-center gap-2 border border-[#E8DACD] shrink-0 w-full md:w-auto">
+        <div className="bg-[#FAF5EF] p-4 rounded-2xl flex flex-col items-center gap-2 border border-[#E8DACD] shrink-0 w-full md:w-auto">
           <span className="text-[11px] font-black uppercase text-gray-400 tracking-wider">
             Account Status
           </span>
@@ -236,12 +236,12 @@ const GetUsers = () => {
           <div className="space-y-4 text-xs font-semibold">
             <div className="flex items-center justify-between py-2 border-b border-[#E8DACD]/50">
               <span className="text-gray-400">User ID</span>
-              <span className="font-extrabold text-gray-800">#{user.id}</span>
+              <span className="font-extrabold text-gray-800">#{user._id || user.id}</span>
             </div>
 
             <div className="flex items-center justify-between py-2 border-b border-[#E8DACD]/50">
               <span className="text-gray-400">Role</span>
-              <span className="font-extrabold text-gray-800 uppercase px-2.5 py-0.5 rounded-full bg-gray-100 text-[10px]">
+              <span className="font-extrabold text-[#7A0C1E] uppercase px-2.5 py-0.5 rounded-full bg-[#FAF5EF] border border-[#E8DACD] text-[10px]">
                 {user.role || 'user'}
               </span>
             </div>
@@ -279,14 +279,14 @@ const GetUsers = () => {
           <div className="space-y-4 text-xs font-semibold">
             <div className="flex items-center justify-between py-2 border-b border-[#E8DACD]/50">
               <span className="text-gray-400">Email Verification</span>
-              <span className={`font-black text-[11px] ${user.is_email_verified ? 'text-[#249454]' : 'text-amber-600'}`}>
+              <span className={`font-black text-[11px] ${user.is_email_verified ? 'text-[#5F0917]' : 'text-amber-600'}`}>
                 {user.is_email_verified ? 'Verified Account' : 'Pending Verification'}
               </span>
             </div>
 
             <div className="flex items-center justify-between py-2 border-b border-[#E8DACD]/50">
               <span className="text-gray-400">Phone Verification</span>
-              <span className={`font-black text-[11px] ${user.is_phone_verified ? 'text-[#249454]' : 'text-gray-400'}`}>
+              <span className={`font-black text-[11px] ${user.is_phone_verified ? 'text-[#5F0917]' : 'text-gray-400'}`}>
                 {user.is_phone_verified ? 'Verified Phone' : 'Not Verified'}
               </span>
             </div>
@@ -310,7 +310,7 @@ const GetUsers = () => {
         {/* Addresses Section (Full Width) */}
         <div className="md:col-span-2 bg-white rounded-3xl p-7 shadow-sm border border-[#E8DACD] space-y-5">
           <h4 className="text-base font-black text-gray-900 flex items-center gap-2.5 border-b border-[#E8DACD] pb-4">
-            <FiMapPin className="w-5 h-5 text-[#56D896]" />
+            <FiMapPin className="w-5 h-5 text-[#7A0C1E]" />
             <span>Saved Shipping & Billing Addresses</span>
           </h4>
 
@@ -319,14 +319,14 @@ const GetUsers = () => {
               {user.addresses.map((addr, idx) => (
                 <div 
                   key={addr.id || idx} 
-                  className="bg-[#F2E6DA] p-5 rounded-2xl border border-[#E8DACD] space-y-2 relative"
+                  className="bg-[#FAF5EF]/50 p-5 rounded-2xl border border-[#E8DACD] space-y-2 relative"
                 >
                   <div className="flex items-center justify-between">
                     <span className="font-black text-xs text-gray-900 uppercase tracking-wider">
                       Address #{idx + 1}
                     </span>
                     {addr.is_default && (
-                      <span className="px-2.5 py-0.5 rounded-full bg-[#E8DACD] text-[#2B1B17] font-black text-[10px]">
+                      <span className="px-2.5 py-0.5 rounded-full bg-[#FAF5EF] text-[#7A0C1E] border border-[#E8DACD] font-black text-[10px]">
                         Default Address
                       </span>
                     )}
@@ -341,7 +341,7 @@ const GetUsers = () => {
               ))}
             </div>
           ) : (
-            <div className="py-8 text-center text-gray-400 text-xs font-bold bg-[#F2E6DA] rounded-2xl">
+            <div className="py-8 text-center text-gray-400 text-xs font-bold bg-[#FAF5EF] border border-[#E8DACD] rounded-2xl">
               No saved addresses found for this user.
             </div>
           )}

@@ -1,70 +1,23 @@
-'use strict';
-const { Model } = require('sequelize');
+const mongoose = require('mongoose');
+const { Schema } = mongoose;
 
-module.exports = (sequelize, DataTypes) => {
-  class Payment extends Model {
-    static associate(models) {
-      Payment.belongsTo(models.Order, { foreignKey: 'order_id', as: 'order' });
-      Payment.hasMany(models.PaymentTransaction, { foreignKey: 'payment_id', as: 'transactions' });
-    }
-  }
+const paymentSchema = new Schema({
+  order_id: { type: Schema.Types.ObjectId, ref: 'Order', required: true, unique: true },
+  gateway: { type: String, enum: ['razorpay', 'stripe', 'paypal', 'cod'], required: true },
+  amount: { type: Number, required: true },
+  currency: { type: String, default: 'INR', maxlength: 5 },
+  transaction_id: { type: String, default: null },
+  status: { type: String, enum: ['pending', 'paid', 'failed', 'refunded'], default: 'pending' },
+  paid_at: { type: Date, default: null },
+  refunded_at: { type: Date, default: null },
+  refund_amount: { type: Number, default: null },
+}, {
+  timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true },
+});
 
-  Payment.init({
-    id: {
-      type: DataTypes.BIGINT.UNSIGNED,
-      autoIncrement: true,
-      primaryKey: true,
-    },
-    order_id: {
-      type: DataTypes.BIGINT.UNSIGNED,
-      allowNull: false,
-      unique: true,
-      references: { model: 'orders', key: 'id' },
-    },
-    gateway: {
-      type: DataTypes.ENUM('razorpay', 'stripe', 'paypal', 'cod'),
-      allowNull: false,
-    },
-    amount: {
-      type: DataTypes.DECIMAL(10, 2),
-      allowNull: false,
-    },
-    currency: {
-      type: DataTypes.STRING(5),
-      allowNull: false,
-      defaultValue: 'INR',
-    },
-    transaction_id: {
-      type: DataTypes.STRING(200),
-      allowNull: true,
-      comment: 'Gateway-issued transaction/payment ID',
-    },
-    status: {
-      type: DataTypes.ENUM('pending', 'paid', 'failed', 'refunded'),
-      defaultValue: 'pending',
-    },
-    paid_at: {
-      type: DataTypes.DATE,
-      allowNull: true,
-    },
-    refunded_at: {
-      type: DataTypes.DATE,
-      allowNull: true,
-    },
-    refund_amount: {
-      type: DataTypes.DECIMAL(10, 2),
-      allowNull: true,
-    },
-  }, {
-    sequelize,
-    modelName: 'Payment',
-    tableName: 'payments',
-    timestamps: true,
-    underscored: true,
-    indexes: [
-      { fields: ['transaction_id'] },
-    ],
-  });
+paymentSchema.index({ transaction_id: 1 });
 
-  return Payment;
-};
+const Payment = mongoose.model('Payment', paymentSchema);
+module.exports = Payment;

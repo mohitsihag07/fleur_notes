@@ -1,63 +1,20 @@
-'use strict';
-const { Model } = require('sequelize');
+const mongoose = require('mongoose');
+const { Schema } = mongoose;
 
-module.exports = (sequelize, DataTypes) => {
-  class SupportConversation extends Model {
-    static associate(models) {
-      if (models.User) {
-        SupportConversation.belongsTo(models.User, { foreignKey: 'user_id', as: 'user' });
-      }
-      if (models.SupportMessage) {
-        SupportConversation.hasMany(models.SupportMessage, { foreignKey: 'conversation_id', as: 'messages' });
-      }
-    }
-  }
+const supportConversationSchema = new Schema({
+  user_id: { type: Schema.Types.ObjectId, ref: 'User', default: null },
+  user_name: { type: String, required: true, maxlength: 100 },
+  user_email: { type: String, default: null },
+  status: { type: String, enum: ['active', 'closed'], default: 'active' },
+  unread_admin: { type: Number, default: 0 },
+  unread_user: { type: Number, default: 0 },
+  last_message: { type: String, default: null },
+  last_message_at: { type: Date, default: Date.now },
+}, {
+  timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true },
+});
 
-  SupportConversation.init({
-    id: {
-      type: DataTypes.BIGINT.UNSIGNED,
-      autoIncrement: true,
-      primaryKey: true,
-    },
-    user_id: {
-      type: DataTypes.BIGINT.UNSIGNED,
-      allowNull: true,
-    },
-    user_name: {
-      type: DataTypes.STRING(100),
-      allowNull: false,
-    },
-    user_email: {
-      type: DataTypes.STRING(150),
-      allowNull: true,
-    },
-    status: {
-      type: DataTypes.ENUM('active', 'closed'),
-      defaultValue: 'active',
-    },
-    unread_admin: {
-      type: DataTypes.INTEGER,
-      defaultValue: 0,
-    },
-    unread_user: {
-      type: DataTypes.INTEGER,
-      defaultValue: 0,
-    },
-    last_message: {
-      type: DataTypes.TEXT,
-      allowNull: true,
-    },
-    last_message_at: {
-      type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW,
-    },
-  }, {
-    sequelize,
-    modelName: 'SupportConversation',
-    tableName: 'support_conversations',
-    timestamps: true,
-    underscored: true,
-  });
-
-  return SupportConversation;
-};
+const SupportConversation = mongoose.model('SupportConversation', supportConversationSchema);
+module.exports = SupportConversation;

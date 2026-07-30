@@ -2,15 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import ApiInstance from '../../utils/ApiInstance';
 import useAuthStore from '../../store/authStore';
-import { 
-  FiUser, 
-  FiLock, 
-  FiMail, 
-  FiPhone, 
-  FiMapPin, 
-  FiCalendar, 
-  FiGlobe, 
-  FiSave, 
+import {
+  FiUser,
+  FiLock,
+  FiMail,
+  FiPhone,
+  FiMapPin,
+  FiCalendar,
+  FiGlobe,
+  FiSave,
   FiLoader,
   FiEye,
   FiEyeOff,
@@ -47,7 +47,7 @@ const Profile = () => {
         const response = await ApiInstance.get('/profile');
         if (response.data?.success) {
           const { user: apiUser, profile, address } = response.data.data;
-          
+
           if (profile?.profile_picture) {
             setAvatarPreview(profile.profile_picture);
           }
@@ -96,7 +96,7 @@ const Profile = () => {
         const uploadedUrl = res.data.data.url;
         setAvatarPreview(uploadedUrl);
         toast.success('Profile picture uploaded & saved successfully');
-        
+
         // Immediately sync with global user store
         if (setUser && user) {
           setUser({
@@ -125,7 +125,7 @@ const Profile = () => {
       const response = await ApiInstance.put('/profile', payload);
       if (response.data?.success) {
         toast.success(response.data.message || 'Profile updated successfully.');
-        
+
         // Update local authStore user to sync navbar
         const updatedUser = response.data.data.user;
         setUser({
@@ -175,12 +175,12 @@ const Profile = () => {
     );
   }
 
-  const currentUserName = profileForm.watch('name') || user?.name || 'Fleur Admin';
-  const currentUserEmail = profileForm.watch('email') || user?.email || 'admin@fleur.com';
+  const currentUserName = profileForm.watch('name') || user?.name || 'CafloreAdmin';
+  const currentUserEmail = profileForm.watch('email') || user?.email || 'admin@caflore.com';
 
   return (
     <div className="max-w-4xl mx-auto space-y-6 pb-12">
-      
+
       {/* 1. Header Profile Banner */}
       <div className="bg-white rounded-3xl p-7 shadow-sm border border-[#E8DACD] flex flex-col md:flex-row items-center gap-6">
         {/* Avatar Upload Container */}
@@ -197,7 +197,7 @@ const Profile = () => {
             )}
           </div>
 
-          <label className="absolute bottom-0 right-0 p-2 rounded-full bg-white border border-[#E8DACD] text-gray-700 shadow-md cursor-pointer hover:bg-[#FAF5EF] hover:text-[#2B1B17] transition-all">
+          <label className="absolute bottom-0 right-0 p-2 rounded-full bg-white border border-[#E8DACD] text-gray-700 shadow-md cursor-pointer hover:bg-[#FAF5EF] hover:text-[#7A0C1E] transition-all">
             {uploadingAvatar ? (
               <FiLoader className="w-4 h-4 animate-spin text-[#7A0C1E]" />
             ) : (
@@ -221,10 +221,10 @@ const Profile = () => {
             <span>{currentUserEmail}</span>
           </p>
           <div className="flex items-center justify-center md:justify-start gap-2.5 mt-2">
-            <span className="text-[10px] font-black px-3 py-1 rounded-full bg-[#7A0C1E]/20 text-[#D94545] uppercase tracking-wider">
+            <span className="text-[10px] font-black px-3 py-1 rounded-full bg-[#7A0C1E]/20 text-[#7A0C1E] uppercase tracking-wider">
               {user?.role || 'ADMIN'}
             </span>
-            <span className="text-[10px] font-black px-3 py-1 rounded-full bg-[#E8DACD]/50 text-[#1E7741] uppercase tracking-wider flex items-center gap-1">
+            <span className="text-[10px] font-black px-3 py-1 rounded-full bg-[#FAF5EF] text-[#5F0917] uppercase tracking-wider flex items-center gap-1">
               <FiCheckCircle className="w-3 h-3" />
               <span>ACTIVE</span>
             </span>
@@ -236,22 +236,20 @@ const Profile = () => {
       <div className="flex border-b border-[#E8DACD]">
         <button
           onClick={() => setActiveTab('profile')}
-          className={`flex items-center gap-2 px-6 py-3.5 font-extrabold text-xs border-b-2 transition-all cursor-pointer ${
-            activeTab === 'profile'
+          className={`flex items-center gap-2 px-6 py-3.5 font-extrabold text-xs border-b-2 transition-all cursor-pointer ${activeTab === 'profile'
               ? 'border-[#7A0C1E] text-[#7A0C1E]'
               : 'border-transparent text-gray-400 hover:text-gray-700'
-          }`}
+            }`}
         >
           <FiUser className="w-4 h-4" />
           <span>Profile Details</span>
         </button>
         <button
           onClick={() => setActiveTab('password')}
-          className={`flex items-center gap-2 px-6 py-3.5 font-extrabold text-xs border-b-2 transition-all cursor-pointer ${
-            activeTab === 'password'
+          className={`flex items-center gap-2 px-6 py-3.5 font-extrabold text-xs border-b-2 transition-all cursor-pointer ${activeTab === 'password'
               ? 'border-[#7A0C1E] text-[#7A0C1E]'
               : 'border-transparent text-gray-400 hover:text-gray-700'
-          }`}
+            }`}
         >
           <FiLock className="w-4 h-4" />
           <span>Change Password</span>
@@ -280,8 +278,8 @@ const Profile = () => {
                     <FiUser className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
                     <input
                       type="text"
-                      className="w-full pl-10 pr-4 py-2.5 rounded-2xl bg-[#F2E6DA] text-xs font-semibold text-gray-800 border-none focus:outline-none focus:ring-2 focus:ring-[#7A0C1E]"
-                      placeholder="Fleur Admin"
+                      className="w-full pl-10 pr-4 py-2.5 rounded-2xl bg-[#FAF5EF] text-xs font-semibold text-gray-800 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E]"
+                      placeholder="CafloreAdmin"
                       {...profileForm.register('name', { required: 'Name is required' })}
                     />
                   </div>
@@ -299,8 +297,8 @@ const Profile = () => {
                     <input
                       type="email"
                       readOnly={true}
-                      className="w-full pl-10 pr-4 py-2.5 rounded-2xl bg-gray-100 text-xs font-semibold text-gray-500 border-none cursor-not-allowed"
-                      placeholder="admin@fleur.com"
+                      className="w-full pl-10 pr-4 py-2.5 rounded-2xl bg-gray-100 text-xs font-semibold text-gray-500 border border-[#E8DACD]/50 cursor-not-allowed"
+                      placeholder="admin@caflore.com"
                       {...profileForm.register('email')}
                     />
                   </div>
@@ -317,7 +315,7 @@ const Profile = () => {
                     <FiPhone className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
                     <input
                       type="text"
-                      className="w-full pl-10 pr-4 py-2.5 rounded-2xl bg-[#F2E6DA] text-xs font-semibold text-gray-800 border-none focus:outline-none focus:ring-2 focus:ring-[#7A0C1E]"
+                      className="w-full pl-10 pr-4 py-2.5 rounded-2xl bg-[#FAF5EF] text-xs font-semibold text-gray-800 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E]"
                       placeholder="07056485362"
                       {...profileForm.register('phone')}
                     />
@@ -332,7 +330,7 @@ const Profile = () => {
                     <FiCalendar className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
                     <input
                       type="date"
-                      className="w-full pl-10 pr-4 py-2.5 rounded-2xl bg-[#F2E6DA] text-xs font-semibold text-gray-800 border-none focus:outline-none focus:ring-2 focus:ring-[#7A0C1E]"
+                      className="w-full pl-10 pr-4 py-2.5 rounded-2xl bg-[#FAF5EF] text-xs font-semibold text-gray-800 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E]"
                       {...profileForm.register('dob')}
                     />
                   </div>
@@ -343,7 +341,7 @@ const Profile = () => {
                     Gender
                   </label>
                   <select
-                    className="w-full px-4 py-2.5 rounded-2xl bg-[#F2E6DA] text-xs font-semibold text-gray-800 border-none focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] cursor-pointer"
+                    className="w-full px-4 py-2.5 rounded-2xl bg-[#FAF5EF] text-xs font-semibold text-gray-800 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] cursor-pointer"
                     {...profileForm.register('gender')}
                   >
                     <option value="">Select Gender</option>
@@ -361,7 +359,7 @@ const Profile = () => {
                 </label>
                 <textarea
                   rows={3}
-                  className="w-full p-4 rounded-2xl bg-[#F2E6DA] text-xs font-semibold text-gray-800 border-none focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] resize-none"
+                  className="w-full p-4 rounded-2xl bg-[#FAF5EF] text-xs font-semibold text-gray-800 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] resize-none"
                   placeholder="Tell us about yourself..."
                   {...profileForm.register('bio')}
                 />
@@ -383,7 +381,7 @@ const Profile = () => {
                     </label>
                     <input
                       type="text"
-                      className="w-full px-4 py-2.5 rounded-2xl bg-[#F2E6DA] text-xs font-semibold text-gray-800 border-none focus:outline-none focus:ring-2 focus:ring-[#7A0C1E]"
+                      className="w-full px-4 py-2.5 rounded-2xl bg-[#FAF5EF] text-xs font-semibold text-gray-800 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E]"
                       placeholder="123 Studio Street"
                       {...profileForm.register('address')}
                     />
@@ -395,7 +393,7 @@ const Profile = () => {
                     </label>
                     <input
                       type="text"
-                      className="w-full px-4 py-2.5 rounded-2xl bg-[#F2E6DA] text-xs font-semibold text-gray-800 border-none focus:outline-none focus:ring-2 focus:ring-[#7A0C1E]"
+                      className="w-full px-4 py-2.5 rounded-2xl bg-[#FAF5EF] text-xs font-semibold text-gray-800 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E]"
                       placeholder="Varanasi"
                       {...profileForm.register('city')}
                     />
@@ -407,7 +405,7 @@ const Profile = () => {
                     </label>
                     <input
                       type="text"
-                      className="w-full px-4 py-2.5 rounded-2xl bg-[#F2E6DA] text-xs font-semibold text-gray-800 border-none focus:outline-none focus:ring-2 focus:ring-[#7A0C1E]"
+                      className="w-full px-4 py-2.5 rounded-2xl bg-[#FAF5EF] text-xs font-semibold text-gray-800 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E]"
                       placeholder="Uttar Pradesh"
                       {...profileForm.register('state')}
                     />
@@ -421,7 +419,7 @@ const Profile = () => {
                       <FiGlobe className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
                       <input
                         type="text"
-                        className="w-full pl-10 pr-4 py-2.5 rounded-2xl bg-[#F2E6DA] text-xs font-semibold text-gray-800 border-none focus:outline-none focus:ring-2 focus:ring-[#7A0C1E]"
+                        className="w-full pl-10 pr-4 py-2.5 rounded-2xl bg-[#FAF5EF] text-xs font-semibold text-gray-800 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E]"
                         placeholder="India"
                         {...profileForm.register('country')}
                       />
@@ -434,7 +432,7 @@ const Profile = () => {
                     </label>
                     <input
                       type="text"
-                      className="w-full px-4 py-2.5 rounded-2xl bg-[#F2E6DA] text-xs font-semibold text-gray-800 border-none focus:outline-none focus:ring-2 focus:ring-[#7A0C1E]"
+                      className="w-full px-4 py-2.5 rounded-2xl bg-[#FAF5EF] text-xs font-semibold text-gray-800 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E]"
                       placeholder="221005"
                       {...profileForm.register('postal_code')}
                     />
@@ -447,7 +445,7 @@ const Profile = () => {
                 <button
                   type="submit"
                   disabled={saveLoading}
-                  className="bg-[#FAF5EF] hover:bg-[#7A0C1E] text-white font-black px-6 py-3 rounded-2xl shadow-sm transition-all flex items-center gap-2 cursor-pointer text-xs uppercase tracking-wider"
+                  className="bg-[#7A0C1E] hover:bg-[#5F0917] text-white font-black px-6 py-3 rounded-2xl shadow-sm transition-all flex items-center gap-2 cursor-pointer text-xs uppercase tracking-wider"
                 >
                   {saveLoading ? <FiLoader className="w-4 h-4 animate-spin" /> : <FiSave className="w-4 h-4" />}
                   <span>Save Profile Changes</span>
@@ -475,7 +473,7 @@ const Profile = () => {
                   <input
                     type={showCurrentPwd ? 'text' : 'password'}
                     placeholder="••••••••"
-                    className="w-full px-4 py-2.5 pr-11 rounded-2xl bg-[#F2E6DA] text-xs font-semibold text-gray-800 border-none focus:outline-none focus:ring-2 focus:ring-[#7A0C1E]"
+                    className="w-full px-4 py-2.5 pr-11 rounded-2xl bg-[#FAF5EF] text-xs font-semibold text-gray-800 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E]"
                     {...passwordForm.register('currentPassword', { required: 'Current password is required' })}
                   />
                   <button
@@ -497,7 +495,7 @@ const Profile = () => {
                   <input
                     type={showNewPwd ? 'text' : 'password'}
                     placeholder="••••••••"
-                    className="w-full px-4 py-2.5 pr-11 rounded-2xl bg-[#F2E6DA] text-xs font-semibold text-gray-800 border-none focus:outline-none focus:ring-2 focus:ring-[#7A0C1E]"
+                    className="w-full px-4 py-2.5 pr-11 rounded-2xl bg-[#FAF5EF] text-xs font-semibold text-gray-800 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E]"
                     {...passwordForm.register('newPassword', { required: 'New password is required', minLength: { value: 6, message: 'Must be at least 6 characters' } })}
                   />
                   <button
@@ -519,10 +517,10 @@ const Profile = () => {
                   <input
                     type={showConfirmPwd ? 'text' : 'password'}
                     placeholder="••••••••"
-                    className="w-full px-4 py-2.5 pr-11 rounded-2xl bg-[#F2E6DA] text-xs font-semibold text-gray-800 border-none focus:outline-none focus:ring-2 focus:ring-[#7A0C1E]"
-                    {...passwordForm.register('confirmPassword', { 
-                      required: 'Confirm password is required', 
-                      validate: v => v === newPasswordVal || 'Passwords do not match' 
+                    className="w-full px-4 py-2.5 pr-11 rounded-2xl bg-[#FAF5EF] text-xs font-semibold text-gray-800 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E]"
+                    {...passwordForm.register('confirmPassword', {
+                      required: 'Confirm password is required',
+                      validate: v => v === newPasswordVal || 'Passwords do not match'
                     })}
                   />
                   <button
@@ -540,7 +538,7 @@ const Profile = () => {
                 <button
                   type="submit"
                   disabled={pwdLoading}
-                  className="bg-[#FAF5EF] hover:bg-[#7A0C1E] text-white font-black px-6 py-3 rounded-2xl shadow-sm transition-all flex items-center gap-2 cursor-pointer text-xs uppercase tracking-wider"
+                  className="bg-[#7A0C1E] hover:bg-[#5F0917] text-white font-black px-6 py-3 rounded-2xl shadow-sm transition-all flex items-center gap-2 cursor-pointer text-xs uppercase tracking-wider"
                 >
                   {pwdLoading ? <FiLoader className="w-4 h-4 animate-spin" /> : <FiLock className="w-4 h-4" />}
                   <span>Update Password</span>

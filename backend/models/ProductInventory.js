@@ -1,49 +1,16 @@
-'use strict';
-const { Model } = require('sequelize');
+const mongoose = require('mongoose');
+const { Schema } = mongoose;
 
-module.exports = (sequelize, DataTypes) => {
-  class ProductInventory extends Model {
-    static associate(models) {
-      ProductInventory.belongsTo(models.Product, { foreignKey: 'product_id', as: 'product' });
-    }
-  }
+const productInventorySchema = new Schema({
+  product_id: { type: Schema.Types.ObjectId, ref: 'Product', required: true, unique: true },
+  quantity: { type: Number, required: true, default: 0 },
+  reserved_quantity: { type: Number, default: 0 },
+  low_stock_limit: { type: Number, default: 5 },
+}, {
+  timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true },
+});
 
-  ProductInventory.init({
-    id: {
-      type: DataTypes.BIGINT.UNSIGNED,
-      autoIncrement: true,
-      primaryKey: true,
-    },
-    product_id: {
-      type: DataTypes.BIGINT.UNSIGNED,
-      allowNull: false,
-      unique: true,
-      references: { model: 'products', key: 'id' },
-    },
-    quantity: {
-      type: DataTypes.INTEGER.UNSIGNED,
-      allowNull: false,
-      defaultValue: 0,
-    },
-    reserved_quantity: {
-      type: DataTypes.INTEGER.UNSIGNED,
-      allowNull: false,
-      defaultValue: 0,
-      comment: 'Qty locked in pending orders',
-    },
-    low_stock_limit: {
-      type: DataTypes.INTEGER.UNSIGNED,
-      allowNull: false,
-      defaultValue: 5,
-      comment: 'Alert threshold for low stock',
-    },
-  }, {
-    sequelize,
-    modelName: 'ProductInventory',
-    tableName: 'product_inventory',
-    timestamps: true,
-    underscored: true,
-  });
-
-  return ProductInventory;
-};
+const ProductInventory = mongoose.model('ProductInventory', productInventorySchema);
+module.exports = ProductInventory;

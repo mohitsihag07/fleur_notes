@@ -32,7 +32,7 @@ const ApiInstance = axios.create({
 // Automatically inject JWT tokens into outbox requests
 ApiInstance.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('fleur_admin_token');
+    const token = localStorage.getItem('caflore_admin_token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -52,8 +52,8 @@ ApiInstance.interceptors.response.use(
     const isLoginRequest = error.config && error.config.url && error.config.url.includes('/login');
     if (error.response && error.response.status === 401 && !isLoginRequest) {
       console.warn('Session expired. Cleared authentication tokens.');
-      localStorage.removeItem('fleur_admin_token');
-      localStorage.removeItem('fleur_admin_refresh_token');
+      localStorage.removeItem('caflore_admin_token');
+      localStorage.removeItem('caflore_admin_refresh_token');
       // Dispatch custom event to trigger Zustand logout
       window.dispatchEvent(new Event('auth-logout'));
     }

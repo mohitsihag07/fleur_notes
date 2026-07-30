@@ -1,131 +1,336 @@
 'use client';
 
-import React, { useState } from 'react';
-import { categories } from '@/data/categories';
+import React, { useState, useEffect } from 'react';
+import { ChevronDown, ChevronUp, Star } from 'lucide-react';
+import { categories as staticCategories } from '@/data/categories';
+import { categoryService } from '@/services/categoryService';
 
-export function FilterSidebar({ activeCategory, onSelectCategory }) {
-  const [priceRange, setPriceRange] = useState(150);
-  const [selectedColor, setSelectedColor] = useState(null);
 
-  const colors = [
-    { name: 'White', colorClass: 'bg-white border-gray-300' },
-    { name: 'Cream', colorClass: 'bg-[#F2E6DA] border-gray-300' },
-    { name: 'Beige', colorClass: 'bg-[#F5E6D3] border-gray-300' },
-    { name: 'Crimson', colorClass: 'bg-[#7A0C1E]' },
-    { name: 'Bronze', colorClass: 'bg-[#A87B39]' },
-    { name: 'Mocha', colorClass: 'bg-[#4A2E1B]' }
-  ];
+const PRICE_MIN = 0;
+const PRICE_MAX = 10000;
+
+function Section({ title, children, defaultOpen = true }) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <div className="border-b border-[#E8DACD]/60 pb-4 last:border-0 last:pb-0">
+      <button
+        onClick={() => setOpen(!open)}
+        className="w-full flex items-center justify-between py-2 text-left cursor-pointer"
+      >
+        <span className="font-semibold text-xs text-[#2B1B17] uppercase tracking-wider">{title}</span>
+        {open
+          ? <ChevronUp className="w-3.5 h-3.5 text-gray-400" />
+          : <ChevronDown className="w-3.5 h-3.5 text-gray-400" />
+        }
+      </button>
+      {open && <div className="mt-3">{children}</div>}
+    </div>
+  );
+}
+
+function PriceRangeSlider({ min, max, onChange }) {
+  const pct = (v) => ((v - PRICE_MIN) / (PRICE_MAX - PRICE_MIN)) * 100;
+
+  const handleMin = (e) => {
+    const val = Math.min(Number(e.target.value), max - 100);
+    onChange(val, max);
+  };
+  const handleMax = (e) => {
+    const val = Math.max(Number(e.target.value), min + 100);
+    onChange(min, val);
+  };
 
   return (
-    <div className="space-y-8 bg-white p-6 rounded-2xl border border-[#E8DACD]/70 shadow-sm">
-      {/* Categories List */}
-      <div>
-        <h3 className="font-semibold text-sm text-[#2B1B17] uppercase tracking-wider mb-4">
-          Categories
-        </h3>
+    <div className="px-1 pt-1 pb-2">
+      {/* Price labels */}
+      <div className="flex justify-between text-xs font-bold text-[#7A0C1E] mb-4">
+        <span>₹{min.toLocaleString('en-IN')}</span>
+        <span>₹{max.toLocaleString('en-IN')}</span>
+      </div>
+
+      {/* Slider track */}
+      <div className="relative h-1.5 rounded-full bg-[#E8DACD] mb-5">
+        {/* Filled range */}
+        <div
+          className="absolute h-1.5 rounded-full bg-[#7A0C1E]"
+          style={{
+            left: `${pct(min)}%`,
+            right: `${100 - pct(max)}%`,
+          }}
+        />
+
+        {/* Min thumb */}
+        <input
+          type="range"
+          min={PRICE_MIN}
+          max={PRICE_MAX}
+          step={100}
+          value={min}
+          onChange={handleMin}
+          className="absolute w-full h-1.5 appearance-none bg-transparent cursor-pointer price-thumb"
+          style={{ top: 0, left: 0 }}
+        />
+
+        {/* Max thumb */}
+        <input
+          type="range"
+          min={PRICE_MIN}
+          max={PRICE_MAX}
+          step={100}
+          value={max}
+          onChange={handleMax}
+          className="absolute w-full h-1.5 appearance-none bg-transparent cursor-pointer price-thumb"
+          style={{ top: 0, left: 0 }}
+        />
+      </div>
+
+      <style jsx>{`
+        .price-thumb::-webkit-slider-thumb {
+          appearance: none;
+          width: 16px;
+          height: 16px;
+          border-radius: 50%;
+          background: #7A0C1E;
+          border: 2px solid white;
+          box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+          cursor: pointer;
+          transition: transform 0.15s;
+        }
+        .price-thumb::-webkit-slider-thumb:hover {
+          transform: scale(1.2);
+        }
+        .price-thumb::-moz-range-thumb {
+          width: 16px;
+          height: 16px;
+          border-radius: 50%;
+          background: #7A0C1E;
+          border: 2px solid white;
+          box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+          cursor: pointer;
+        }
+      `}</style>
+    </div>
+  );
+}
+
+export function FilterSidebar({
+  activeCategory,
+  onSelectCategory,
+  filters,
+  onFiltersChange,
+  products = [],
+}) {
+  const [categoriesList, setCategoriesList] = useState([]);
+
+  // Derive unique colors from live products
+  const uniqueColors = Array.from(
+    new Set(
+      products
+        .map(p => (p.color || '').trim())
+        .filter(c => c.length > 0)
+    )
+  ).sort();
+
+  useEffect(() => {
+    async function loadCategories() {
+      try {
+        const fetched = await categoryService.getCategories({ status: 'active' });
+        if (Array.isArray(fetched) && fetched.length > 0) {
+          setCategoriesList(fetched);
+        } else {
+          setCategoriesList(staticCategories);
+        }
+      } catch (err) {
+        console.error('Failed to load categories for sidebar:', err);
+        setCategoriesList(staticCategories);
+      }
+    }
+    loadCategories();
+  }, []);
+
+  const typeOptions = [
+    { id: 'all',          name: 'All Products',  slug: 'all'          },
+    { id: 'featured',     name: 'Featured',      slug: 'featured'     },
+    { id: 'bestsellers',  name: 'Bestsellers',   slug: 'bestsellers'  },
+    { id: 'new-arrivals', name: 'New Arrivals',  slug: 'new-arrivals' },
+  ];
+
+  const toggleColor = (colorName) => {
+    const current = filters.colors || [];
+    const next = current.includes(colorName)
+      ? current.filter(c => c !== colorName)
+      : [...current, colorName];
+    onFiltersChange({ ...filters, colors: next });
+  };
+
+  const handlePriceChange = (min, max) => {
+    onFiltersChange({ ...filters, priceRange: { min, max } });
+  };
+
+  const toggleRating = (star) => {
+    onFiltersChange({ ...filters, minRating: filters.minRating === star ? 0 : star });
+  };
+
+  const hasActiveFilters =
+    (filters.colors && filters.colors.length > 0) ||
+    (filters.priceRange && (filters.priceRange.min > PRICE_MIN || filters.priceRange.max < PRICE_MAX)) ||
+    filters.minRating > 0;
+
+  const clearAll = () => {
+    onFiltersChange({ colors: [], priceRange: null, minRating: 0 });
+    onSelectCategory('all');
+  };
+
+  return (
+    <div className="space-y-0 bg-white p-5 rounded-2xl border border-[#E8DACD]/70 shadow-sm divide-y divide-[#E8DACD]/60">
+
+      {/* Header row: Filters title + Clear All button */}
+      <div className="flex items-center justify-between pb-3">
+        <span className="font-black text-sm text-[#2B1B17] tracking-tight">Filters</span>
+        <button
+          onClick={clearAll}
+          disabled={!hasActiveFilters}
+          className={`text-[11px] font-bold px-3 py-1 rounded-full border transition-all cursor-pointer ${
+            hasActiveFilters
+              ? 'text-[#7A0C1E] border-[#7A0C1E] bg-[#FAF5EF] hover:bg-[#7A0C1E] hover:text-white'
+              : 'text-gray-300 border-gray-200 bg-gray-50 cursor-not-allowed'
+          }`}
+        >
+          Clear All
+        </button>
+      </div>
+
+      {/* ── Categories & Types ── */}
+      <Section title="Categories & Types">
         <ul className="space-y-1 text-xs">
-          <li>
-            <button
-              onClick={() => onSelectCategory('all')}
-              className={`w-full flex items-center justify-between py-2 px-3 rounded-lg text-left transition-colors ${
-                activeCategory === 'all'
-                  ? 'bg-[#F2E6DA] text-[#7A0C1E] font-bold'
-                  : 'text-gray-600 hover:bg-gray-50'
-              }`}
-            >
-              <span>All Products</span>
-              <span className="text-gray-400 font-normal">(120)</span>
-            </button>
-          </li>
-          <li>
-            <button
-              onClick={() => onSelectCategory('bestsellers')}
-              className={`w-full flex items-center justify-between py-2 px-3 rounded-lg text-left transition-colors ${
-                activeCategory === 'bestsellers'
-                  ? 'bg-[#F2E6DA] text-[#7A0C1E] font-bold'
-                  : 'text-gray-600 hover:bg-gray-50'
-              }`}
-            >
-              <span>Bestsellers</span>
-              <span className="text-gray-400 font-normal">(15)</span>
-            </button>
-          </li>
-          <li>
-            <button
-              onClick={() => onSelectCategory('new-arrivals')}
-              className={`w-full flex items-center justify-between py-2 px-3 rounded-lg text-left transition-colors ${
-                activeCategory === 'new-arrivals'
-                  ? 'bg-[#F2E6DA] text-[#7A0C1E] font-bold'
-                  : 'text-gray-600 hover:bg-gray-50'
-              }`}
-            >
-              <span>New Arrivals</span>
-              <span className="text-gray-400 font-normal">(8)</span>
-            </button>
-          </li>
-          {categories.map((cat) => (
-            <li key={cat.id}>
+          {typeOptions.map((type) => (
+            <li key={type.id}>
               <button
-                onClick={() => onSelectCategory(cat.slug)}
-                className={`w-full flex items-center justify-between py-2 px-3 rounded-lg text-left transition-colors ${
-                  activeCategory === cat.slug
-                    ? 'bg-[#F2E6DA] text-[#7A0C1E] font-bold'
-                    : 'text-gray-600 hover:bg-gray-50'
+                onClick={() => onSelectCategory(type.slug)}
+                className={`w-full flex items-center justify-between py-2 px-3 rounded-xl text-left transition-all cursor-pointer ${
+                  activeCategory === type.slug
+                    ? 'bg-[#7A0C1E] text-white font-bold shadow-xs'
+                    : 'text-[#2B1B17] font-medium hover:bg-[#FAF5EF] hover:text-[#7A0C1E]'
                 }`}
               >
-                <span>{cat.name}</span>
-                <span className="text-gray-400 font-normal">({cat.itemCount})</span>
+                <span>{type.name}</span>
               </button>
             </li>
           ))}
+
+          {categoriesList.length > 0 && (
+            <li className="pt-3 pb-1">
+              <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block px-2">
+                Shop By Category
+              </span>
+            </li>
+          )}
+
+          {categoriesList.map((cat) => {
+            const catSlug = cat.slug || cat._id || cat.id;
+            const isSelected = activeCategory === catSlug || activeCategory === cat.name?.toLowerCase().trim();
+            return (
+              <li key={cat.id || cat._id || catSlug}>
+                <button
+                  onClick={() => onSelectCategory(catSlug)}
+                  className={`w-full flex items-center justify-between py-2 px-3 rounded-xl text-left transition-all cursor-pointer ${
+                    isSelected
+                      ? 'bg-[#7A0C1E] text-white font-bold shadow-xs'
+                      : 'text-[#2B1B17] font-medium hover:bg-[#FAF5EF] hover:text-[#7A0C1E]'
+                  }`}
+                >
+                  <span>{cat.name}</span>
+                  {cat.itemCount !== undefined && (
+                    <span className={`text-xs ${isSelected ? 'text-white/80' : 'text-gray-400'}`}>
+                      ({cat.itemCount})
+                    </span>
+                  )}
+                </button>
+              </li>
+            );
+          })}
         </ul>
-      </div>
+      </Section>
 
-      <hr className="border-[#E8DACD]" />
+      {/* ── Price Range ── */}
+      <Section title="Price Range">
+        <PriceRangeSlider
+          min={filters.priceRange?.min ?? PRICE_MIN}
+          max={filters.priceRange?.max ?? PRICE_MAX}
+          onChange={handlePriceChange}
+        />
+      </Section>
 
-      {/* Filter By Section */}
-      <div>
-        <h3 className="font-semibold text-sm text-[#2B1B17] uppercase tracking-wider mb-4">
-          Filter By
-        </h3>
+      {/* ── Rating ── */}
+      <Section title="Customer Rating">
+        <ul className="space-y-1.5">
+          {[4, 3, 2, 1].map((star) => {
+            const isSelected = filters.minRating === star;
+            return (
+              <li key={star}>
+                <button
+                  onClick={() => toggleRating(star)}
+                  className={`w-full flex items-center gap-2 py-1.5 px-2 rounded-lg text-left transition-all cursor-pointer ${
+                    isSelected ? 'text-[#7A0C1E]' : 'text-[#2B1B17] hover:text-[#7A0C1E]'
+                  }`}
+                >
+                  <span className={`w-3.5 h-3.5 rounded-sm border-2 flex items-center justify-center shrink-0 transition-all ${
+                    isSelected ? 'bg-[#7A0C1E] border-[#7A0C1E]' : 'border-[#C4A98A]'
+                  }`}>
+                    {isSelected && (
+                      <svg className="w-2 h-2 text-white" viewBox="0 0 10 10" fill="currentColor">
+                        <path d="M1 5l3 3 5-5" stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    )}
+                  </span>
+                  <span className="flex items-center gap-0.5">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <Star
+                        key={i}
+                        className={`w-3.5 h-3.5 ${i < star ? 'fill-amber-400 text-amber-400' : 'text-gray-200 fill-gray-200'}`}
+                      />
+                    ))}
+                  </span>
+                  <span className="text-xs font-semibold text-gray-500">& up</span>
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      </Section>
 
-        {/* Price Slider */}
-        <div className="mb-6">
-          <div className="flex items-center justify-between text-xs font-medium text-[#2B1B17] mb-2">
-            <span>Price</span>
-            <span className="text-[#7A0C1E]">₹0 – ₹{priceRange}</span>
-          </div>
-          <input
-            type="range"
-            min="0"
-            max="150"
-            value={priceRange}
-            onChange={(e) => setPriceRange(e.target.value)}
-            className="w-full accent-[#7A0C1E] cursor-pointer"
-          />
-          <div className="flex justify-between text-[10px] text-gray-400 mt-1">
-            <span>₹0</span>
-            <span>₹150</span>
-          </div>
-        </div>
+      {/* ── Color ── */}
+      {uniqueColors.length > 0 && (
+        <Section title="Color" defaultOpen={false}>
+          <ul className="space-y-1.5 text-xs">
+            {uniqueColors.map((colorName) => {
+              const isSelected = (filters.colors || []).includes(colorName);
+              return (
+                <li key={colorName}>
+                  <button
+                    onClick={() => toggleColor(colorName)}
+                    className={`w-full flex items-center gap-2.5 py-1.5 px-2 rounded-lg text-left transition-all cursor-pointer ${
+                      isSelected ? 'text-[#7A0C1E] font-bold' : 'text-[#2B1B17] font-medium hover:text-[#7A0C1E]'
+                    }`}
+                  >
+                    <span className={`w-3.5 h-3.5 rounded-sm border-2 flex items-center justify-center shrink-0 transition-all ${
+                      isSelected ? 'bg-[#7A0C1E] border-[#7A0C1E]' : 'border-[#C4A98A]'
+                    }`}>
+                      {isSelected && (
+                        <svg className="w-2 h-2 text-white" viewBox="0 0 10 10" fill="currentColor">
+                          <path d="M1 5l3 3 5-5" stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                      )}
+                    </span>
+                    <span className="capitalize">{colorName}</span>
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        </Section>
+      )}
 
-        {/* Color Swatches */}
-        <div>
-          <span className="block text-xs font-medium text-[#2B1B17] mb-2">Color</span>
-          <div className="flex flex-wrap gap-2">
-            {colors.map((c) => (
-              <button
-                key={c.name}
-                onClick={() => setSelectedColor(selectedColor === c.name ? null : c.name)}
-                className={`w-6 h-6 rounded-full border ${c.colorClass} transition-transform ${
-                  selectedColor === c.name ? 'scale-125 ring-2 ring-[#7A0C1E] ring-offset-1' : ''
-                }`}
-                title={c.name}
-              />
-            ))}
-          </div>
-        </div>
-      </div>
     </div>
   );
 }

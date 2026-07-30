@@ -1,69 +1,22 @@
-'use strict';
-const { Model } = require('sequelize');
+const mongoose = require('mongoose');
+const { Schema } = mongoose;
 
-module.exports = (sequelize, DataTypes) => {
-  class OrderItem extends Model {
-    static associate(models) {
-      OrderItem.belongsTo(models.Order, { foreignKey: 'order_id', as: 'order' });
-      OrderItem.belongsTo(models.Product, { foreignKey: 'product_id', as: 'product' });
-      OrderItem.belongsTo(models.ProductVariant, { foreignKey: 'variant_id', as: 'variant' });
-    }
-  }
+const orderItemSchema = new Schema({
+  order_id: { type: Schema.Types.ObjectId, ref: 'Order', required: true },
+  product_id: { type: Schema.Types.ObjectId, ref: 'Product', required: true },
+  variant_id: { type: Schema.Types.ObjectId, ref: 'ProductVariant', default: null },
+  product_name: { type: String, required: true },
+  product_sku: { type: String, default: null },
+  quantity: { type: Number, required: true },
+  price: { type: Number, required: true },
+  total: { type: Number, required: true },
+}, {
+  timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true },
+});
 
-  OrderItem.init({
-    id: {
-      type: DataTypes.BIGINT.UNSIGNED,
-      autoIncrement: true,
-      primaryKey: true,
-    },
-    order_id: {
-      type: DataTypes.BIGINT.UNSIGNED,
-      allowNull: false,
-      references: { model: 'orders', key: 'id' },
-    },
-    product_id: {
-      type: DataTypes.BIGINT.UNSIGNED,
-      allowNull: false,
-      references: { model: 'products', key: 'id' },
-    },
-    variant_id: {
-      type: DataTypes.BIGINT.UNSIGNED,
-      allowNull: true,
-      references: { model: 'product_variants', key: 'id' },
-    },
-    product_name: {
-      type: DataTypes.STRING(200),
-      allowNull: false,
-      comment: 'Snapshot at time of order',
-    },
-    product_sku: {
-      type: DataTypes.STRING(100),
-      allowNull: true,
-    },
-    quantity: {
-      type: DataTypes.INTEGER.UNSIGNED,
-      allowNull: false,
-    },
-    price: {
-      type: DataTypes.DECIMAL(10, 2),
-      allowNull: false,
-      comment: 'Unit price snapshot',
-    },
-    total: {
-      type: DataTypes.DECIMAL(10, 2),
-      allowNull: false,
-      comment: 'price * quantity',
-    },
-  }, {
-    sequelize,
-    modelName: 'OrderItem',
-    tableName: 'order_items',
-    timestamps: true,
-    underscored: true,
-    indexes: [
-      { fields: ['order_id'] },
-    ],
-  });
+orderItemSchema.index({ order_id: 1 });
 
-  return OrderItem;
-};
+const OrderItem = mongoose.model('OrderItem', orderItemSchema);
+module.exports = OrderItem;

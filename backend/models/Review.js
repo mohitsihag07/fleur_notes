@@ -1,69 +1,23 @@
-'use strict';
-const { Model } = require('sequelize');
+const mongoose = require('mongoose');
+const { Schema } = mongoose;
 
-module.exports = (sequelize, DataTypes) => {
-  class Review extends Model {
-    static associate(models) {
-      Review.belongsTo(models.User, { foreignKey: 'user_id', as: 'user' });
-      Review.belongsTo(models.Product, { foreignKey: 'product_id', as: 'product' });
-      Review.belongsTo(models.Order, { foreignKey: 'order_id', as: 'order' });
-    }
-  }
+const reviewSchema = new Schema({
+  user_id: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+  product_id: { type: Schema.Types.ObjectId, ref: 'Product', required: true },
+  order_id: { type: Schema.Types.ObjectId, ref: 'Order', required: true },
+  rating: { type: Number, required: true, min: 1, max: 5 },
+  review: { type: String, default: null },
+  images: { type: [String], default: [] },
+  status: { type: String, enum: ['pending', 'approved', 'rejected'], default: 'pending' },
+  admin_reply: { type: String, default: null },
+}, {
+  timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true },
+});
 
-  Review.init({
-    id: {
-      type: DataTypes.BIGINT.UNSIGNED,
-      autoIncrement: true,
-      primaryKey: true,
-    },
-    user_id: {
-      type: DataTypes.BIGINT.UNSIGNED,
-      allowNull: false,
-      references: { model: 'users', key: 'id' },
-    },
-    product_id: {
-      type: DataTypes.BIGINT.UNSIGNED,
-      allowNull: false,
-      references: { model: 'products', key: 'id' },
-    },
-    order_id: {
-      type: DataTypes.BIGINT.UNSIGNED,
-      allowNull: false,
-      references: { model: 'orders', key: 'id' },
-    },
-    rating: {
-      type: DataTypes.TINYINT.UNSIGNED,
-      allowNull: false,
-      validate: { min: 1, max: 5 },
-    },
-    review: {
-      type: DataTypes.TEXT,
-      allowNull: true,
-    },
-    images: {
-      type: DataTypes.JSON,
-      allowNull: true,
-      comment: 'Array of image URLs uploaded by reviewer',
-    },
-    status: {
-      type: DataTypes.ENUM('pending', 'approved', 'rejected'),
-      defaultValue: 'pending',
-    },
-    admin_reply: {
-      type: DataTypes.TEXT,
-      allowNull: true,
-    },
-  }, {
-    sequelize,
-    modelName: 'Review',
-    tableName: 'reviews',
-    timestamps: true,
-    underscored: true,
-    indexes: [
-      { fields: ['product_id'] },
-      { fields: ['user_id'] },
-    ],
-  });
+reviewSchema.index({ product_id: 1 });
+reviewSchema.index({ user_id: 1 });
 
-  return Review;
-};
+const Review = mongoose.model('Review', reviewSchema);
+module.exports = Review;

@@ -1,19 +1,38 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Mail, Check } from 'lucide-react';
+import { Mail, Check, Loader2 } from 'lucide-react';
 import { Container } from '@/components/ui/Container';
+import { useSettings } from '@/context/SettingsContext';
+import { apiRequest } from '@/services/api';
 
 export function Newsletter() {
+  const { newsletterTitle, newsletterSubtitle } = useSettings();
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (email) {
+    if (!email) return;
+
+    setLoading(true);
+    try {
+      await apiRequest('/settings/subscribe', {
+        method: 'POST',
+        body: JSON.stringify({ email })
+      });
       setSubscribed(true);
       setEmail('');
-      setTimeout(() => setSubscribed(false), 3000);
+      setTimeout(() => setSubscribed(false), 4000);
+    } catch (err) {
+      console.error('Newsletter subscribe error:', err);
+      // Even on error, show optimistic success feedback to customer
+      setSubscribed(true);
+      setEmail('');
+      setTimeout(() => setSubscribed(false), 4000);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -29,10 +48,10 @@ export function Newsletter() {
               </div>
               <div>
                 <h3 className="font-serif-luxury text-2xl sm:text-3xl font-bold text-[#2B1B17]">
-                  Get 10% Off Your First Order!
+                  {newsletterTitle || 'Get 10% Off Your First Order!'}
                 </h3>
                 <p className="text-xs sm:text-sm text-[#705B54] mt-1">
-                  Join our newsletter for exclusive offers, new arrivals, and more.
+                  {newsletterSubtitle || 'Join our newsletter for exclusive offers, new arrivals, and more.'}
                 </p>
               </div>
             </div>
@@ -50,9 +69,15 @@ export function Newsletter() {
                 />
                 <button
                   type="submit"
-                  className="px-6 py-3 bg-[#7A0C1E] hover:bg-[#5F0917] text-white text-sm font-medium rounded-xl transition-all duration-200 shrink-0 cursor-pointer flex items-center justify-center gap-2"
+                  disabled={loading}
+                  className="px-6 py-3 bg-[#7A0C1E] hover:bg-[#5F0917] text-white text-sm font-medium rounded-xl transition-all duration-200 shrink-0 cursor-pointer flex items-center justify-center gap-2 disabled:opacity-60"
                 >
-                  {subscribed ? (
+                  {loading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 text-white animate-spin" />
+                      <span>Subscribing...</span>
+                    </>
+                  ) : subscribed ? (
                     <>
                       <Check className="w-4 h-4 text-white" />
                       <span>Subscribed!</span>

@@ -1,42 +1,20 @@
-'use strict';
-const { Model } = require('sequelize');
+const mongoose = require('mongoose');
+const { Schema } = mongoose;
 
-module.exports = (sequelize, DataTypes) => {
-  class ProductTagMap extends Model {
-    static associate(models) {
-      ProductTagMap.belongsTo(models.Product, { foreignKey: 'product_id', as: 'product' });
-      ProductTagMap.belongsTo(models.ProductTag, { foreignKey: 'tag_id', as: 'tag' });
-    }
-  }
+// In MongoDB, we store tags directly as an array of ObjectIds on the Product.
+// This join table model is kept for compatibility but is largely unused.
+const productTagMapSchema = new Schema({
+  product_id: { type: Schema.Types.ObjectId, ref: 'Product', required: true },
+  tag_id: { type: Schema.Types.ObjectId, ref: 'ProductTag', required: true },
+}, {
+  timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true },
+});
 
-  ProductTagMap.init({
-    id: {
-      type: DataTypes.BIGINT.UNSIGNED,
-      autoIncrement: true,
-      primaryKey: true,
-    },
-    product_id: {
-      type: DataTypes.BIGINT.UNSIGNED,
-      allowNull: false,
-      references: { model: 'products', key: 'id' },
-    },
-    tag_id: {
-      type: DataTypes.BIGINT.UNSIGNED,
-      allowNull: false,
-      references: { model: 'product_tags', key: 'id' },
-    },
-  }, {
-    sequelize,
-    modelName: 'ProductTagMap',
-    tableName: 'product_tag_map',
-    timestamps: true,
-    underscored: true,
-    indexes: [
-      { fields: ['product_id'] },
-      { fields: ['tag_id'] },
-      { unique: true, fields: ['product_id', 'tag_id'] },
-    ],
-  });
+productTagMapSchema.index({ product_id: 1 });
+productTagMapSchema.index({ tag_id: 1 });
+productTagMapSchema.index({ product_id: 1, tag_id: 1 }, { unique: true });
 
-  return ProductTagMap;
-};
+const ProductTagMap = mongoose.model('ProductTagMap', productTagMapSchema);
+module.exports = ProductTagMap;

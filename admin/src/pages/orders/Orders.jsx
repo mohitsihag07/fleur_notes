@@ -1,14 +1,14 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { 
-  FiShoppingBag, 
-  FiSearch, 
-  FiFilter, 
-  FiEye, 
-  FiClock, 
-  FiTruck, 
-  FiCheckCircle, 
-  FiXCircle, 
+import {
+  FiShoppingBag,
+  FiSearch,
+  FiFilter,
+  FiEye,
+  FiClock,
+  FiTruck,
+  FiCheckCircle,
+  FiXCircle,
   FiLoader,
   FiChevronLeft,
   FiChevronRight,
@@ -99,18 +99,18 @@ const Orders = () => {
   const getStatusBadgeStyle = (status) => {
     switch (status?.toLowerCase()) {
       case 'delivered':
-        return 'bg-[#E8DACD]/50 text-[#1E7741] border-[#E8DACD]';
+        return 'bg-[#FAF5EF] text-[#5F0917] border-[#E8DACD]';
       case 'shipped':
       case 'out_for_delivery':
       case 'confirmed':
       case 'packed':
-        return 'bg-blue-100 text-blue-700 border-blue-200';
+        return 'bg-[#FAF5EF] text-[#7A0C1E] border-[#E8DACD]';
       case 'cancelled':
       case 'returned':
         return 'bg-red-100 text-red-700 border-red-200';
       case 'pending':
       default:
-        return 'bg-[#5F0917]/40 text-[#D96B3B] border-[#5F0917]';
+        return 'bg-[#F2E6DA]/40 text-[#7A0C1E] border-[#E8DACD]';
     }
   };
 
@@ -118,7 +118,7 @@ const Orders = () => {
   const getPaymentBadgeStyle = (pStatus) => {
     switch (pStatus?.toLowerCase()) {
       case 'paid':
-        return 'bg-[#FAF5EF] text-[#2B1B17] font-black';
+        return 'bg-[#FAF5EF] text-[#5F0917] font-black border border-[#E8DACD]';
       case 'failed':
       case 'refunded':
         return 'bg-red-50 text-red-600 font-bold';
@@ -144,7 +144,7 @@ const Orders = () => {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-2xl bg-[#7A0C1E]/20 text-[#2B1B17]">
+            <div className="p-2.5 rounded-2xl bg-[#FAF5EF] text-[#7A0C1E] border border-[#E8DACD]">
               <FiShoppingBag className="w-6 h-6 text-[#7A0C1E]" />
             </div>
             <h2 className="text-2xl font-black text-gray-900 tracking-tight">
@@ -165,7 +165,7 @@ const Orders = () => {
             <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Total Orders</p>
             <h3 className="text-2xl font-black text-gray-900 mt-1">{stats.totalOrders || 0}</h3>
           </div>
-          <div className="p-3 rounded-2xl bg-purple-50 text-purple-600">
+          <div className="p-3 rounded-2xl bg-[#FAF5EF] text-[#7A0C1E]">
             <FiShoppingBag className="w-5 h-5" />
           </div>
         </div>
@@ -176,7 +176,7 @@ const Orders = () => {
             <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Pending Orders</p>
             <h3 className="text-2xl font-black text-gray-900 mt-1">{stats.pendingCount || 0}</h3>
           </div>
-          <div className="p-3 rounded-2xl bg-[#5F0917]/30 text-[#D96B3B]">
+          <div className="p-3 rounded-2xl bg-[#F2E6DA]/40 text-[#7A0C1E]">
             <FiClock className="w-5 h-5" />
           </div>
         </div>
@@ -187,7 +187,7 @@ const Orders = () => {
             <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Processing & Shipped</p>
             <h3 className="text-2xl font-black text-gray-900 mt-1">{stats.processingCount || 0}</h3>
           </div>
-          <div className="p-3 rounded-2xl bg-blue-50 text-blue-600">
+          <div className="p-3 rounded-2xl bg-[#FAF5EF] text-[#A87B39]">
             <FiTruck className="w-5 h-5" />
           </div>
         </div>
@@ -198,7 +198,7 @@ const Orders = () => {
             <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Total Revenue</p>
             <h3 className="text-2xl font-black text-gray-900 mt-1">₹{parseFloat(stats.totalRevenue || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</h3>
           </div>
-          <div className="p-3 rounded-2xl bg-[#E8DACD]/40 text-[#1E7741]">
+          <div className="p-3 rounded-2xl bg-[#FAF5EF] text-[#5F0917]">
             <span className="font-black text-lg">₹</span>
           </div>
         </div>
@@ -217,13 +217,13 @@ const Orders = () => {
               setSearchTerm(e.target.value);
               setCurrentPage(1);
             }}
-            className="w-full pl-11 pr-4 py-2.5 rounded-full bg-[#F2E6DA] text-xs font-semibold text-gray-700 border-none focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all"
+            className="w-full pl-11 pr-4 py-2.5 rounded-full bg-[#FAF5EF] text-xs font-semibold text-gray-700 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all"
           />
         </div>
 
         {/* Status Filter */}
         <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
-          <div className="flex items-center gap-2 bg-[#F2E6DA] px-4 py-2.5 rounded-full text-xs font-bold text-gray-600">
+          <div className="flex items-center gap-2 bg-[#FAF5EF] px-4 py-2.5 rounded-full text-xs font-bold text-gray-600 border border-[#E8DACD]">
             <FiFilter className="w-3.5 h-3.5 text-gray-400" />
             <span>Order Status:</span>
             <select
@@ -258,7 +258,7 @@ const Orders = () => {
 
         <div className="overflow-x-auto min-h-[380px]">
           <table className="w-full text-left text-xs">
-            <thead className="bg-[#F2E6DA] text-gray-400 font-extrabold text-xs uppercase tracking-wider">
+            <thead className="bg-[#FAF5EF] text-[#7A0C1E] font-extrabold text-xs uppercase tracking-wider">
               <tr>
                 <th className="py-4 px-6">Order ID & Date</th>
                 <th className="py-4 px-6">Customer</th>
@@ -268,7 +268,7 @@ const Orders = () => {
                 <th className="py-4 px-6 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#E8DACD] font-medium text-gray-700">
+            <tbody className="divide-y divide-[#E8DACD]/60 font-medium text-gray-700">
               {!isLoading && orders.length === 0 ? (
                 <tr>
                   <td colSpan="6" className="py-12 text-center text-gray-400 font-bold">
@@ -279,9 +279,9 @@ const Orders = () => {
                 orders.map((order) => {
                   const customerName = order.user?.name || 'Guest Customer';
                   const customerEmail = order.user?.email || 'N/A';
-                  
+
                   return (
-                    <tr key={order.id} className="hover:bg-gray-50 transition-colors">
+                    <tr key={order.id} className="hover:bg-[#FAF5EF]/40 transition-colors">
                       {/* Order ID & Date */}
                       <td className="py-4 px-6">
                         <span className="font-mono font-black text-xs text-gray-900 block">
@@ -338,7 +338,7 @@ const Orders = () => {
                         <button
                           onClick={() => navigate(`/orders/${order.id}`)}
                           title="View Order Details"
-                          className="p-2.5 rounded-2xl bg-[#FAF5EF] text-[#2B1B17] hover:bg-[#7A0C1E] transition-all cursor-pointer shadow-2xs font-bold text-xs inline-flex items-center gap-1.5"
+                          className="p-2.5 rounded-2xl bg-[#FAF5EF] text-[#7A0C1E] hover:bg-[#7A0C1E] hover:text-white transition-all cursor-pointer shadow-2xs font-bold text-xs inline-flex items-center gap-1.5"
                         >
                           <FiEye className="w-4 h-4" />
                           <span>View Details</span>
@@ -354,7 +354,7 @@ const Orders = () => {
 
         {/* Pagination Footer */}
         {totalPages > 1 && (
-          <div className="px-6 py-4 bg-[#F2E6DA] flex items-center justify-between border-t border-[#E8DACD] text-xs font-bold text-gray-500">
+          <div className="px-6 py-4 bg-[#FAF5EF] flex items-center justify-between border-t border-[#E8DACD] text-xs font-bold text-gray-600">
             <span>
               Showing page {currentPage} of {totalPages} ({totalItems} total orders)
             </span>
@@ -362,17 +362,17 @@ const Orders = () => {
               <button
                 disabled={currentPage === 1}
                 onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                className="p-2 rounded-xl bg-white text-gray-700 disabled:opacity-40 shadow-xs hover:bg-[#FAF5EF] hover:text-[#2B1B17] transition-all cursor-pointer"
+                className="p-2 rounded-xl bg-white text-gray-700 border border-[#E8DACD] disabled:opacity-40 shadow-xs hover:bg-[#7A0C1E] hover:text-white transition-all cursor-pointer"
               >
                 <FiChevronLeft className="w-4 h-4" />
               </button>
-              <span className="px-3 py-1 rounded-lg bg-white text-gray-800 font-black">
+              <span className="px-3 py-1 rounded-lg bg-[#7A0C1E] text-white font-black">
                 {currentPage}
               </span>
               <button
                 disabled={currentPage === totalPages}
                 onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-                className="p-2 rounded-xl bg-white text-gray-700 disabled:opacity-40 shadow-xs hover:bg-[#FAF5EF] hover:text-[#2B1B17] transition-all cursor-pointer"
+                className="p-2 rounded-xl bg-white text-gray-700 border border-[#E8DACD] disabled:opacity-40 shadow-xs hover:bg-[#7A0C1E] hover:text-white transition-all cursor-pointer"
               >
                 <FiChevronRight className="w-4 h-4" />
               </button>

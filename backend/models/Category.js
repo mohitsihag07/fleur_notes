@@ -1,59 +1,21 @@
-'use strict';
-const { Model } = require('sequelize');
+const mongoose = require('mongoose');
+const { Schema } = mongoose;
 
-module.exports = (sequelize, DataTypes) => {
-  class Category extends Model {
-    static associate(models) {
-      Category.hasMany(models.Product, { foreignKey: 'category_id', as: 'products' });
-    }
-  }
+const categorySchema = new Schema({
+  name: { type: String, required: true, maxlength: 100 },
+  slug: { type: String, required: true, unique: true, maxlength: 150 },
+  image: { type: String, default: null },
+  description: { type: String, default: null },
+  sort_order: { type: Number, default: 0 },
+  status: { type: String, enum: ['active', 'inactive'], default: 'active' },
+  deleted_at: { type: Date, default: null },
+}, {
+  timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true },
+});
 
-  Category.init({
-    id: {
-      type: DataTypes.BIGINT.UNSIGNED,
-      autoIncrement: true,
-      primaryKey: true,
-    },
-    name: {
-      type: DataTypes.STRING(100),
-      allowNull: false,
-    },
-    slug: {
-      type: DataTypes.STRING(150),
-      allowNull: false,
-      unique: true,
-    },
-    image: {
-      type: DataTypes.STRING(255),
-      allowNull: true,
-    },
-    description: {
-      type: DataTypes.TEXT,
-      allowNull: true,
-    },
-    sort_order: {
-      type: DataTypes.INTEGER.UNSIGNED,
-      defaultValue: 0,
-    },
-    status: {
-      type: DataTypes.ENUM('active', 'inactive'),
-      defaultValue: 'active',
-    },
-    deleted_at: {
-      type: DataTypes.DATE,
-      allowNull: true,
-    },
-  }, {
-    sequelize,
-    modelName: 'Category',
-    tableName: 'categories',
-    timestamps: true,
-    underscored: true,
-    paranoid: true,
-    indexes: [
-      { fields: ['slug'] },
-    ],
-  });
+categorySchema.index({ slug: 1 });
 
-  return Category;
-};
+const Category = mongoose.model('Category', categorySchema);
+module.exports = Category;

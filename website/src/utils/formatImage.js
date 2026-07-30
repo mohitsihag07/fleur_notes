@@ -6,9 +6,14 @@ export const getFormattedImage = (rawImg) => {
   if (!rawImg) return fallback;
   if (typeof rawImg === 'object' && rawImg.image) rawImg = rawImg.image;
   if (typeof rawImg !== 'string' || !rawImg.trim()) return fallback;
-  if (rawImg.startsWith('http://') || rawImg.startsWith('https://')) return rawImg;
+  if (rawImg.startsWith('http://') || rawImg.startsWith('https://') || rawImg.startsWith('data:')) return rawImg;
 
   let cleanPath = rawImg.trim();
+  if (cleanPath.startsWith('/uploads/') || cleanPath.startsWith('uploads/')) {
+    const formatted = cleanPath.startsWith('/') ? cleanPath : `/${cleanPath}`;
+    return `${backendUrl}${formatted}`;
+  }
+
   if (!cleanPath.includes('/images/')) {
     cleanPath = `/images/products/${cleanPath.replace(/^\//, '')}`;
   }

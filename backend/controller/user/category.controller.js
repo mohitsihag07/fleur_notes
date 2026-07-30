@@ -1,9 +1,6 @@
-const { Op } = require("sequelize");
 const db = require("../../models");
 const helper = require("../../helper/helper");
 const { Category, Product, ProductImage, ProductInventory } = db;
-
-
 
 const getCategoriesList = async (req, res) => {
   try {
@@ -11,85 +8,45 @@ const getCategoriesList = async (req, res) => {
     const limit = parseInt(req.query.limit) || 20;
     const search = req.query.search || '';
     const status = req.query.status || 'active';
-    const offset = (page - 1) * limit;
+    const skip = (page - 1) * limit;
 
-    const whereClause = {};
+    const query = {};
+    if (search) query.$or = [{ name: { $regex: search, $options: 'i' } }, { slug: { $regex: search, $options: 'i' } }];
+    if (status) query.status = status;
 
-    if (search) {
-      whereClause[Op.or] = [
-        { name: { [Op.like]: `%${search}%` } },
-        { slug: { [Op.like]: `%${search}%` } }
-      ];
-    }
+    const [rows, count] = await Promise.all([
+      Category.find(query).sort({ sort_order: 1, _id: -1 }).skip(skip).limit(limit).lean({ virtuals: true }),
+      Category.countDocuments(query)
+    ]);
 
-    if (status) {
-      whereClause.status = status;
-    }
-
-    const { count, rows } = await Category.findAndCountAll({
-      where: whereClause,
-      limit,
-      offset,
-      order: [['sort_order', 'ASC'], ['id', 'DESC']],
-      attributes: ['id', 'name', 'slug', 'image', 'description', 'status', 'created_at', 'updated_at'],
-    });
-
-    return helper.success(res, `Successfully fetched list of categories`, {
+    return helper.success(res, 'Successfully fetched list of categories', {
       categories: rows,
       data: rows,
-      meta: {
-        totalItems: count,
-        totalPages: Math.ceil(count / limit),
-        currentPage: page,
-        limit
-      }
+      meta: { totalItems: count, totalPages: Math.ceil(count / limit), currentPage: page, limit }
     });
-  } catch (error) {
-    console.error(`Error loading categories:`, error);
-    return helper.error(res, 'Server error loading categories', 500);
-  }
-}; 
+  } catch (e) { return helper.error(res, 'Server error loading categories', 500); }
+};
 
 const getCategory = async (req, res) => {
-    try {
-        const category = await Category.findOne({
-            where: { id: req.params.id },
-            attributes: ['id', 'name', 'slug', 'image', 'description', 'status', 'created_at', 'updated_at'],
-            include: [
-                {
-                    model: Product,
-                    as: 'products',
-                    required: false,
-                    attributes: ['id', 'name', 'slug', 'price', 'sale_price', 'status', 'created_at'],
-                    include: [
-                        {
-                            model: ProductImage,
-                            as: 'images',
-                            required: false,
-                            attributes: ['id', 'image', 'is_thumbnail']
-                        },
-                        {
-                            model: ProductInventory,
-                            as: 'inventory',
-                            required: false,
-                            attributes: ['quantity', 'reserved_quantity']
-                        }
-                    ]
-                }
-            ]
-        });
-        if (!category) {
-            return helper.error(res, "Category not found", 404);
-        }
-        return helper.success(res, "Category found", category, 200);
-    } catch (error) {
-        console.error("Error fetching category:", error);
-        return helper.error(res, "Server error loading category", 500);
-    }
-}
+  try {
+    const category = await Category.findById(req.params.id).lean({ virtuals: true });
+    if (!category) return helper.error(res, "Category not found", 404);
 
+    const products = await Product.find({ category_id: category._id, status: 'active' }, 'id name slug price sale_price status created_at').lean({ virtuals: true });
+    const productIds = products.map(p => p._id);
+    const [images, inventories] = await Promise.all([
+      ProductImage.find({ product_id: { $in: productIds } }, 'id image is_thumbnail sort_order product_id').lean({ virtuals: true }),
+      ProductInventory.find({ product_id: { $in: productIds } }, 'quantity reserved_quantity product_id').lean({ virtuals: true })
+    ]);
 
-module.exports = {
-    getCategoriesList,
-    getCategory
-}
+    const productsWithData = products.map(p => ({
+      ...p,
+      images: images.filter(img => String(img.product_id) === String(p._id)),
+      inventory: inventories.find(inv => String(inv.product_id) === String(p._id)) || null
+    }));
+
+    return helper.success(res, "Category found", { ...category, products: productsWithData }, 200);
+  } catch (e) { return helper.error(res, "Server error loading category", 500); }
+};
+
+module.exports = { getCategoriesList, getCategory };

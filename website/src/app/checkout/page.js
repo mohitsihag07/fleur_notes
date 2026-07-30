@@ -21,7 +21,11 @@ import {
 import { Container } from '@/components/ui/Container';
 import { formatPrice } from '@/utils/formatPrice';
 
+import { useSettings } from '@/context/SettingsContext';
+
 export default function CheckoutPage() {
+  const { freeShippingThreshold, flatShippingRate, enableFreeShipping } = useSettings();
+
   // Form State
   const [shippingAddress, setShippingAddress] = useState({
     firstName: '',
@@ -106,7 +110,8 @@ export default function CheckoutPage() {
   ]);
 
   const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
-  const shippingCost = subtotal >= 1500 ? 0 : 150;
+  const isFreeShipping = enableFreeShipping && subtotal >= freeShippingThreshold;
+  const shippingCost = subtotal === 0 || isFreeShipping ? 0 : flatShippingRate;
   const discountAmount = (subtotal * appliedDiscount) / 100;
   const taxAmount = (subtotal - discountAmount) * 0.05;
   const grandTotal = subtotal - discountAmount + shippingCost + taxAmount;
@@ -116,7 +121,7 @@ export default function CheckoutPage() {
     setPromoError('');
     setPromoSuccess('');
 
-    if (promoCode.toUpperCase() === 'FLEUR10') {
+    if (promoCode.toUpperCase() === 'CAFLORE10') {
       setAppliedDiscount(10);
       setPromoSuccess('10% discount applied successfully!');
     } else if (promoCode.toUpperCase() === 'WELCOME15') {
@@ -158,7 +163,7 @@ export default function CheckoutPage() {
     setTimeout(() => {
       setIsPlacingOrder(false);
       setOrderCompleted(true);
-      setOrderId('FN-' + Math.floor(100000 + Math.random() * 900000));
+      setOrderId('C-' + Math.floor(100000 + Math.random() * 900000));
     }, 2000);
   };
 
@@ -498,7 +503,7 @@ export default function CheckoutPage() {
                   type="text"
                   value={promoCode}
                   onChange={(e) => setPromoCode(e.target.value)}
-                  placeholder="e.g. FLEUR10"
+                  placeholder="e.g. CAFLORE10"
                   className="flex-1 bg-[#FAF5EF] border border-[#E8DACD] rounded-xl px-4 py-2 text-xs text-[#2B1B17] uppercase focus:outline-none focus:border-[#7A0C1E]"
                 />
                 <button
@@ -511,7 +516,7 @@ export default function CheckoutPage() {
               {promoSuccess && <p className="text-[10px] text-green-700 font-semibold mt-2">{promoSuccess}</p>}
               {promoError && <p className="text-[10px] text-red-600 font-semibold mt-2">{promoError}</p>}
               <div className="mt-3 bg-[#FAF5EF] border border-[#E8DACD] rounded-xl p-2.5 text-[10px] text-gray-500">
-                💡 Tip: Try code <span className="font-bold text-[#7A0C1E]">FLEUR10</span> for 10% off.
+                💡 Tip: Try code <span className="font-bold text-[#7A0C1E]">CAFLORE10</span> for 10% off.
               </div>
             </div>
 

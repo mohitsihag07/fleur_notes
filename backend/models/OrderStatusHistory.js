@@ -1,49 +1,18 @@
-'use strict';
-const { Model } = require('sequelize');
+const mongoose = require('mongoose');
+const { Schema } = mongoose;
 
-module.exports = (sequelize, DataTypes) => {
-  class OrderStatusHistory extends Model {
-    static associate(models) {
-      OrderStatusHistory.belongsTo(models.Order, { foreignKey: 'order_id', as: 'order' });
-      OrderStatusHistory.belongsTo(models.User, { foreignKey: 'changed_by', as: 'changedByUser' });
-    }
-  }
+const orderStatusHistorySchema = new Schema({
+  order_id: { type: Schema.Types.ObjectId, ref: 'Order', required: true },
+  status: { type: String, required: true, maxlength: 50 },
+  remarks: { type: String, default: null },
+  changed_by: { type: Schema.Types.ObjectId, ref: 'User', default: null },
+}, {
+  timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true },
+});
 
-  OrderStatusHistory.init({
-    id: {
-      type: DataTypes.BIGINT.UNSIGNED,
-      autoIncrement: true,
-      primaryKey: true,
-    },
-    order_id: {
-      type: DataTypes.BIGINT.UNSIGNED,
-      allowNull: false,
-      references: { model: 'orders', key: 'id' },
-    },
-    status: {
-      type: DataTypes.STRING(50),
-      allowNull: false,
-    },
-    remarks: {
-      type: DataTypes.TEXT,
-      allowNull: true,
-    },
-    changed_by: {
-      type: DataTypes.BIGINT.UNSIGNED,
-      allowNull: true,
-      references: { model: 'users', key: 'id' },
-      comment: 'Admin/customer who triggered the change',
-    },
-  }, {
-    sequelize,
-    modelName: 'OrderStatusHistory',
-    tableName: 'order_status_history',
-    timestamps: true,
-    underscored: true,
-    indexes: [
-      { fields: ['order_id'] },
-    ],
-  });
+orderStatusHistorySchema.index({ order_id: 1 });
 
-  return OrderStatusHistory;
-};
+const OrderStatusHistory = mongoose.model('OrderStatusHistory', orderStatusHistorySchema);
+module.exports = OrderStatusHistory;

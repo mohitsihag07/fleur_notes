@@ -1,51 +1,19 @@
-'use strict';
-const { Model } = require('sequelize');
+const mongoose = require('mongoose');
+const { Schema } = mongoose;
 
-module.exports = (sequelize, DataTypes) => {
-  class CustomerActivity extends Model {
-    static associate(models) {
-      CustomerActivity.belongsTo(models.User, { foreignKey: 'user_id', as: 'user' });
-    }
-  }
+const customerActivitySchema = new Schema({
+  user_id: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+  action: { type: String, required: true, maxlength: 100 },
+  ip_address: { type: String, default: null },
+  user_agent: { type: String, default: null },
+  metadata: { type: Schema.Types.Mixed, default: null },
+}, {
+  timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true },
+});
 
-  CustomerActivity.init({
-    id: {
-      type: DataTypes.BIGINT.UNSIGNED,
-      autoIncrement: true,
-      primaryKey: true,
-    },
-    user_id: {
-      type: DataTypes.BIGINT.UNSIGNED,
-      allowNull: false,
-      references: { model: 'users', key: 'id' },
-    },
-    action: {
-      type: DataTypes.STRING(100),
-      allowNull: false,
-      comment: 'e.g. login, logout, password_changed',
-    },
-    ip_address: {
-      type: DataTypes.STRING(45),
-      allowNull: true,
-    },
-    user_agent: {
-      type: DataTypes.TEXT,
-      allowNull: true,
-    },
-    metadata: {
-      type: DataTypes.JSON,
-      allowNull: true,
-    },
-  }, {
-    sequelize,
-    modelName: 'CustomerActivity',
-    tableName: 'customer_activity',
-    timestamps: true,
-    underscored: true,
-    indexes: [
-      { fields: ['user_id'] },
-    ],
-  });
+customerActivitySchema.index({ user_id: 1 });
 
-  return CustomerActivity;
-};
+const CustomerActivity = mongoose.model('CustomerActivity', customerActivitySchema);
+module.exports = CustomerActivity;

@@ -80,7 +80,7 @@ const GetFAQ = () => {
     return (
       <div className="flex h-64 items-center justify-center">
         <div className="flex items-center gap-3 font-black text-[#7A0C1E] text-sm">
-          <FiLoader className="w-6 h-6 animate-spin" />
+          <FiLoader className="w-6 h-6 animate-spin text-[#7A0C1E]" />
           <span>Loading FAQ details...</span>
         </div>
       </div>
@@ -98,13 +98,13 @@ const GetFAQ = () => {
         <div className="flex items-center gap-3">
           <button
             onClick={() => navigate('/faqs')}
-            className="p-2.5 rounded-2xl bg-white border border-[#E8DACD] text-gray-700 hover:bg-[#FAF5EF] hover:text-[#2B1B17] transition-all cursor-pointer shadow-2xs"
+            className="p-2.5 rounded-2xl bg-white border border-[#E8DACD] text-gray-700 hover:bg-[#FAF5EF] hover:text-[#7A0C1E] transition-all cursor-pointer shadow-2xs"
           >
             <FiArrowLeft className="w-5 h-5" />
           </button>
           <div>
             <h2 className="text-2xl font-black text-gray-900 tracking-tight">
-              FAQ Details #{faq.id}
+              FAQ Details #{faq.id || faq._id}
             </h2>
             <p className="text-xs font-semibold text-gray-500 mt-0.5">
               Detailed view of customer FAQ question and answer.
@@ -114,8 +114,8 @@ const GetFAQ = () => {
 
         <div className="flex items-center gap-3">
           <button
-            onClick={() => navigate(`/faqs/edit/${faq.id}`)}
-            className="btn-primary py-2.5 px-5 rounded-2xl font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-md cursor-pointer transition-all hover:scale-[1.01]"
+            onClick={() => navigate(`/faqs/edit/${faq.id || faq._id}`)}
+            className="py-2.5 px-5 rounded-2xl bg-[#7A0C1E] hover:bg-[#5F0917] text-white font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-md cursor-pointer transition-all hover:scale-[1.01]"
           >
             <FiEdit2 className="w-4 h-4" />
             <span>Edit FAQ</span>
@@ -136,7 +136,7 @@ const GetFAQ = () => {
         {/* Meta Pills Bar */}
         <div className="flex items-center justify-between flex-wrap gap-3 pb-4 border-b border-[#E8DACD]">
           <div className="flex items-center gap-2">
-            <span className="px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-[#FAF5EF] text-[#2B1B17] flex items-center gap-1.5">
+            <span className="px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-[#FAF5EF] text-[#7A0C1E] border border-[#E8DACD] flex items-center gap-1.5">
               <FiTag className="w-3.5 h-3.5" />
               <span>{faq.category || 'General'}</span>
             </span>
@@ -147,7 +147,7 @@ const GetFAQ = () => {
           </div>
 
           {isActive ? (
-            <span className="px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-[#E8DACD]/60 text-[#1E7741] flex items-center gap-1.5">
+            <span className="px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-[#FAF5EF] text-[#5F0917] border border-[#E8DACD] flex items-center gap-1.5">
               <FiCheckCircle className="w-4 h-4" />
               <span>Active</span>
             </span>
@@ -170,7 +170,7 @@ const GetFAQ = () => {
         {/* Answer Box */}
         <div className="space-y-2">
           <h3 className="text-xs font-black text-gray-400 uppercase tracking-wider">Answer</h3>
-          <div className="p-6 rounded-2xl bg-[#F2E6DA] border border-[#E8DACD] text-sm font-semibold text-gray-800 leading-relaxed whitespace-pre-line">
+          <div className="p-6 rounded-2xl bg-[#FAF5EF]/50 border border-[#E8DACD] text-sm font-semibold text-gray-800 leading-relaxed whitespace-pre-line">
             {faq.answer}
           </div>
         </div>

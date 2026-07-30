@@ -2,11 +2,11 @@ import React, { useState, useEffect, useRef } from 'react';
 import useAuthStore from '../store/authStore';
 import ConfirmModal from '../components/ConfirmModal';
 import ApiInstance from '../utils/ApiInstance';
-import { 
-  FiAlignLeft, 
-  FiSearch, 
-  FiMessageSquare, 
-  FiBell, 
+import {
+  FiAlignLeft,
+  FiSearch,
+  FiMessageSquare,
+  FiBell,
   FiChevronDown,
   FiLogOut,
   FiExternalLink,
@@ -127,7 +127,7 @@ const Navbar = () => {
     const timer = setTimeout(async () => {
       try {
         // 1. Filter matching quick navigation pages
-        const matchingPages = ALL_NAVIGATION_PAGES.filter(p => 
+        const matchingPages = ALL_NAVIGATION_PAGES.filter(p =>
           p.name.toLowerCase().includes(trimmed) || p.path.toLowerCase().includes(trimmed)
         );
 
@@ -215,7 +215,7 @@ const Navbar = () => {
     navigate(targetPath);
   };
 
-  const hasAnyResults = 
+  const hasAnyResults =
     searchResults.pages.length > 0 ||
     searchResults.products.length > 0 ||
     searchResults.users.length > 0 ||
@@ -226,20 +226,17 @@ const Navbar = () => {
     <>
       <header className="pt-6 px-8 bg-[#FAF5EF] transition-all duration-300 shrink-0">
         {/* Floating Card Navbar Container */}
-        <div className="bg-white rounded-3xl px-6 py-3.5 shadow-sm border border-white/80 flex items-center justify-between">
-          
-          {/* Left section: Modern Squircle Hamburger Icon + Page Title */}
+        <div className="bg-white rounded-3xl px-6 py-3.5 shadow-sm border border-[#E8DACD] flex items-center justify-between">
+
+          {/* Left section: Hamburger Toggle */}
           <div className="flex items-center gap-5">
-            <button 
+            <button
               onClick={toggleSidebar}
-              className="w-10 h-10 rounded-2xl bg-[#FAF5EF] text-[#2B1B17] flex items-center justify-center hover:scale-105 active:scale-95 shadow-sm transition-all cursor-pointer"
+              className="w-10 h-10 rounded-2xl bg-[#FAF5EF] text-[#7A0C1E] flex items-center justify-center hover:scale-105 active:scale-95 shadow-sm transition-all cursor-pointer"
               title={isSidebarOpen ? "Collapse sidebar" : "Expand sidebar"}
             >
               <FiAlignLeft className={`w-5 h-5 transition-transform duration-300 ${isSidebarOpen ? '' : 'rotate-180'}`} />
             </button>
-            <h1 className="text-xl font-black text-gray-900 tracking-tight">
-              {getPageTitle()}
-            </h1>
           </div>
 
           {/* Center Global Search bar */}
@@ -260,7 +257,7 @@ const Navbar = () => {
                   if (searchQuery.trim()) setShowSearchDropdown(true);
                 }}
                 placeholder="Search products, users, orders, categories..."
-                className="w-full bg-[#F2E6DA] text-gray-800 border-none rounded-full pl-11 pr-10 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] hover:bg-[#FAF5EF] hover:text-[#2B1B17] transition-all placeholder:text-gray-400"
+                className="w-full bg-[#FAF5EF] text-gray-800 border border-[#E8DACD]/80 rounded-full pl-11 pr-10 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] hover:bg-[#F2E6DA]/60 transition-all placeholder:text-gray-400"
               />
               {searchQuery && (
                 <button
@@ -289,7 +286,7 @@ const Navbar = () => {
                   </div>
                 ) : (
                   <div className="divide-y divide-[#E8DACD]">
-                    
+
                     {/* Quick Pages Navigation */}
                     {searchResults.pages.length > 0 && (
                       <div className="p-3">
@@ -431,18 +428,17 @@ const Navbar = () => {
 
           {/* Right Action Icons & Profile */}
           <div className="flex items-center gap-4">
-            
-            {/* 1. Support Messages Popover Icon */}
+
+            {/* 1. Live Support Chat Messages Popover Icon */}
             <div className="relative" ref={msgRef}>
-              <button 
+              <button
                 onClick={() => {
                   setShowMsgPopover(!showMsgPopover);
                   setShowNotifPopover(false);
                   setShowProfileDropdown(false);
                 }}
-                className={`relative p-2.5 rounded-full transition-all cursor-pointer ${
-                  showMsgPopover ? 'bg-[#FAF5EF] text-[#2B1B17]' : 'bg-[#F2E6DA] text-gray-600 hover:bg-[#FAF5EF] hover:text-[#2B1B17]'
-                }`}
+                className={`relative p-2.5 rounded-full transition-all cursor-pointer ${showMsgPopover ? 'bg-[#7A0C1E] text-white' : 'bg-[#FAF5EF] text-[#7A0C1E] hover:bg-[#F2E6DA] hover:text-[#5F0917]'
+                  }`}
                 title="Support Messages"
               >
                 <FiMessageSquare className="w-5 h-5" />
@@ -456,7 +452,7 @@ const Navbar = () => {
               {/* Messages Floating Dropdown Popover */}
               {showMsgPopover && (
                 <div className="absolute right-0 mt-3 w-80 sm:w-96 bg-white rounded-3xl shadow-2xl border border-[#E8DACD] z-50 overflow-hidden animate-fadeIn">
-                  <div className="p-4 bg-[#F2E6DA] border-b border-[#E8DACD] flex items-center justify-between">
+                  <div className="p-4 bg-[#FAF5EF] border-b border-[#E8DACD] flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <FiMessageSquare className="w-4 h-4 text-[#7A0C1E]" />
                       <h3 className="text-xs font-black text-gray-900 uppercase tracking-wider">
@@ -487,7 +483,7 @@ const Navbar = () => {
                             setShowMsgPopover(false);
                             navigate('/support/chat');
                           }}
-                          className="p-4 hover:bg-[#F2E6DA] transition-colors cursor-pointer text-left space-y-1"
+                          className="p-4 hover:bg-[#FAF5EF]/60 transition-colors cursor-pointer text-left space-y-1"
                         >
                           <div className="flex items-center justify-between">
                             <span className="text-xs font-black text-gray-900">{m.user_name || m.name || 'Customer'}</span>
@@ -495,9 +491,9 @@ const Navbar = () => {
                               {m.last_message_at ? new Date(m.last_message_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : (m.created_at ? new Date(m.created_at).toLocaleDateString() : '')}
                             </span>
                           </div>
-                          <p className="text-xs font-bold text-gray-700 truncate">{m.last_message || m.message || 'Live chat request'}</p>
-                          {(m.unread_admin || 0) > 0 && (
-                            <span className="inline-block px-2 py-0.5 rounded-full bg-rose-600 text-white font-black text-[9px]">
+                          <p className="text-[11px] text-gray-600 line-clamp-2 leading-relaxed">{m.last_message || 'New customer inquiry'}</p>
+                          {m.unread_admin > 0 && (
+                            <span className="inline-block mt-1 text-[9px] font-black px-2 py-0.5 rounded-full bg-[#7A0C1E] text-white">
                               {m.unread_admin} UNREAD
                             </span>
                           )}
@@ -512,7 +508,7 @@ const Navbar = () => {
                         setShowMsgPopover(false);
                         navigate('/support/chat');
                       }}
-                      className="text-xs font-black text-[#2B1B17] hover:text-[#7A0C1E] transition-colors inline-flex items-center gap-1 cursor-pointer"
+                      className="text-xs font-black text-[#7A0C1E] hover:underline transition-colors inline-flex items-center gap-1 cursor-pointer"
                     >
                       <span>Open Customer Support Center</span>
                       <FiExternalLink className="w-3.5 h-3.5" />
@@ -524,20 +520,19 @@ const Navbar = () => {
 
             {/* 2. Notifications Popover Bell Icon */}
             <div className="relative" ref={notifRef}>
-              <button 
+              <button
                 onClick={() => {
                   setShowNotifPopover(!showNotifPopover);
                   setShowMsgPopover(false);
                   setShowProfileDropdown(false);
                 }}
-                className={`relative p-2.5 rounded-full transition-all cursor-pointer ${
-                  showNotifPopover ? 'bg-[#FAF5EF] text-[#2B1B17]' : 'bg-[#F2E6DA] text-gray-600 hover:bg-[#FAF5EF] hover:text-[#2B1B17]'
-                }`}
+                className={`relative p-2.5 rounded-full transition-all cursor-pointer ${showNotifPopover ? 'bg-[#7A0C1E] text-white' : 'bg-[#FAF5EF] text-[#7A0C1E] hover:bg-[#F2E6DA] hover:text-[#5F0917]'
+                  }`}
                 title="Notifications"
               >
                 <FiBell className="w-5 h-5" />
                 {notifCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-[#5F0917] text-[#2B1B17] font-black text-[10px] min-w-[20px] h-5 px-1 rounded-full flex items-center justify-center border-2 border-white shadow-sm">
+                  <span className="absolute -top-1 -right-1 bg-[#7A0C1E] text-white font-black text-[10px] min-w-[20px] h-5 px-1 rounded-full flex items-center justify-center border-2 border-white shadow-sm">
                     {notifCount > 99 ? '99+' : notifCount}
                   </span>
                 )}
@@ -546,7 +541,7 @@ const Navbar = () => {
               {/* Notifications Floating Dropdown Popover */}
               {showNotifPopover && (
                 <div className="absolute right-0 mt-3 w-80 sm:w-96 bg-white rounded-3xl shadow-2xl border border-[#E8DACD] z-50 overflow-hidden animate-fadeIn">
-                  <div className="p-4 bg-[#F2E6DA] border-b border-[#E8DACD] flex items-center justify-between">
+                  <div className="p-4 bg-[#FAF5EF] border-b border-[#E8DACD] flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <FiBell className="w-4 h-4 text-[#7A0C1E]" />
                       <h3 className="text-xs font-black text-gray-900 uppercase tracking-wider">
@@ -577,11 +572,11 @@ const Navbar = () => {
                             setShowNotifPopover(false);
                             navigate('/notifications');
                           }}
-                          className="p-4 hover:bg-[#F2E6DA] transition-colors cursor-pointer text-left space-y-1"
+                          className="p-4 hover:bg-[#FAF5EF]/60 transition-colors cursor-pointer text-left space-y-1"
                         >
                           <div className="flex items-center justify-between">
                             <span className="text-xs font-black text-gray-900 truncate max-w-[200px]">{n.title}</span>
-                            <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-[#7A0C1E]/20 text-[#D94545] uppercase">
+                            <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-[#7A0C1E]/20 text-[#7A0C1E] uppercase">
                               {n.type || 'system'}
                             </span>
                           </div>
@@ -600,7 +595,7 @@ const Navbar = () => {
                         setShowNotifPopover(false);
                         navigate('/notifications');
                       }}
-                      className="text-xs font-black text-[#2B1B17] hover:text-[#7A0C1E] transition-colors inline-flex items-center gap-1"
+                      className="text-xs font-black text-[#7A0C1E] hover:underline transition-colors inline-flex items-center gap-1"
                     >
                       <span>Go to Notification Center</span>
                       <FiExternalLink className="w-3.5 h-3.5" />
@@ -623,17 +618,17 @@ const Navbar = () => {
                 {user?.profile_picture ? (
                   <img
                     src={user.profile_picture.startsWith('http') ? user.profile_picture : `http://localhost:3131${user.profile_picture.startsWith('/') ? '' : '/'}${user.profile_picture}`}
-                    alt={user?.name || 'Fleur Admin'}
+                    alt={user?.name || 'CafloreAdmin'}
                     className="w-10 h-10 rounded-full object-cover border-2 border-[#7A0C1E] shadow-sm group-hover:scale-105 transition-all"
                   />
                 ) : (
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-[#7A0C1E] to-[#5F0917] text-white flex items-center justify-center font-black text-sm border-2 border-[#7A0C1E] shadow-sm group-hover:scale-105 transition-all">
-                    {user?.name ? user.name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2) : 'FA'}
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-[#7A0C1E] to-[#5F0917] text-white flex items-center justify-center font-sans font-black text-sm border-2 border-[#E8DACD] shadow-sm group-hover:scale-105 transition-all">
+                    {user?.name ? user.name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2) : 'CA'}
                   </div>
                 )}
                 <div className="hidden lg:flex flex-col text-left">
                   <span className="text-sm font-black text-gray-800 leading-snug group-hover:text-[#7A0C1E] transition-colors">
-                    {user?.name || 'Fleur Admin'}
+                    {user?.name || 'CafloreAdmin'}
                   </span>
                   <span className="text-xs text-gray-500 capitalize font-medium">
                     {user?.role || 'Admin'}
@@ -645,13 +640,13 @@ const Navbar = () => {
               {/* Profile Dropdown Menu */}
               {showProfileDropdown && (
                 <div className="absolute right-0 mt-3 w-64 bg-white rounded-3xl shadow-2xl border border-[#E8DACD] z-50 overflow-hidden animate-fadeIn py-2">
-                  
+
                   {/* Dropdown Header Info */}
-                  <div className="px-5 py-3 border-b border-[#E8DACD] bg-[#F2E6DA]">
-                    <p className="text-xs font-black text-gray-900 truncate">{user?.name || 'Fleur Admin'}</p>
-                    <p className="text-[11px] font-semibold text-gray-500 truncate mt-0.5">{user?.email || 'admin@fleur.com'}</p>
-                    <div className="mt-2 inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#7A0C1E]/20 text-[#D94545] text-[10px] font-black uppercase">
-                      <FiShield className="w-3 h-3" />
+                  <div className="px-5 py-3 border-b border-[#E8DACD] bg-[#FAF5EF]">
+                    <p className="text-xs font-black text-gray-900 truncate">{user?.name || 'CafloreAdmin'}</p>
+                    <p className="text-[11px] font-semibold text-gray-500 truncate mt-0.5">{user?.email || 'admin@caflore.com'}</p>
+                    <div className="mt-2 inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#7A0C1E]/20 text-[#7A0C1E] text-[10px] font-black uppercase">
+                      <FiShield className="w-3 h-3 text-[#7A0C1E]" />
                       <span>{user?.role || 'Super Admin'}</span>
                     </div>
                   </div>
@@ -663,7 +658,7 @@ const Navbar = () => {
                         setShowProfileDropdown(false);
                         navigate('/profile');
                       }}
-                      className="w-full text-left px-5 py-2.5 text-xs font-bold text-gray-700 hover:bg-[#FAF5EF] hover:text-[#2B1B17] flex items-center gap-3 transition-colors cursor-pointer"
+                      className="w-full text-left px-5 py-2.5 text-xs font-bold text-gray-700 hover:bg-[#FAF5EF] hover:text-[#7A0C1E] flex items-center gap-3 transition-colors cursor-pointer"
                     >
                       <FiUser className="w-4 h-4 text-[#7A0C1E]" />
                       <span>My Profile</span>
@@ -674,7 +669,7 @@ const Navbar = () => {
                         setShowProfileDropdown(false);
                         navigate('/settings');
                       }}
-                      className="w-full text-left px-5 py-2.5 text-xs font-bold text-gray-700 hover:bg-[#FAF5EF] hover:text-[#2B1B17] flex items-center gap-3 transition-colors cursor-pointer"
+                      className="w-full text-left px-5 py-2.5 text-xs font-bold text-gray-700 hover:bg-[#FAF5EF] hover:text-[#7A0C1E] flex items-center gap-3 transition-colors cursor-pointer"
                     >
                       <FiSettings className="w-4 h-4 text-[#7A0C1E]" />
                       <span>Account Settings</span>
