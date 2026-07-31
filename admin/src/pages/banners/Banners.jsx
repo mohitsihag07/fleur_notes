@@ -239,25 +239,39 @@ const Banners = () => {
   return (
     <div className="space-y-6">
       {/* Header Banner Section */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-black text-gray-900 tracking-tight flex items-center gap-3">
-            <div className="p-2.5 rounded-2xl bg-[#FAF5EF] text-[#7A0C1E]">
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 rounded-2xl bg-[#FAF5EF] text-[#7A0C1E] border border-[#E8DACD]">
               <FiImage className="w-6 h-6 text-[#7A0C1E]" />
             </div>
-            <span>Hero Banners</span>
-          </h2>
-          <p className="text-xs font-semibold text-gray-500 mt-1 pl-12">
+            <h2 className="text-2xl font-black text-gray-900 tracking-tight">
+              Banners Management
+            </h2>
+          </div>
+          <p className="text-sm font-semibold text-gray-500 mt-1.5 pl-11">
             Manage store homepage sliders, promo graphics, and call-to-action banners.
           </p>
         </div>
-        <Link
-          to="/banners/add"
-          className="px-5 py-3 rounded-2xl bg-[#7A0C1E] hover:bg-[#5F0917] text-white font-black text-xs uppercase tracking-wider flex items-center gap-2 shadow-sm transition-all hover:scale-105 shrink-0"
-        >
-          <FiPlus className="w-4 h-4" />
-          <span>Add New Banner</span>
-        </Link>
+
+        <div className="flex items-center gap-3">
+          {/* Total Pill */}
+          <div className="flex items-center gap-2 bg-white px-4 py-2.5 rounded-full border border-[#E8DACD] shadow-sm">
+            <FiImage className="w-4 h-4 text-[#7A0C1E]" />
+            <span className="text-xs font-black text-gray-800">
+              {stats.totalBanners} Banners
+            </span>
+          </div>
+
+          {/* Add Banner Button -> Direct Navigation */}
+          <button
+            onClick={() => navigate('/banners/add')}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#7A0C1E] hover:bg-[#5F0917] text-white font-black text-xs shadow-md transition-all cursor-pointer"
+          >
+            <FiPlus className="w-4 h-4" />
+            <span>Add Banner</span>
+          </button>
+        </div>
       </div>
 
       {/* 4 Stat Overview Cards */}

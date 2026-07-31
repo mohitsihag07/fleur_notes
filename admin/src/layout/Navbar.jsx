@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import useAuthStore from '../store/authStore';
 import ConfirmModal from '../components/ConfirmModal';
-import ApiInstance from '../utils/ApiInstance';
+import ApiInstance, { getBackendURL } from '../utils/ApiInstance';
 import {
   FiAlignLeft,
   FiSearch,
@@ -451,7 +451,7 @@ const Navbar = () => {
 
               {/* Messages Floating Dropdown Popover */}
               {showMsgPopover && (
-                <div className="absolute right-0 mt-3 w-80 sm:w-96 bg-white rounded-3xl shadow-2xl border border-[#E8DACD] z-50 overflow-hidden animate-fadeIn">
+                <div className="fixed sm:absolute top-16 left-4 right-4 sm:left-auto sm:right-0 sm:top-full sm:mt-3 w-[calc(100vw-32px)] max-w-sm sm:w-96 bg-white rounded-3xl shadow-2xl border border-[#E8DACD] z-50 overflow-hidden animate-fadeIn">
                   <div className="p-4 bg-[#FAF5EF] border-b border-[#E8DACD] flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <FiMessageSquare className="w-4 h-4 text-[#7A0C1E]" />
@@ -540,7 +540,7 @@ const Navbar = () => {
 
               {/* Notifications Floating Dropdown Popover */}
               {showNotifPopover && (
-                <div className="absolute right-0 mt-3 w-80 sm:w-96 bg-white rounded-3xl shadow-2xl border border-[#E8DACD] z-50 overflow-hidden animate-fadeIn">
+                <div className="fixed sm:absolute top-16 left-4 right-4 sm:left-auto sm:right-0 sm:top-full sm:mt-3 w-[calc(100vw-32px)] max-w-sm sm:w-96 bg-white rounded-3xl shadow-2xl border border-[#E8DACD] z-50 overflow-hidden animate-fadeIn">
                   <div className="p-4 bg-[#FAF5EF] border-b border-[#E8DACD] flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <FiBell className="w-4 h-4 text-[#7A0C1E]" />
@@ -617,13 +617,16 @@ const Navbar = () => {
               >
                 {user?.profile_picture ? (
                   <img
-                    src={user.profile_picture.startsWith('http') ? user.profile_picture : `http://localhost:3131${user.profile_picture.startsWith('/') ? '' : '/'}${user.profile_picture}`}
-                    alt={user?.name || 'Fleur NotesAdmin'}
+                    src={user.profile_picture.startsWith('http') ? user.profile_picture : `${getBackendURL()}${user.profile_picture.startsWith('/') ? '' : '/'}${user.profile_picture}`}
+                    alt={user?.name || 'Fleur Notes Admin'}
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                    }}
                     className="w-10 h-10 rounded-full object-cover border-2 border-[#7A0C1E] shadow-sm group-hover:scale-105 transition-all"
                   />
                 ) : (
                   <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-[#7A0C1E] to-[#5F0917] text-white flex items-center justify-center font-sans font-black text-sm border-2 border-[#E8DACD] shadow-sm group-hover:scale-105 transition-all">
-                    {user?.name ? user.name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2) : 'CA'}
+                    {user?.name ? user.name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2) : 'FN'}
                   </div>
                 )}
                 <div className="hidden lg:flex flex-col text-left">
@@ -639,7 +642,7 @@ const Navbar = () => {
 
               {/* Profile Dropdown Menu */}
               {showProfileDropdown && (
-                <div className="absolute right-0 mt-3 w-64 bg-white rounded-3xl shadow-2xl border border-[#E8DACD] z-50 overflow-hidden animate-fadeIn py-2">
+                <div className="fixed sm:absolute top-16 right-4 sm:right-0 sm:top-full sm:mt-3 w-64 bg-white rounded-3xl shadow-2xl border border-[#E8DACD] z-50 overflow-hidden animate-fadeIn py-2">
 
                   {/* Dropdown Header Info */}
                   <div className="px-5 py-3 border-b border-[#E8DACD] bg-[#FAF5EF]">

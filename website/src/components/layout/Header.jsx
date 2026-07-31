@@ -45,12 +45,6 @@ export function Header() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  useEffect(() => {
-    const handleOpenMenu = () => setMobileMenuOpen(true);
-    window.addEventListener('open-mobile-account-menu', handleOpenMenu);
-    return () => window.removeEventListener('open-mobile-account-menu', handleOpenMenu);
-  }, []);
-
   // Close mobile sidebar on route change
   useEffect(() => {
     setMobileMenuOpen(false);
@@ -223,6 +217,8 @@ export function Header() {
           </div>
         </div>
       </header>
+
+
 
       {/* Mobile Sidebar Drawer - Account & Support Details Only */}
       <AnimatePresence>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import ApiInstance from '../../utils/ApiInstance';
+import ApiInstance, { getBackendURL } from '../../utils/ApiInstance';
 import useAuthStore from '../../store/authStore';
 import {
   FiUser,
@@ -188,7 +188,7 @@ const Profile = () => {
           <div className="w-24 h-24 rounded-full bg-gradient-to-tr from-[#7A0C1E] to-[#5F0917] text-white flex items-center justify-center text-3xl font-black shadow-md ring-4 ring-[#7A0C1E]/30 overflow-hidden">
             {avatarPreview ? (
               <img
-                src={avatarPreview.startsWith('http') ? avatarPreview : `http://localhost:3131${avatarPreview.startsWith('/') ? '' : '/'}${avatarPreview}`}
+                src={avatarPreview.startsWith('http') ? avatarPreview : `${getBackendURL()}${avatarPreview.startsWith('/') ? '' : '/'}${avatarPreview}`}
                 alt={currentUserName}
                 className="w-full h-full object-cover"
               />

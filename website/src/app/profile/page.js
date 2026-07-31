@@ -309,8 +309,40 @@ function ProfileContent() {
   }
 
   return (
-    <div className="bg-[#FAF5EF] min-h-screen py-10">
+    <div className="bg-[#FAF5EF] min-h-screen py-6 sm:py-10">
       <Container>
+        {/* Mobile Profile Navigation Bar (Visible ONLY on Profile Page) */}
+        <div className="lg:hidden mb-6 bg-white rounded-2xl border border-[#E8DACD] p-2 shadow-xs overflow-x-auto no-scrollbar flex items-center gap-2">
+          {menuItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = activeTab === item.id;
+            return (
+              <button
+                key={item.id}
+                onClick={() => {
+                  setActiveTab(item.id);
+                  setIsMobileDetailsActive(true);
+                }}
+                className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold shrink-0 transition-colors ${
+                  isActive
+                    ? 'bg-[#7A0C1E] text-white shadow-xs'
+                    : 'bg-[#FAF5EF] text-gray-600 border border-[#E8DACD]/60 hover:bg-[#F2E6DA]'
+                }`}
+              >
+                <Icon className="w-4 h-4" />
+                <span>{item.name}</span>
+              </button>
+            );
+          })}
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold text-red-600 bg-red-50 border border-red-100 shrink-0 hover:bg-red-100 transition-colors"
+          >
+            <LogOut className="w-4 h-4" />
+            <span>Log Out</span>
+          </button>
+        </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           {/* Left Sidebar Menu (Desktop Only) */}
           <div className="hidden lg:block lg:col-span-3 bg-white rounded-2xl border border-[#E8DACD] p-4 shadow-sm h-fit space-y-1">
