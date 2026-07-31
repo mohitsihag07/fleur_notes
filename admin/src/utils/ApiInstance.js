@@ -2,24 +2,23 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 
 
-export const getBackendURL = () => {
-  const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-  if (isLocal) {
-    const envUrl = import.meta.env.VITE_API_BASE_URL;
-    if (envUrl) {
-      return envUrl.replace('/api/admin', '');
-    }
-    return 'http://localhost:3131';
+export const getBaseURL = () => {
+  if (import.meta.env.VITE_API_BASE_URL) {
+    return import.meta.env.VITE_API_BASE_URL;
   }
-  // return 'http://13.134.3.37:5000';
+  const isLocal = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+  if (isLocal) {
+    return 'http://localhost:3131/api/admin';
+  }
+  return 'https://fleur-notes-backend.onrender.com/api/admin';
 };
 
-const getBaseURL = () => {
-  const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-  if (isLocal) {
-    return import.meta.env.VITE_API_BASE_URL || 'http://localhost:3131/api/admin';
+export const getBackendURL = () => {
+  if (import.meta.env.VITE_BACKEND_URL) {
+    return import.meta.env.VITE_BACKEND_URL;
   }
-  // return 'http://13.134.3.37:5000/api/admin';
+  const baseUrl = getBaseURL();
+  return baseUrl ? baseUrl.replace('/api/admin', '') : 'https://fleur-notes-backend.onrender.com';
 };
 
 const ApiInstance = axios.create({
