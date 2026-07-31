@@ -71,7 +71,14 @@ const Login = () => {
           {/* Top Logo */}
           <div className="flex items-center gap-3.5 mb-8">
             <div className="w-12 h-12 rounded-2xl bg-[#7A0C1E] p-0.5 shadow-md border border-[#F2E6DA] overflow-hidden shrink-0">
-              <img src={logoUrl} alt="Logo" className="w-full h-full object-cover rounded-xl" />
+              <img
+                src={logoUrl}
+                alt="Logo"
+                onError={(e) => {
+                  e.target.src = '/logo.jpg';
+                }}
+                className="w-full h-full object-cover rounded-xl"
+              />
             </div>
             <div className="flex flex-col">
               <span className="font-serif font-black text-2xl tracking-wider text-[#7A0C1E] uppercase">

@@ -12,9 +12,21 @@ export const getFormattedImage = (rawImg) => {
   }
 
   if (typeof rawImg !== 'string' || !rawImg.trim()) return fallback;
-  if (rawImg.startsWith('http://') || rawImg.startsWith('https://') || rawImg.startsWith('data:')) return rawImg;
 
   let cleanPath = rawImg.trim();
+  if (cleanPath.includes('localhost:') || cleanPath.includes('127.0.0.1:')) {
+    try {
+      const urlObj = new URL(cleanPath);
+      cleanPath = urlObj.pathname;
+    } catch (e) {
+      cleanPath = cleanPath.replace(/^https?:\/\/[^\/]+/, '');
+    }
+  }
+
+  if (cleanPath.startsWith('http://') || cleanPath.startsWith('https://') || cleanPath.startsWith('data:')) {
+    return cleanPath;
+  }
+
   if (cleanPath.startsWith('/uploads/') || cleanPath.startsWith('uploads/')) {
     const formatted = cleanPath.startsWith('/') ? cleanPath : `/${cleanPath}`;
     return `${backendUrl}${formatted}`;

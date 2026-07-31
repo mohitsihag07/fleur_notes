@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import ApiInstance from '../../utils/ApiInstance';
+import ApiInstance, { getBackendURL } from '../../utils/ApiInstance';
 import ConfirmModal from '../../components/ConfirmModal';
 import {
   FiPlus,
@@ -116,9 +116,20 @@ const Banners = () => {
 
   const getImageSrc = (imgPath) => {
     if (!imgPath) return 'https://via.placeholder.com/800x400?text=No+Banner+Image';
-    if (imgPath.startsWith('http://') || imgPath.startsWith('https://') || imgPath.startsWith('data:')) return imgPath;
+    let cleanPath = imgPath;
+    if (cleanPath.includes('localhost:') || cleanPath.includes('127.0.0.1:')) {
+      try {
+        const urlObj = new URL(cleanPath);
+        cleanPath = urlObj.pathname;
+      } catch (e) {
+        cleanPath = cleanPath.replace(/^https?:\/\/[^\/]+/, '');
+      }
+    }
+    if (cleanPath.startsWith('http://') || cleanPath.startsWith('https://') || cleanPath.startsWith('data:')) {
+      return cleanPath;
+    }
     const backendUrl = getBackendURL();
-    return `${backendUrl}${imgPath.startsWith('/') ? '' : '/'}${imgPath}`;
+    return `${backendUrl}${cleanPath.startsWith('/') ? '' : '/'}${cleanPath}`;
   };
 
   const renderBannerSection = (title, typeValue) => {

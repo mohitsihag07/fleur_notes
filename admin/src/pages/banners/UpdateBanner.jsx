@@ -38,9 +38,20 @@ const UpdateBanner = () => {
 
   const getImageSrc = (imgPath) => {
     if (!imgPath) return '';
-    if (imgPath.startsWith('http://') || imgPath.startsWith('https://') || imgPath.startsWith('data:')) return imgPath;
+    let cleanPath = imgPath;
+    if (cleanPath.includes('localhost:') || cleanPath.includes('127.0.0.1:')) {
+      try {
+        const urlObj = new URL(cleanPath);
+        cleanPath = urlObj.pathname;
+      } catch (e) {
+        cleanPath = cleanPath.replace(/^https?:\/\/[^\/]+/, '');
+      }
+    }
+    if (cleanPath.startsWith('http://') || cleanPath.startsWith('https://') || cleanPath.startsWith('data:')) {
+      return cleanPath;
+    }
     const backendUrl = getBackendURL();
-    return `${backendUrl}${imgPath.startsWith('/') ? '' : '/'}${imgPath}`;
+    return `${backendUrl}${cleanPath.startsWith('/') ? '' : '/'}${cleanPath}`;
   };
 
   useEffect(() => {

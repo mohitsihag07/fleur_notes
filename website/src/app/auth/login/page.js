@@ -3,13 +3,15 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Mail, Lock, Eye, EyeOff, ShieldCheck, Truck, Award, Loader2, Phone, KeyRound, ArrowRight } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useSettings } from '@/context/SettingsContext';
 
 export default function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectTarget = searchParams?.get('redirect') || '/profile';
   const { login, sendOtp, verifyOtp } = useAuth();
   const { logoUrl, siteName } = useSettings();
 
@@ -40,7 +42,7 @@ export default function LoginPage() {
     try {
       const res = await login(email, password);
       if (res.success) {
-        router.push('/profile');
+        router.push(redirectTarget);
       } else {
         setErrorMessage(res.message || 'Login failed. Please check your credentials.');
       }
@@ -92,7 +94,7 @@ export default function LoginPage() {
     try {
       const res = await verifyOtp(phone, otp, name);
       if (res.success) {
-        router.push('/profile');
+        router.push(redirectTarget);
       } else {
         setErrorMessage(res.message || 'Invalid OTP code.');
       }

@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import {
   Lock,
   ShieldCheck,
@@ -32,6 +33,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useShop } from '@/context/ShopContext';
 
 export default function CheckoutPage() {
+  const router = useRouter();
   const { freeShippingThreshold, flatShippingRate, enableFreeShipping, taxRate } = useSettings();
   const { setCartCount } = useShop();
 
@@ -75,6 +77,12 @@ export default function CheckoutPage() {
   const [cartItems, setCartItems] = useState([]);
 
   const hasToken = typeof window !== 'undefined' && Boolean(localStorage.getItem('user_token'));
+
+  React.useEffect(() => {
+    if (!authLoading && !isLoggedIn && !hasToken) {
+      router.replace('/auth/login?redirect=/checkout');
+    }
+  }, [authLoading, isLoggedIn, hasToken, router]);
 
   React.useEffect(() => {
     // 1. Load Dynamic User Saved Addresses from API or localStorage

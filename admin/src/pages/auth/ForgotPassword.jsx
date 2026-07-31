@@ -215,7 +215,14 @@ const ForgotPassword = () => {
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-[#7A0C1E] p-0.5 shadow-md border border-[#F2E6DA] overflow-hidden shrink-0">
-                <img src={logoUrl} alt="Fleur Notes Logo" className="w-full h-full object-cover rounded-lg" />
+                <img
+                  src={logoUrl}
+                  alt="Fleur Notes Logo"
+                  onError={(e) => {
+                    e.target.src = '/logo.jpg';
+                  }}
+                  className="w-full h-full object-cover rounded-lg"
+                />
               </div>
               <div className="flex flex-col">
                 <span className="font-serif font-black text-xl tracking-wider text-[#7A0C1E] uppercase">

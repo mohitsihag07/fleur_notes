@@ -75,7 +75,14 @@ const Sidebar = () => {
         {/* 1. TOP HEADER */}
         <div className={`p-5 shrink-0 flex items-center ${isSidebarOpen ? 'gap-3.5' : 'justify-center px-0'}`}>
           <div className="w-11 h-11 rounded-2xl bg-white overflow-hidden flex items-center justify-center shadow-md shrink-0 ring-2 ring-[#FAF5EF]/90 p-0.5">
-            <img src={logoUrl} alt="Logo" className="w-full h-full object-cover rounded-xl" />
+            <img
+              src={logoUrl}
+              alt="Logo"
+              onError={(e) => {
+                e.target.src = '/logo.jpg';
+              }}
+              className="w-full h-full object-cover rounded-xl"
+            />
           </div>
           {isSidebarOpen && (
             <div className="flex flex-col overflow-hidden">
