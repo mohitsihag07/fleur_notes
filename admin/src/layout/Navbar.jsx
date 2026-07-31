@@ -224,9 +224,9 @@ const Navbar = () => {
 
   return (
     <>
-      <header className="pt-6 px-8 bg-[#FAF5EF] transition-all duration-300 shrink-0">
+      <header className="pt-3 sm:pt-6 px-3 sm:px-8 bg-[#FAF5EF] transition-all duration-300 shrink-0">
         {/* Floating Card Navbar Container */}
-        <div className="bg-white rounded-3xl px-6 py-3.5 shadow-sm border border-[#E8DACD] flex items-center justify-between">
+        <div className="bg-white rounded-2xl sm:rounded-3xl px-3.5 sm:px-6 py-2.5 sm:py-3.5 shadow-sm border border-[#E8DACD] flex items-center justify-between gap-2">
 
           {/* Left section: Hamburger Toggle */}
           <div className="flex items-center gap-5">

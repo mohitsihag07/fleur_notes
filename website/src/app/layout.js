@@ -6,6 +6,13 @@ import { SettingsProvider } from '@/context/SettingsContext';
 import { AuthProvider } from '@/context/AuthContext';
 import { ShopProvider } from '@/context/ShopContext';
 
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+};
+
 export const metadata = {
   title: 'Fleur Notes | Beautiful Handmade Things For Every Moment',
   description: 'Discover handcrafted luxury home decor, natural soy candles, artisanal gift hampers, and boutique accessories.',

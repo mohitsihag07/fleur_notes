@@ -57,7 +57,20 @@ const Sidebar = () => {
 
   return (
     <>
-      <aside className={`${isSidebarOpen ? 'w-64' : 'w-20'} h-screen bg-[#7A0C1E] text-white flex flex-col justify-between transition-all duration-300 z-30 shrink-0`}>
+      {/* Mobile Backdrop Overlay */}
+      {isSidebarOpen && (
+        <div
+          onClick={toggleSidebar}
+          className="fixed inset-0 bg-black/50 z-40 md:hidden backdrop-blur-xs animate-fadeIn"
+        />
+      )}
+
+      {/* Sidebar Container */}
+      <aside
+        className={`fixed md:static inset-y-0 left-0 z-50 ${
+          isSidebarOpen ? 'w-64 translate-x-0' : '-translate-x-full md:translate-x-0 md:w-20'
+        } h-screen bg-[#7A0C1E] text-white flex flex-col justify-between transition-all duration-300 shrink-0 shadow-2xl md:shadow-none`}
+      >
 
         {/* 1. TOP HEADER */}
         <div className={`p-5 shrink-0 flex items-center ${isSidebarOpen ? 'gap-3.5' : 'justify-center px-0'}`}>
@@ -84,6 +97,11 @@ const Sidebar = () => {
               <NavLink
                 key={item.name}
                 to={item.path}
+                onClick={() => {
+                  if (window.innerWidth < 768 && isSidebarOpen) {
+                    toggleSidebar();
+                  }
+                }}
                 title={!isSidebarOpen ? item.name : undefined}
                 className={({ isActive }) =>
                   `relative flex items-center ${isSidebarOpen ? 'justify-between px-5 py-3.5' : 'justify-center p-3.5'} font-bold text-sm tracking-wide transition-all duration-300 ease-in-out ${isActive
