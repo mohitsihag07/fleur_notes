@@ -165,7 +165,7 @@ function ShopContent() {
         }
       } catch (error) {
         console.error('Failed to load shop data:', error);
-        setProducts(S);
+        setProducts([]);
       } finally {
         setLoadingProducts(false);
       }

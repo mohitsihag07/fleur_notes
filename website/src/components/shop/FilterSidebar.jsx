@@ -139,7 +139,7 @@ export function FilterSidebar({
         }
       } catch (err) {
         console.error('Failed to load categories for sidebar:', err);
-        setCategoriesList();
+        setCategoriesList([]);
       }
     }
     loadCategories();

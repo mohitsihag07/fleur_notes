@@ -111,7 +111,7 @@ export default function CategoriesPage() {
         }
       } catch (error) {
         console.error('Failed to load categories page data:', error);
-        setCategoriesList();
+        setCategoriesList([]);
       } finally {
         setLoading(false);
       }

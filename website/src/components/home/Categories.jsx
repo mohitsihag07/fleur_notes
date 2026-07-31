@@ -50,12 +50,7 @@ export function Categories() {
         }
       } catch (err) {
         console.error('Failed to load home categories:', err);
-        setCategoriesList(map((c, idx) => ({
-          id: c.id || `cat-${idx}`,
-          name: c.name,
-          slug: c.slug || c.id,
-          image: c.image,
-        })));
+        setCategoriesList([]);
       } finally {
         setLoading(false);
       }

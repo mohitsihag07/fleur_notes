@@ -11,7 +11,7 @@ import { bannerService } from '@/services/bannerService';
 import { getBackendURL } from '@/services/api';
 
 export function Hero() {
-  const [slides, setSlides] = useState();
+  const [slides, setSlides] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
@@ -47,22 +47,28 @@ export function Hero() {
   }, []);
 
   useEffect(() => {
-    if (slides.length <= 1) return;
+    if (!slides || slides.length <= 1) return;
     const timer = setInterval(() => {
       setCurrentIndex((prevIndex) => (prevIndex + 1) % slides.length);
     }, 5000);
     return () => clearInterval(timer);
-  }, [slides.length]);
+  }, [slides]);
 
   const handlePrev = () => {
+    if (!slides || slides.length <= 1) return;
     setCurrentIndex((prevIndex) => (prevIndex - 1 + slides.length) % slides.length);
   };
 
   const handleNext = () => {
+    if (!slides || slides.length <= 1) return;
     setCurrentIndex((prevIndex) => (prevIndex + 1) % slides.length);
   };
 
-  const slide = slides[currentIndex]    ;
+  if (!slides || slides.length === 0) {
+    return null;
+  }
+
+  const slide = slides[currentIndex] || slides[0];
 
   return (
     <section className="relative overflow-hidden w-full h-[35vh] sm:h-[48vh] lg:h-[55vh] min-h-[260px] lg:min-h-[400px] border-b border-[#E8DACD]/40 bg-[#FAF5EF] flex items-center">
