@@ -9,6 +9,14 @@ import { ShopProvider } from '@/context/ShopContext';
 export const metadata = {
   title: 'Fleur Notes | Beautiful Handmade Things For Every Moment',
   description: 'Discover handcrafted luxury home decor, natural soy candles, artisanal gift hampers, and boutique accessories.',
+  icons: {
+    icon: [
+      { url: '/logo.jpg', type: 'image/jpeg' },
+      { url: '/logo.png', type: 'image/png' },
+    ],
+    shortcut: '/logo.jpg',
+    apple: '/logo.jpg',
+  },
 };
 
 export default function RootLayout({ children }) {

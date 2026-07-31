@@ -109,7 +109,23 @@ const AdminRoutes = () => {
         }
       />
       <Route
+        path="/admin/login"
+        element={
+          <RequireUnauth>
+            <Login />
+          </RequireUnauth>
+        }
+      />
+      <Route
         path="/forgot-password"
+        element={
+          <RequireUnauth>
+            <ForgotPassword />
+          </RequireUnauth>
+        }
+      />
+      <Route
+        path="/admin/forgot-password"
         element={
           <RequireUnauth>
             <ForgotPassword />
