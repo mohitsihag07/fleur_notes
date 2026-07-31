@@ -19,6 +19,24 @@ const placeOrder = async (req, res) => {
       cartItems = await CartItem.find({ cart_id: cart._id }).populate('product_id').lean();
     }
 
+    // Fallback: If DB cart is empty, use items passed in request body from frontend cart
+    if ((!cartItems || cartItems.length === 0) && Array.isArray(req.body.items) && req.body.items.length > 0) {
+      const productIds = req.body.items.map(i => i.product_id || i.productId || i.id).filter(Boolean);
+      const dbProducts = await db.Product.find({ _id: { $in: productIds } }).lean();
+      const productMap = {};
+      dbProducts.forEach(p => { productMap[p._id.toString()] = p; });
+
+      cartItems = req.body.items.map(it => {
+        const pIdStr = String(it.product_id || it.productId || it.id);
+        const pDoc = productMap[pIdStr];
+        return {
+          product_id: pDoc || { _id: pIdStr, name: it.name || 'Product', price: it.price || 0 },
+          quantity: it.quantity || 1,
+          price: it.price || (pDoc ? (pDoc.selling_price || pDoc.price) : 0)
+        };
+      });
+    }
+
     if (!cartItems || cartItems.length === 0) {
       return helper.error(res, "Your shopping cart is empty.", 400);
     }

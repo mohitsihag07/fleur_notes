@@ -27,10 +27,14 @@ import { getFormattedImage, extractProductImage } from '@/utils/formatImage';
 import { formatPrice } from '@/utils/formatPrice';
 import { useShop } from '@/context/ShopContext';
 import { useSettings } from '@/context/SettingsContext';
+import { useAuth } from '@/context/AuthContext';
 
 export default function CartPage() {
   const { freeShippingThreshold, flatShippingRate, enableFreeShipping, taxRate } = useSettings();
   const { setCartCount, removeFromCart, updateCartQuantity, clearCart: clearShopCart } = useShop();
+  const { isLoggedIn } = useAuth();
+  const hasToken = typeof window !== 'undefined' && Boolean(localStorage.getItem('user_token'));
+  const checkoutHref = isLoggedIn || hasToken ? '/checkout' : '/auth/login?redirect=/checkout';
   const [cartItems, setCartItems] = useState([]);
   const [frequentlyBought, setFrequentlyBought] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -565,7 +569,7 @@ export default function CartPage() {
                 {/* Checkout CTA */}
                 <div className="pt-2">
                   <Link
-                    href="/checkout"
+                    href={checkoutHref}
                     className="w-full flex items-center justify-center gap-2 py-3.5 bg-[#7A0C1E] hover:bg-[#5F0917] text-white text-xs font-bold rounded-xl transition-colors cursor-pointer shadow-md"
                   >
                     <Lock className="w-4 h-4" />

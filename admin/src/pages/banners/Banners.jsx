@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import ApiInstance, { getBackendURL } from '../../utils/ApiInstance';
+import ApiInstance from '../../utils/ApiInstance';
 import ConfirmModal from '../../components/ConfirmModal';
 import {
   FiPlus,

@@ -454,7 +454,8 @@ export default function ProductDetailPage() {
                 onClick={() => {
                   if (product) {
                     addToCart(product, quantity);
-                    window.location.href = '/cart';
+                    const hasToken = typeof window !== 'undefined' && Boolean(localStorage.getItem('user_token'));
+                    window.location.href = hasToken ? '/checkout' : '/auth/login?redirect=/checkout';
                   }
                 }}
                 className="w-full py-3 bg-white border border-[#E8DACD] text-[#2B1B17] hover:bg-[#F2E6DA] rounded-xl text-xs font-bold transition-colors cursor-pointer"

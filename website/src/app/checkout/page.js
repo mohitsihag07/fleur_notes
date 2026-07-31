@@ -47,11 +47,11 @@ export default function CheckoutPage() {
     phone: ''
   });
 
-  const { user } = useAuth();
+  const { user, isLoggedIn, loading: authLoading } = useAuth();
   const [savedAddresses, setSavedAddresses] = useState([]);
   const [selectedAddressId, setSelectedAddressId] = useState('');
   const [useNewAddress, setUseNewAddress] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState('upi'); // upi, card, cod
+  const [paymentMethod, setPaymentMethod] = useState('cod'); // upi, card, cod (default cod)
   const [promoCode, setPromoCode] = useState('');
   const [appliedDiscount, setAppliedDiscount] = useState(0);
   const [promoError, setPromoError] = useState('');
@@ -74,6 +74,8 @@ export default function CheckoutPage() {
   // Cart Items from localStorage
   const [cartItems, setCartItems] = useState([]);
 
+  const hasToken = typeof window !== 'undefined' && Boolean(localStorage.getItem('user_token'));
+
   React.useEffect(() => {
     // 1. Load Dynamic User Saved Addresses from API or localStorage
     async function loadUserAddresses() {
@@ -82,6 +84,7 @@ export default function CheckoutPage() {
         if (Array.isArray(apiAddresses) && apiAddresses.length > 0) {
           setSavedAddresses(apiAddresses);
           setSelectedAddressId(apiAddresses[0].id);
+          setUseNewAddress(false);
           return;
         }
       } catch (err) {
@@ -224,13 +227,29 @@ export default function CheckoutPage() {
     e.preventDefault();
     setCheckoutError('');
 
-    let newAddressPayload = null;
+    const token = typeof window !== 'undefined' ? localStorage.getItem('user_token') : null;
+    if (!isLoggedIn && !token) {
+      setCheckoutError('Please sign in to place your order.');
+      return;
+    }
 
-    // Simple validation if custom address is chosen
+    let newAddressPayload = null;
+    let activeAddressId = selectedAddressId;
+
+    if (!useNewAddress) {
+      if (!activeAddressId && savedAddresses.length > 0) {
+        activeAddressId = savedAddresses[0].id;
+        setSelectedAddressId(savedAddresses[0].id);
+      } else if (!activeAddressId && savedAddresses.length === 0) {
+        setUseNewAddress(true);
+      }
+    }
+
+    // Validation if custom address is chosen
     if (useNewAddress) {
       const { firstName, lastName, address, city, state, pinCode, phone } = shippingAddress;
       if (!firstName || !address || !city || !state || !pinCode || !phone) {
-        setCheckoutError('Please fill out all required shipping fields.');
+        setCheckoutError('Please fill out all required shipping fields (First Name, Street Address, City, State, PIN Code, Phone).');
         return;
       }
       newAddressPayload = {
@@ -261,10 +280,15 @@ export default function CheckoutPage() {
 
     try {
       const orderPayload = {
-        address_id: useNewAddress ? null : selectedAddressId,
+        address_id: useNewAddress ? null : activeAddressId,
         new_address: newAddressPayload,
         payment_method: paymentMethod,
-        coupon_code: promoCode || null
+        coupon_code: promoCode || null,
+        items: cartItems.map(item => ({
+          product_id: item.productId || item._id || item.id,
+          quantity: item.quantity,
+          price: item.price
+        }))
       };
 
       const response = await orderService.placeOrder(orderPayload);
@@ -306,6 +330,28 @@ export default function CheckoutPage() {
       setCheckoutError('An error occurred while placing your order.');
     }
   };
+
+  if (!authLoading && !isLoggedIn && !hasToken) {
+    return (
+      <div className="bg-[#FAF5EF] min-h-[75vh] flex items-center justify-center py-16 px-4">
+        <div className="max-w-md w-full bg-white rounded-3xl border border-[#E8DACD] p-8 shadow-sm text-center space-y-4 animate-fadeIn">
+          <div className="w-16 h-16 rounded-full bg-[#7A0C1E]/10 text-[#7A0C1E] flex items-center justify-center mx-auto">
+            <Lock className="w-8 h-8" />
+          </div>
+          <h2 className="font-serif-luxury text-2xl font-bold text-[#2B1B17]">Sign In Required</h2>
+          <p className="text-xs text-[#705B54]">
+            Please sign in or create an account to proceed to checkout and complete your order.
+          </p>
+          <Link
+            href="/auth/login?redirect=/checkout"
+            className="inline-flex items-center justify-center w-full py-3.5 bg-[#7A0C1E] hover:bg-[#5F0917] text-white text-xs font-bold rounded-xl transition-all shadow-xs"
+          >
+            Sign In to Checkout
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-[#FAF5EF] min-h-screen py-10">
