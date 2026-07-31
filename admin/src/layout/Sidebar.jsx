@@ -23,7 +23,7 @@ import {
 } from 'react-icons/fi';
 
 const Sidebar = () => {
-  const { logout, isSidebarOpen } = useAuthStore();
+  const { logout, isSidebarOpen, toggleSidebar } = useAuthStore();
   const getLogoUrl = useSettingsStore((state) => state.getLogoUrl);
   const getSiteName = useSettingsStore((state) => state.getSiteName);
   const getTagline = useSettingsStore((state) => state.getTagline);
