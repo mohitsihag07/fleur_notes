@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
-import ApiInstance from '../../utils/ApiInstance';
+import ApiInstance, { getBackendURL } from '../../utils/ApiInstance';
 import { 
   FiArrowLeft, 
   FiUploadCloud, 
@@ -38,8 +38,9 @@ const UpdateBanner = () => {
 
   const getImageSrc = (imgPath) => {
     if (!imgPath) return '';
-    if (imgPath.startsWith('http')) return imgPath;
-    return `http://localhost:3131${imgPath.startsWith('/') ? '' : '/'}${imgPath}`;
+    if (imgPath.startsWith('http://') || imgPath.startsWith('https://') || imgPath.startsWith('data:')) return imgPath;
+    const backendUrl = getBackendURL();
+    return `${backendUrl}${imgPath.startsWith('/') ? '' : '/'}${imgPath}`;
   };
 
   useEffect(() => {

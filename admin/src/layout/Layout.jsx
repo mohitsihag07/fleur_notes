@@ -1,10 +1,18 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import Navbar from './Navbar';
 import Sidebar from './Sidebar';
+import useAuthStore from '../store/authStore';
 
 const Layout = () => {
   const location = useLocation();
+  const setSidebarOpen = useAuthStore((state) => state.setSidebarOpen);
+
+  useEffect(() => {
+    if (window.innerWidth < 768) {
+      setSidebarOpen(false);
+    }
+  }, [setSidebarOpen]);
 
   return (
     <div className="flex h-screen overflow-hidden bg-[#FAF5EF] font-sans antialiased text-gray-800 transition-colors duration-300">

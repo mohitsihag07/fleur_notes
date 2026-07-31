@@ -13,11 +13,18 @@ const enforceLightTheme = () => {
 // Immediately enforce light theme on store load
 enforceLightTheme();
 
+const getInitialSidebarState = () => {
+  if (typeof window !== 'undefined') {
+    return window.innerWidth >= 768;
+  }
+  return true;
+};
+
 const useAuthStore = create((set) => ({
   user: null,
   isAuthenticated: false,
   isLoading: true,
-  isSidebarOpen: true,
+  isSidebarOpen: getInitialSidebarState(),
 
   // Toggle Sidebar Open / Collapsed
   toggleSidebar: () => set((state) => ({ isSidebarOpen: !state.isSidebarOpen })),

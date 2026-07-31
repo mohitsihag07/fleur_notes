@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import ApiInstance from '../../utils/ApiInstance';
+import ApiInstance, { getBackendURL } from '../../utils/ApiInstance';
 import ConfirmModal from '../../components/ConfirmModal';
 import {
   FiArrowLeft,
@@ -25,8 +25,9 @@ const GetBanner = () => {
 
   const getImageSrc = (imgPath) => {
     if (!imgPath) return 'https://via.placeholder.com/1200x500?text=No+Banner+Image';
-    if (imgPath.startsWith('http')) return imgPath;
-    return `http://localhost:3131${imgPath.startsWith('/') ? '' : '/'}${imgPath}`;
+    if (imgPath.startsWith('http://') || imgPath.startsWith('https://') || imgPath.startsWith('data:')) return imgPath;
+    const backendUrl = getBackendURL();
+    return `${backendUrl}${imgPath.startsWith('/') ? '' : '/'}${imgPath}`;
   };
 
   const fetchBanner = async () => {

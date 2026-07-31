@@ -17,7 +17,7 @@ import {
   FiPackage
 } from 'react-icons/fi';
 import toast from 'react-hot-toast';
-import ApiInstance from '../../utils/ApiInstance';
+import ApiInstance, { getBackendURL } from '../../utils/ApiInstance';
 
 const Orders = () => {
   const navigate = useNavigate();
@@ -139,12 +139,12 @@ const Orders = () => {
     });
   };
 
-  const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
   const formatImageUrl = (imgPath) => {
     if (!imgPath || typeof imgPath !== 'string') return null;
     if (imgPath.startsWith('http://') || imgPath.startsWith('https://') || imgPath.startsWith('data:')) {
       return imgPath;
     }
+    const backendUrl = getBackendURL();
     return `${backendUrl}${imgPath.startsWith('/') ? '' : '/'}${imgPath}`;
   };
 
