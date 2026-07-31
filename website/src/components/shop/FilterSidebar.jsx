@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from 'react';
 import { ChevronDown, ChevronUp, Star } from 'lucide-react';
-import { categories as staticCategories } from '@/data/categories';
 import { categoryService } from '@/services/categoryService';
 
 
@@ -137,12 +136,10 @@ export function FilterSidebar({
         const fetched = await categoryService.getCategories({ status: 'active' });
         if (Array.isArray(fetched) && fetched.length > 0) {
           setCategoriesList(fetched);
-        } else {
-          setCategoriesList(staticCategories);
         }
       } catch (err) {
         console.error('Failed to load categories for sidebar:', err);
-        setCategoriesList(staticCategories);
+        setCategoriesList();
       }
     }
     loadCategories();

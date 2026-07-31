@@ -25,7 +25,6 @@ import {
 } from 'lucide-react';
 import { Container } from '@/components/ui/Container';
 import { ProductCard } from '@/components/shop/ProductCard';
-import { featuredProducts as staticFeaturedProducts } from '@/data/products';
 import { productService } from '@/services/productService';
 import { formatPrice } from '@/utils/formatPrice';
 import { useSettings } from '@/context/SettingsContext';
@@ -74,7 +73,7 @@ export default function ProductDetailPage() {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
-  const [relatedProducts, setRelatedProducts] = useState(staticFeaturedProducts);
+  const [relatedProducts, setRelatedProducts] = useState();
 
   useEffect(() => {
     const fetchRelated = async () => {

@@ -6,7 +6,6 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Sparkles } from 'lucide-react';
 import { Container } from '@/components/ui/Container';
-import { categories as staticCategories } from '@/data/categories';
 import { categoryService } from '@/services/categoryService';
 import { getBackendURL } from '@/services/api';
 
@@ -47,16 +46,11 @@ export function Categories() {
           });
           setCategoriesList(formatted);
         } else {
-          setCategoriesList(staticCategories.map((c, idx) => ({
-            id: c.id || `cat-${idx}`,
-            name: c.name,
-            slug: c.slug || c.id,
-            image: c.image,
-          })));
+          setCategoriesList([]);
         }
       } catch (err) {
         console.error('Failed to load home categories:', err);
-        setCategoriesList(staticCategories.map((c, idx) => ({
+        setCategoriesList(map((c, idx) => ({
           id: c.id || `cat-${idx}`,
           name: c.name,
           slug: c.slug || c.id,

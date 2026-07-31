@@ -10,7 +10,6 @@ import {
 } from 'lucide-react';
 import { Container } from '@/components/ui/Container';
 import { Newsletter } from '@/components/home/Newsletter';
-import { categories as staticCategories } from '@/data/categories';
 import { bannerService } from '@/services/bannerService';
 import { categoryService } from '@/services/categoryService';
 import { getBackendURL } from '@/services/api';
@@ -109,12 +108,10 @@ export default function CategoriesPage() {
             };
           });
           setCategoriesList(formatted);
-        } else {
-          setCategoriesList(staticCategories);
         }
       } catch (error) {
         console.error('Failed to load categories page data:', error);
-        setCategoriesList(staticCategories);
+        setCategoriesList();
       } finally {
         setLoading(false);
       }

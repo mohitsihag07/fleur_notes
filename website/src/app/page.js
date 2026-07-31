@@ -5,7 +5,7 @@ import { ShopByType } from '@/components/home/ShopByType';
 import { FeaturedProducts } from '@/components/home/FeaturedProducts';
 import { FAQ } from '@/components/home/FAQ';
 import { Newsletter } from '@/components/home/Newsletter';
-import { EthicalBadges } from '@/components/home/EthicalBadges';
+// import { EthicalBadges } from '@/components/home/EthicalBadges';
 
 export default function HomePage() {
   return (
@@ -17,7 +17,7 @@ export default function HomePage() {
       <FeaturedProducts />
       <FAQ />
       <Newsletter />
-      <EthicalBadges />
+      {/* <EthicalBadges /> */}
     </>
   );
 }

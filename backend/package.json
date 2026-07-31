@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "nodemon ./fleur.js",
+    "dev": "nodemon ./fleur.js",
+    "start": "node ./fleur.js",
     "db:sync": "node sync-db.js",
     "db:sync:force": "node sync-db.js --force"
   },

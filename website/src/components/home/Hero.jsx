@@ -7,12 +7,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight, Heart, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/common/Button';
 import { Container } from '@/components/ui/Container';
-import { heroSlides } from '@/data/banners';
 import { bannerService } from '@/services/bannerService';
 import { getBackendURL } from '@/services/api';
 
 export function Hero() {
-  const [slides, setSlides] = useState(heroSlides);
+  const [slides, setSlides] = useState();
   const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
@@ -63,7 +62,7 @@ export function Hero() {
     setCurrentIndex((prevIndex) => (prevIndex + 1) % slides.length);
   };
 
-  const slide = slides[currentIndex] || heroSlides[0];
+  const slide = slides[currentIndex]    ;
 
   return (
     <section className="relative overflow-hidden w-full h-[35vh] sm:h-[48vh] lg:h-[55vh] min-h-[260px] lg:min-h-[400px] border-b border-[#E8DACD]/40 bg-[#FAF5EF] flex items-center">

@@ -1,7 +1,6 @@
 import React from 'react';
 import { Leaf, Heart, Shield, Star } from 'lucide-react';
 import { Container } from '@/components/ui/Container';
-import { ethicalBadges } from '@/data/banners';
 
 const iconMap = {
   Leaf,

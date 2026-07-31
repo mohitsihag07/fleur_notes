@@ -8,7 +8,6 @@ import { Grid, List, ChevronLeft, ChevronRight, SlidersHorizontal, Loader2 } fro
 import { Container } from '@/components/ui/Container';
 import { ProductCard } from '@/components/shop/ProductCard';
 import { FilterSidebar } from '@/components/shop/FilterSidebar';
-import { featuredProducts as staticFeaturedProducts } from '@/data/products';
 import { bannerService } from '@/services/bannerService';
 import { productService } from '@/services/productService';
 import { getFormattedImage } from '@/utils/formatImage';
@@ -166,8 +165,7 @@ function ShopContent() {
         }
       } catch (error) {
         console.error('Failed to load shop data:', error);
-        setProducts(staticFeaturedProducts);
-        setMeta({ totalItems: staticFeaturedProducts.length, totalPages: 1, currentPage: 1, limit: 20 });
+        setProducts(S);
       } finally {
         setLoadingProducts(false);
       }

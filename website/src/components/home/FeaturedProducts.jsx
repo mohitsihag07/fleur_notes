@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { ArrowRight, Loader2 } from 'lucide-react';
 import { Container } from '@/components/ui/Container';
 import { ProductCard } from '@/components/shop/ProductCard';
-import { featuredProducts as staticFeaturedProducts } from '@/data/products';
 import { productService } from '@/services/productService';
 import { getFormattedImage } from '@/utils/formatImage';
 

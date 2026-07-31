@@ -30,6 +30,14 @@ app.use('/api/settings', settingRouter);
 app.use('/api/admin', indexRouter);
 app.use('/api/users', usersRouter);
 
+
+app.get("/", (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: "Fleur Notes Backend is running 🚀"
+  });
+});
+
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));
@@ -44,6 +52,7 @@ app.use(function(err, req, res, next) {
 });
 
 const PORT = process.env.PORT || 3131;
+
 
 app.listen(PORT, () => {
   console.log(`🚀 Server is running on port ${PORT}`);

@@ -3,7 +3,6 @@
 import React from 'react';
 import { Truck, ShieldCheck, RotateCcw, Headphones } from 'lucide-react';
 import { Container } from '@/components/ui/Container';
-import { valueProps } from '@/data/banners';
 import { useSettings } from '@/context/SettingsContext';
 import { formatPrice } from '@/utils/formatPrice';
 
