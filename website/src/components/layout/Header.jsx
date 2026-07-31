@@ -45,6 +45,12 @@ export function Header() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  useEffect(() => {
+    const handleOpenMenu = () => setMobileMenuOpen(true);
+    window.addEventListener('open-mobile-account-menu', handleOpenMenu);
+    return () => window.removeEventListener('open-mobile-account-menu', handleOpenMenu);
+  }, []);
+
   // Close mobile sidebar on route change
   useEffect(() => {
     setMobileMenuOpen(false);
@@ -217,21 +223,6 @@ export function Header() {
           </div>
         </div>
       </header>
-
-      {/* 3-Line Menu Bar (Shown ONLY on Profile page) */}
-      {pathname?.startsWith('/profile') && (
-        <div className="lg:hidden bg-[#F2E6DA]/80 border-b border-[#E8DACD] px-3 sm:px-6 py-1.5 flex items-center justify-between">
-          <button
-            type="button"
-            onClick={() => setMobileMenuOpen(true)}
-            className="flex items-center gap-2 text-xs font-bold text-[#7A0C1E] bg-white border border-[#E8DACD] px-3 py-1.5 rounded-xl shadow-xs hover:bg-[#FAF5EF] transition-all cursor-pointer"
-          >
-            <Menu className="w-4 h-4 text-[#7A0C1E]" />
-            <span>Menu</span>
-          </button>
-          <span className="text-[11px] font-semibold text-[#705B54]">Explore {siteName}</span>
-        </div>
-      )}
 
       {/* Mobile Sidebar Drawer - Account & Support Details Only */}
       <AnimatePresence>

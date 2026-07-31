@@ -245,7 +245,7 @@ const Banners = () => {
             <div className="p-2.5 rounded-2xl bg-[#FAF5EF] text-[#7A0C1E]">
               <FiImage className="w-6 h-6 text-[#7A0C1E]" />
             </div>
-            <span>Hero Banners & Promotions</span>
+            <span>Hero Banners</span>
           </h2>
           <p className="text-xs font-semibold text-gray-500 mt-1 pl-12">
             Manage store homepage sliders, promo graphics, and call-to-action banners.
