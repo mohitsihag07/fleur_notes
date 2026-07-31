@@ -10,6 +10,30 @@ const iconMap = {
 };
 
 export function EthicalBadges() {
+
+    const ethicalBadges = [
+    {
+      icon: 'Leaf',
+      title: 'Eco-Friendly',
+      subtitle: 'Sustainably sourced materials'
+    },
+    {
+      icon: 'Heart',
+      title: 'Handcrafted',
+      subtitle: 'Made with love & care'
+    },
+    {
+      icon: 'Award',
+      title: 'Premium Quality',
+      subtitle: 'Crafted with the finest materials'
+    },
+    {
+      icon: 'Star',
+      title: 'Customer Favorite',
+      subtitle: 'Trusted by thousands of customers'
+    }
+  ];
+  
   return (
     <section className="py-10 bg-[#FAF5EF] border-t border-[#E8DACD]/60">
       <Container>
