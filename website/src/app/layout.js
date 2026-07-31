@@ -11,11 +11,12 @@ export const metadata = {
   description: 'Discover handcrafted luxury home decor, natural soy candles, artisanal gift hampers, and boutique accessories.',
   icons: {
     icon: [
-      { url: '/logo.jpg', type: 'image/jpeg' },
+      { url: '/favicon.ico', sizes: 'any' },
+      { url: '/favicon.png', type: 'image/png' },
       { url: '/logo.png', type: 'image/png' },
     ],
-    shortcut: '/logo.jpg',
-    apple: '/logo.jpg',
+    shortcut: '/favicon.ico',
+    apple: '/apple-icon.png',
   },
 };
 
