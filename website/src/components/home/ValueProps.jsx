@@ -16,6 +16,31 @@ const iconMap = {
 export function ValueProps() {
   const { freeShippingThreshold, flatShippingRate, enableFreeShipping } = useSettings();
 
+
+   const valueProps = [
+    {
+      icon: 'Truck',
+      title: 'Free Shipping',
+      subtitle: 'On orders over ₹999',
+    },
+    {
+      icon: 'ShieldCheck',
+      title: 'Secure Payment',
+      subtitle: '100% Secure Checkout',
+    },
+    {
+      icon: 'RotateCcw',
+      title: 'Easy Returns',
+      subtitle: '7-Day Return Policy',
+    },
+    {
+      icon: 'Headphones',
+      title: '24/7 Support',
+      subtitle: 'Always Here to Help',
+    },
+  ];
+
+  
   return (
     <section className="py-8 bg-[#FAF5EF] border-b border-[#E8DACD]/60">
       <Container>

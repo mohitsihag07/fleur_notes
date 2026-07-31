@@ -1,5 +1,5 @@
 import { Hero } from '@/components/home/Hero';
-// import { ValueProps } from '@/components/home/ValueProps';
+import { ValueProps } from '@/components/home/ValueProps';
 import { Categories } from '@/components/home/Categories';
 import { ShopByType } from '@/components/home/ShopByType';
 import { FeaturedProducts } from '@/components/home/FeaturedProducts';
@@ -11,7 +11,7 @@ export default function HomePage() {
   return (
     <>
       <Hero />
-      {/* <ValueProps /> */}
+      <ValueProps />
       <ShopByType />
       <Categories />
       <FeaturedProducts />
