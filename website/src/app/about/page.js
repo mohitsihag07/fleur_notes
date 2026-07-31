@@ -69,6 +69,14 @@ export default function AboutPage() {
           const b = fetchedBanners[0];
           const backendUrl = getBackendURL();
           let imgUrl = b.image || BANNER_DEFAULTS.image;
+          if (imgUrl.includes('localhost:') || imgUrl.includes('127.0.0.1:')) {
+            try {
+              const urlObj = new URL(imgUrl);
+              imgUrl = urlObj.pathname;
+            } catch (e) {
+              imgUrl = imgUrl.replace(/^https?:\/\/[^\/]+/, '');
+            }
+          }
           if (imgUrl && !imgUrl.startsWith('http') && !imgUrl.startsWith('data:')) {
             imgUrl = `${backendUrl}${imgUrl.startsWith('/') ? imgUrl : `/${imgUrl}`}`;
           }

@@ -30,6 +30,11 @@ export function MobileBottomNav() {
             <Link
               key={item.name}
               href={item.href}
+              onClick={() => {
+                if (item.name === 'Account' && pathname?.startsWith('/profile')) {
+                  window.dispatchEvent(new CustomEvent('open-mobile-account-menu'));
+                }
+              }}
               className="flex flex-col items-center gap-0.5 text-[10px] font-medium py-1.5 px-3 rounded-xl relative transition-colors duration-200 select-none"
               style={{ color: isActive ? '#7A0C1E' : '#6B7280' }}
             >

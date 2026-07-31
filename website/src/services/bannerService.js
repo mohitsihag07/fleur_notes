@@ -11,8 +11,7 @@ export const bannerService = {
       const queryString = query.toString() ? `?${query.toString()}` : '';
       const response = await apiRequest(`/users/banners${queryString}`, {
         method: 'GET',
-        // Enable Next.js incremental static regeneration / caching
-        next: { revalidate: 3600 } 
+        cache: 'no-store'
       });
       
       return response.data?.banners || [];

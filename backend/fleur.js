@@ -42,6 +42,12 @@ app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use('/images', express.static(path.join(__dirname, 'public/images')));
+app.use('/uploads', express.static(path.join(__dirname, 'public/images')));
+const uploadsDir = path.join(__dirname, 'uploads');
+if (fs.existsSync(uploadsDir)) {
+  app.use('/uploads', express.static(uploadsDir));
+}
 
 app.use('/api/settings', settingRouter);
 app.use('/api/admin', indexRouter);

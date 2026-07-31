@@ -112,6 +112,14 @@ function ShopContent() {
           const b = fetchedBanners[0];
           const backendUrl = getBackendURL();
           let imgUrl = b.image || '/images/banners/hero_banner.jpg';
+          if (imgUrl.includes('localhost:') || imgUrl.includes('127.0.0.1:')) {
+            try {
+              const urlObj = new URL(imgUrl);
+              imgUrl = urlObj.pathname;
+            } catch (e) {
+              imgUrl = imgUrl.replace(/^https?:\/\/[^\/]+/, '');
+            }
+          }
           if (imgUrl && !imgUrl.startsWith('http') && !imgUrl.startsWith('data:')) {
             const path = imgUrl.startsWith('/') ? imgUrl : `/${imgUrl}`;
             imgUrl = `${backendUrl}${path}`;
