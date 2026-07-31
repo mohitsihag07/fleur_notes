@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 import { MapPin, Mail, Phone, Clock, Send, ChevronRight, Sparkles } from 'lucide-react';
 import { Container } from '@/components/ui/Container';
 import { Button } from '@/components/common/Button';
-import { ValueProps } from '@/components/home/ValueProps';
+// import { ValueProps } from '@/components/home/ValueProps';
 import { bannerService } from '@/services/bannerService';
 import { getBackendURL } from '@/services/api';
 
@@ -263,7 +263,7 @@ export default function ContactPage() {
       </section>
 
       {/* Bottom Features Bar */}
-      <ValueProps />
+      {/* <ValueProps /> */}
     </div>
   );
 }
