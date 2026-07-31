@@ -31,11 +31,11 @@ export function Footer() {
                 <img src={logoUrl} alt={siteName || "Logo"} className="w-full h-full object-contain" />
               </div>
               <span className="font-serif-luxury text-2xl font-semibold tracking-tight text-[#2B1B17]">
-                {siteName || 'Caflore'}
+                {siteName}
               </span>
             </Link>
             <p className="text-xs text-[#705B54] leading-relaxed max-w-xs">
-              {siteTagline || 'Bringing beauty and comfort to your everyday life with handcrafted artisanal creations.'}
+              {siteTagline}
             </p>
             {/* Social Icons */}
             <div className="flex items-center gap-3 pt-2">
@@ -164,15 +164,15 @@ export function Footer() {
             <ul className="space-y-3 text-xs text-[#705B54]">
               <li className="flex items-center gap-2">
                 <Mail className="w-4 h-4 text-[#7A0C1E] shrink-0" />
-                <span>{contactEmail || 'hello@caflore.com'}</span>
+                <span>{contactEmail}</span>
               </li>
               <li className="flex items-center gap-2">
                 <Phone className="w-4 h-4 text-[#7A0C1E] shrink-0" />
-                <span>{contactPhone || '+1 (800) 555-0199'}</span>
+                <span>{contactPhone}</span>
               </li>
               <li className="flex items-[#2B1B17] gap-2">
                 <Clock className="w-4 h-4 text-[#7A0C1E] shrink-0 mt-0.5" />
-                <span className="whitespace-pre-line">{businessHours || 'Mon – Fri: 9:00 AM – 6:00 PM (EST)'}</span>
+                <span className="whitespace-pre-line">{businessHours}</span>
               </li>
             </ul>
           </div>
@@ -180,7 +180,7 @@ export function Footer() {
 
         {/* Bottom Bar */}
         <div className="pt-8 flex items-center justify-between text-xs text-[#705B54]">
-          <p>© {new Date().getFullYear()} {siteName || 'Caflore'}. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} {siteName}. All rights reserved.</p>
         </div>
       </Container>
     </footer>

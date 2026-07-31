@@ -14,7 +14,7 @@ const authentication = async (req, res, next) => {
     const token = authHeader.split(' ')[1];
 
     try {
-      const decodedToken = jwt.verify(token, process.env.JWT_SECRET || 'caflore_secret_jwt_key_2026');
+      const decodedToken = jwt.verify(token, process.env.JWT_SECRET || 'fleur_notes_secret_jwt_key_2026');
       const user = await User.findById(decodedToken.id);
 
       if (!user) {
@@ -60,7 +60,7 @@ const authenticateAdmin = async (req, res, next) => {
     const token = authHeader.split(' ')[1];
 
     try {
-      const decodedToken = jwt.verify(token, process.env.JWT_SECRET || 'caflore_secret_jwt_key_2026');
+      const decodedToken = jwt.verify(token, process.env.JWT_SECRET || 'fleur_notes_secret_jwt_key_2026');
 
       if (decodedToken.role !== 'admin') {
         return helper.error(res, 'Access denied: Admins only', 403);

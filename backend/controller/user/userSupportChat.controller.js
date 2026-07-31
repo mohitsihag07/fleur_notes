@@ -26,7 +26,7 @@ const getOrCreateConversation = async (req, res) => {
         status: 'active',
         unread_admin: 1,
         unread_user: 0,
-        last_message: 'Welcome to Caflore Support! How can we assist you today?',
+        last_message: 'Welcome to Fleur Notes Support! How can we assist you today?',
         last_message_at: new Date()
       });
 
@@ -34,8 +34,8 @@ const getOrCreateConversation = async (req, res) => {
         conversation_id: conversation._id,
         sender_type: 'admin',
         sender_id: null,
-        sender_name: 'Caflore Support Agent',
-        message: `Hello ${userName}! Welcome to Caflore Support. 🌸 How can we assist you with your orders, returns, or gifts today?`,
+        sender_name: 'Fleur Notes Support Agent',
+        message: `Hello ${userName}! Welcome to Fleur Notes Support. 🌸 How can we assist you with your orders, returns, or gifts today?`,
         is_read: true
       });
     }

@@ -32,7 +32,7 @@ const sendEmail = async ({ to, subject, text, html }) => {
     });
 
     const info = await transporter.sendMail({
-      from: process.env.SMTP_FROM || '"Caflore" <no-reply@caflore.com>',
+      from: process.env.SMTP_FROM ,
       to,
       subject,
       text,

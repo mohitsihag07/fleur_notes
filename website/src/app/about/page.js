@@ -25,7 +25,7 @@ const ICON_MAP = {
 // Default fallbacks for About Banner
 const BANNER_DEFAULTS = {
   title: 'Handcrafted With Purpose, Curated With Love',
-  tagline: 'ABOUT CAFLORE',
+  tagline: 'ABOUT Fleur Notes',
   description: 'We bring warmth, elegance, and intentional design into your everyday spaces through carefully handcrafted home decor, artisanal soy candles, and boutique essentials.',
   image: '/images/categories/decor.jpg',
   primary_cta_text: 'Explore Our Story',

@@ -16,15 +16,24 @@ import {
   ShoppingBag,
   ArrowLeft,
   Calendar,
-  Sparkles
+  Sparkles,
+  X,
+  AlertCircle
 } from 'lucide-react';
 import { Container } from '@/components/ui/Container';
 import { formatPrice } from '@/utils/formatPrice';
+import { extractProductImage } from '@/utils/formatImage';
+import { productService } from '@/services/productService';
+import { addressService } from '@/services/addressService';
+import { orderService } from '@/services/orderService';
 
 import { useSettings } from '@/context/SettingsContext';
+import { useAuth } from '@/context/AuthContext';
+import { useShop } from '@/context/ShopContext';
 
 export default function CheckoutPage() {
-  const { freeShippingThreshold, flatShippingRate, enableFreeShipping } = useSettings();
+  const { freeShippingThreshold, flatShippingRate, enableFreeShipping, taxRate } = useSettings();
+  const { setCartCount } = useShop();
 
   // Form State
   const [shippingAddress, setShippingAddress] = useState({
@@ -38,32 +47,9 @@ export default function CheckoutPage() {
     phone: ''
   });
 
-  const [savedAddresses] = useState([
-    {
-      id: 'addr-1',
-      name: 'Ananya Verma',
-      phone: '+91 98765 43210',
-      type: 'Home',
-      address: '402, Royal Residency, Park Street',
-      landmark: 'Near Central Mall',
-      city: 'Kolkata',
-      state: 'West Bengal',
-      pinCode: '700016'
-    },
-    {
-      id: 'addr-2',
-      name: 'Ananya Verma',
-      phone: '+91 98765 43210',
-      type: 'Office',
-      address: 'Tech Park, Tower B, Sector 62',
-      landmark: 'Opposite Metro Station',
-      city: 'Noida',
-      state: 'Uttar Pradesh',
-      pinCode: '201301'
-    }
-  ]);
-
-  const [selectedAddressId, setSelectedAddressId] = useState('addr-1');
+  const { user } = useAuth();
+  const [savedAddresses, setSavedAddresses] = useState([]);
+  const [selectedAddressId, setSelectedAddressId] = useState('');
   const [useNewAddress, setUseNewAddress] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState('upi'); // upi, card, cod
   const [promoCode, setPromoCode] = useState('');
@@ -72,6 +58,7 @@ export default function CheckoutPage() {
   const [promoSuccess, setPromoSuccess] = useState('');
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
   const [orderCompleted, setOrderCompleted] = useState(false);
+  const [checkoutError, setCheckoutError] = useState('');
   const [orderId, setOrderId] = useState('');
 
   // UPI State
@@ -84,36 +71,130 @@ export default function CheckoutPage() {
     cvv: ''
   });
 
-  // Cart Items (simulated from user cart state)
-  const [cartItems] = useState([
-    {
-      id: 'cart-1',
-      name: 'Minimal Ceramic Vase',
-      price: 28.00,
-      quantity: 1,
-      image: '/images/products/vase.jpg'
-    },
-    {
-      id: 'cart-2',
-      name: 'Aromatherapy Soy Candle',
-      price: 18.00,
-      quantity: 2,
-      image: '/images/products/candle.jpg'
-    },
-    {
-      id: 'cart-3',
-      name: 'Rose & Lavender Candle Combo',
-      price: 42.00,
-      quantity: 1,
-      image: '/images/products/wall_hanging.jpg'
+  // Cart Items from localStorage
+  const [cartItems, setCartItems] = useState([]);
+
+  React.useEffect(() => {
+    // 1. Load Dynamic User Saved Addresses from API or localStorage
+    async function loadUserAddresses() {
+      try {
+        const apiAddresses = await addressService.getAddresses();
+        if (Array.isArray(apiAddresses) && apiAddresses.length > 0) {
+          setSavedAddresses(apiAddresses);
+          setSelectedAddressId(apiAddresses[0].id);
+          return;
+        }
+      } catch (err) {
+        console.error('Error fetching user addresses via API:', err);
+      }
+
+      const savedUserDataStr = typeof window !== 'undefined' ? localStorage.getItem('user_data') : null;
+      let currentUserData = user;
+      if (!currentUserData && savedUserDataStr) {
+        try {
+          currentUserData = JSON.parse(savedUserDataStr);
+        } catch (e) {}
+      }
+
+      if (currentUserData) {
+        const userAddresses = [];
+        const userName = currentUserData.name || currentUserData.fullName || '';
+        const userPhone = currentUserData.phone || currentUserData.mobile || '';
+
+        if (Array.isArray(currentUserData.addresses) && currentUserData.addresses.length > 0) {
+          currentUserData.addresses.forEach((addr, idx) => {
+            userAddresses.push({
+              id: addr.id || addr._id || `addr-${idx + 1}`,
+              name: addr.name || userName,
+              phone: addr.phone || userPhone,
+              type: addr.type || (idx === 0 ? 'Home' : 'Office'),
+              address: addr.address_line1 || addr.address || '',
+              landmark: addr.landmark || addr.address_line2 || '',
+              city: addr.city || '',
+              state: addr.state || '',
+              pinCode: addr.pincode || addr.pinCode || addr.zipCode || ''
+            });
+          });
+        } else if (currentUserData.address) {
+          userAddresses.push({
+            id: 'addr-user-primary',
+            name: userName,
+            phone: userPhone,
+            type: 'Home',
+            address: currentUserData.address,
+            landmark: '',
+            city: currentUserData.city || '',
+            state: currentUserData.state || '',
+            pinCode: currentUserData.pincode || currentUserData.pinCode || ''
+          });
+        }
+
+        setSavedAddresses(userAddresses);
+        if (userAddresses.length > 0) {
+          setSelectedAddressId(userAddresses[0].id);
+          setUseNewAddress(false);
+        } else {
+          setSelectedAddressId('');
+          setUseNewAddress(true);
+        }
+      } else {
+        setSavedAddresses([]);
+        setSelectedAddressId('');
+        setUseNewAddress(true);
+      }
     }
-  ]);
+    loadUserAddresses();
+
+    // 2. Sync Applied Coupon from Cart Screen
+    const savedCoupon = typeof window !== 'undefined' ? localStorage.getItem('applied_coupon') : null;
+    if (savedCoupon) {
+      try {
+        const parsed = JSON.parse(savedCoupon);
+        if (parsed?.code && parsed?.discount) {
+          setPromoCode(parsed.code);
+          setAppliedDiscount(parsed.discount);
+          setPromoSuccess(`Coupon ${parsed.code} applied! (${parsed.discount}% OFF)`);
+        }
+      } catch (e) {
+        console.error('Failed to parse applied coupon:', e);
+      }
+    }
+
+    async function syncCheckoutItems() {
+      try {
+        const response = await productService.getProducts({ limit: 50, status: 'active' });
+        const realProducts = response?.data || [];
+        const savedCart = localStorage.getItem('cart_items');
+        if (savedCart) {
+          const parsed = JSON.parse(savedCart);
+          if (Array.isArray(parsed)) {
+            const normalized = parsed.map((it) => {
+              const matchedProduct = realProducts.find((p) => {
+                const pId = String(p._id || p.id);
+                const rawItId = String(it.productId || it.id).replace(/^cart-/, '');
+                return pId === rawItId || p.slug === it.slug || (p.name && it.name && p.name.trim().toLowerCase() === it.name.trim().toLowerCase());
+              });
+              return {
+                ...it,
+                image: matchedProduct ? extractProductImage(matchedProduct) : extractProductImage(it)
+              };
+            });
+            setCartItems(normalized);
+          }
+        }
+      } catch (e) {
+        console.error('Failed to parse cart items for checkout:', e);
+      }
+    }
+    syncCheckoutItems();
+  }, [user]);
 
   const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
   const isFreeShipping = enableFreeShipping && subtotal >= freeShippingThreshold;
   const shippingCost = subtotal === 0 || isFreeShipping ? 0 : flatShippingRate;
   const discountAmount = (subtotal * appliedDiscount) / 100;
-  const taxAmount = (subtotal - discountAmount) * 0.05;
+  const currentTaxRate = taxRate !== undefined && taxRate !== null ? taxRate : 18;
+  const taxAmount = (subtotal - discountAmount) * (currentTaxRate / 100);
   const grandTotal = subtotal - discountAmount + shippingCost + taxAmount;
 
   const handleApplyPromo = (e) => {
@@ -121,50 +202,109 @@ export default function CheckoutPage() {
     setPromoError('');
     setPromoSuccess('');
 
-    if (promoCode.toUpperCase() === 'CAFLORE10') {
-      setAppliedDiscount(10);
-      setPromoSuccess('10% discount applied successfully!');
+    if (promoCode.toUpperCase() === 'FLEUR NOTES20') {
+      setAppliedDiscount(20);
+      setPromoSuccess('');
     } else if (promoCode.toUpperCase() === 'WELCOME15') {
       setAppliedDiscount(15);
-      setPromoSuccess('15% welcome discount applied successfully!');
+      setPromoSuccess('');
     } else if (promoCode) {
       setPromoError('Invalid promo code');
     }
   };
 
-  const handlePlaceOrder = (e) => {
+  const removeCoupon = () => {
+    setPromoCode('');
+    setAppliedDiscount(0);
+    setPromoSuccess('');
+    setPromoError('');
+  };
+
+  const handlePlaceOrder = async (e) => {
     e.preventDefault();
-    
+    setCheckoutError('');
+
+    let newAddressPayload = null;
+
     // Simple validation if custom address is chosen
     if (useNewAddress) {
       const { firstName, lastName, address, city, state, pinCode, phone } = shippingAddress;
-      if (!firstName || !lastName || !address || !city || !state || !pinCode || !phone) {
-        alert('Please fill out all shipping fields.');
+      if (!firstName || !address || !city || !state || !pinCode || !phone) {
+        setCheckoutError('Please fill out all required shipping fields.');
         return;
       }
+      newAddressPayload = {
+        fullName: `${firstName} ${lastName}`.trim(),
+        phone,
+        addressLine1: address,
+        city,
+        state,
+        pinCode,
+        label: 'home'
+      };
     }
 
     if (paymentMethod === 'upi' && !vpa) {
-      alert('Please enter your UPI ID (VPA).');
+      setCheckoutError('Please enter your UPI ID (VPA).');
       return;
     }
 
     if (paymentMethod === 'card') {
       const { number, name, expiry, cvv } = cardDetails;
       if (!number || !name || !expiry || !cvv) {
-        alert('Please fill out card payment details.');
+        setCheckoutError('Please fill out card payment details.');
         return;
       }
     }
 
     setIsPlacingOrder(true);
 
-    // Simulate order placement api request
-    setTimeout(() => {
+    try {
+      const orderPayload = {
+        address_id: useNewAddress ? null : selectedAddressId,
+        new_address: newAddressPayload,
+        payment_method: paymentMethod,
+        coupon_code: promoCode || null
+      };
+
+      const response = await orderService.placeOrder(orderPayload);
+
       setIsPlacingOrder(false);
-      setOrderCompleted(true);
-      setOrderId('C-' + Math.floor(100000 + Math.random() * 900000));
-    }, 2000);
+
+      if (response && response.success) {
+        const generatedOrderId = response.data?.orderNumber || response.data?.orderId || `FN-${Math.floor(100000 + Math.random() * 900000)}`;
+        setOrderCompleted(true);
+        setOrderId(generatedOrderId);
+
+        // 1. Empty Cart
+        try {
+          localStorage.removeItem('cart_items');
+        } catch (e) {}
+        setCartItems([]);
+        if (setCartCount) setCartCount(0);
+
+        // 2. Record coupon usage and clear applied coupon
+        if (promoCode) {
+          try {
+            const used = JSON.parse(localStorage.getItem('used_coupons') || '[]');
+            const upperCode = promoCode.trim().toUpperCase();
+            if (!used.includes(upperCode)) {
+              used.push(upperCode);
+              localStorage.setItem('used_coupons', JSON.stringify(used));
+            }
+          } catch (e) {}
+        }
+        try {
+          localStorage.removeItem('applied_coupon');
+        } catch (e) {}
+      } else {
+        setCheckoutError(response?.message || 'Failed to place order. Please try again.');
+      }
+    } catch (err) {
+      setIsPlacingOrder(false);
+      console.error('Place order exception:', err);
+      setCheckoutError('An error occurred while placing your order.');
+    }
   };
 
   return (
@@ -184,10 +324,10 @@ export default function CheckoutPage() {
         </h1>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-          
+
           {/* Left Column: Details & Payment (Lg: 7 columns) */}
           <div className="lg:col-span-7 space-y-8">
-            
+
             {/* Address Selection */}
             <div className="bg-white p-6 rounded-2xl border border-[#E8DACD] shadow-xs">
               <div className="flex items-center justify-between mb-4 border-b border-[#E8DACD]/40 pb-3">
@@ -198,22 +338,20 @@ export default function CheckoutPage() {
                   <button
                     type="button"
                     onClick={() => setUseNewAddress(false)}
-                    className={`text-xs font-semibold px-3 py-1.5 rounded-lg border transition-all cursor-pointer ${
-                      !useNewAddress
-                        ? 'bg-[#7A0C1E] text-white border-[#7A0C1E]'
-                        : 'border-[#E8DACD] text-gray-600 hover:bg-gray-50'
-                    }`}
+                    className={`text-xs font-semibold px-3 py-1.5 rounded-lg border transition-all cursor-pointer ${!useNewAddress
+                      ? 'bg-[#7A0C1E] text-white border-[#7A0C1E]'
+                      : 'border-[#E8DACD] text-gray-600 hover:bg-gray-50'
+                      }`}
                   >
                     Saved Addresses
                   </button>
                   <button
                     type="button"
                     onClick={() => setUseNewAddress(true)}
-                    className={`text-xs font-semibold px-3 py-1.5 rounded-lg border transition-all cursor-pointer ${
-                      useNewAddress
-                        ? 'bg-[#7A0C1E] text-white border-[#7A0C1E]'
-                        : 'border-[#E8DACD] text-gray-600 hover:bg-gray-50'
-                    }`}
+                    className={`text-xs font-semibold px-3 py-1.5 rounded-lg border transition-all cursor-pointer ${useNewAddress
+                      ? 'bg-[#7A0C1E] text-white border-[#7A0C1E]'
+                      : 'border-[#E8DACD] text-gray-600 hover:bg-gray-50'
+                      }`}
                   >
                     New Address
                   </button>
@@ -221,38 +359,50 @@ export default function CheckoutPage() {
               </div>
 
               {!useNewAddress ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {savedAddresses.map((addr) => (
-                    <div
-                      key={addr.id}
-                      onClick={() => setSelectedAddressId(addr.id)}
-                      className={`p-4 rounded-xl border-2 transition-all cursor-pointer relative ${
-                        selectedAddressId === addr.id
+                savedAddresses.length > 0 ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {savedAddresses.map((addr) => (
+                      <div
+                        key={addr.id}
+                        onClick={() => setSelectedAddressId(addr.id)}
+                        className={`p-4 rounded-xl border-2 transition-all cursor-pointer relative ${selectedAddressId === addr.id
                           ? 'border-[#7A0C1E] bg-[#FAF5EF]/30'
                           : 'border-[#E8DACD] bg-white hover:border-gray-300'
-                      }`}
-                    >
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-[#FAF5EF] text-[#7A0C1E] border border-[#E8DACD]">
-                          {addr.type}
+                          }`}
+                      >
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-[#FAF5EF] text-[#7A0C1E] border border-[#E8DACD]">
+                            {addr.type}
+                          </span>
+                          {selectedAddressId === addr.id && (
+                            <div className="w-4 h-4 rounded-full bg-[#7A0C1E] flex items-center justify-center text-white">
+                              <Check className="w-2.5 h-2.5" />
+                            </div>
+                          )}
+                        </div>
+                        <h4 className="text-xs font-bold text-[#2B1B17]">{addr.name}</h4>
+                        <p className="text-[11px] text-[#705B54] mt-1.5 leading-relaxed">
+                          {addr.address}, {addr.landmark && `${addr.landmark}, `}
+                          {addr.city}, {addr.state} - {addr.pinCode}
+                        </p>
+                        <span className="block text-[10px] text-gray-400 mt-2 font-medium">
+                          {addr.phone}
                         </span>
-                        {selectedAddressId === addr.id && (
-                          <div className="w-4 h-4 rounded-full bg-[#7A0C1E] flex items-center justify-center text-white">
-                            <Check className="w-2.5 h-2.5" />
-                          </div>
-                        )}
                       </div>
-                      <h4 className="text-xs font-bold text-[#2B1B17]">{addr.name}</h4>
-                      <p className="text-[11px] text-[#705B54] mt-1.5 leading-relaxed">
-                        {addr.address}, {addr.landmark && `${addr.landmark}, `}
-                        {addr.city}, {addr.state} - {addr.pinCode}
-                      </p>
-                      <span className="block text-[10px] text-gray-400 mt-2 font-medium">
-                        {addr.phone}
-                      </span>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-6 border border-dashed border-[#E8DACD] rounded-xl">
+                    <p className="text-xs text-gray-500 mb-3">No saved addresses found.</p>
+                    <button
+                      type="button"
+                      onClick={() => setUseNewAddress(true)}
+                      className="px-4 py-2 text-xs font-bold bg-[#7A0C1E] text-white rounded-xl hover:bg-[#5F0917] transition-colors"
+                    >
+                      Add New Address
+                    </button>
+                  </div>
+                )
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
@@ -344,25 +494,23 @@ export default function CheckoutPage() {
               <h2 className="font-serif-luxury text-lg font-bold text-[#2B1B17] mb-4 border-b border-[#E8DACD]/40 pb-3">
                 2. Payment Method
               </h2>
-              
+
               <div className="space-y-4">
                 {/* UPI Option */}
                 <div
                   onClick={() => setPaymentMethod('upi')}
-                  className={`p-4 rounded-xl border-2 transition-all cursor-pointer ${
-                    paymentMethod === 'upi'
-                      ? 'border-[#7A0C1E] bg-[#FAF5EF]/30'
-                      : 'border-[#E8DACD] hover:border-gray-300'
-                  }`}
+                  className={`p-4 rounded-xl border-2 transition-all cursor-pointer ${paymentMethod === 'upi'
+                    ? 'border-[#7A0C1E] bg-[#FAF5EF]/30'
+                    : 'border-[#E8DACD] hover:border-gray-300'
+                    }`}
                 >
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2.5">
                       <Wallet className="w-5 h-5 text-[#7A0C1E]" />
                       <span className="text-xs font-bold text-[#2B1B17]">UPI (Paytm, PhonePe, GPay)</span>
                     </div>
-                    <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${
-                      paymentMethod === 'upi' ? 'bg-[#7A0C1E] border-[#7A0C1E] text-white' : 'border-gray-300'
-                    }`}>
+                    <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${paymentMethod === 'upi' ? 'bg-[#7A0C1E] border-[#7A0C1E] text-white' : 'border-gray-300'
+                      }`}>
                       {paymentMethod === 'upi' && <Check className="w-2.5 h-2.5" />}
                     </div>
                   </div>
@@ -386,20 +534,18 @@ export default function CheckoutPage() {
                 {/* Card Option */}
                 <div
                   onClick={() => setPaymentMethod('card')}
-                  className={`p-4 rounded-xl border-2 transition-all cursor-pointer ${
-                    paymentMethod === 'card'
-                      ? 'border-[#7A0C1E] bg-[#FAF5EF]/30'
-                      : 'border-[#E8DACD] hover:border-gray-300'
-                  }`}
+                  className={`p-4 rounded-xl border-2 transition-all cursor-pointer ${paymentMethod === 'card'
+                    ? 'border-[#7A0C1E] bg-[#FAF5EF]/30'
+                    : 'border-[#E8DACD] hover:border-gray-300'
+                    }`}
                 >
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2.5">
                       <CreditCard className="w-5 h-5 text-[#7A0C1E]" />
                       <span className="text-xs font-bold text-[#2B1B17]">Credit / Debit Card</span>
                     </div>
-                    <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${
-                      paymentMethod === 'card' ? 'bg-[#7A0C1E] border-[#7A0C1E] text-white' : 'border-gray-300'
-                    }`}>
+                    <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${paymentMethod === 'card' ? 'bg-[#7A0C1E] border-[#7A0C1E] text-white' : 'border-gray-300'
+                      }`}>
                       {paymentMethod === 'card' && <Check className="w-2.5 h-2.5" />}
                     </div>
                   </div>
@@ -457,20 +603,18 @@ export default function CheckoutPage() {
                 {/* Cash on Delivery */}
                 <div
                   onClick={() => setPaymentMethod('cod')}
-                  className={`p-4 rounded-xl border-2 transition-all cursor-pointer ${
-                    paymentMethod === 'cod'
-                      ? 'border-[#7A0C1E] bg-[#FAF5EF]/30'
-                      : 'border-[#E8DACD] hover:border-gray-300'
-                  }`}
+                  className={`p-4 rounded-xl border-2 transition-all cursor-pointer ${paymentMethod === 'cod'
+                    ? 'border-[#7A0C1E] bg-[#FAF5EF]/30'
+                    : 'border-[#E8DACD] hover:border-gray-300'
+                    }`}
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2.5">
                       <Truck className="w-5 h-5 text-[#7A0C1E]" />
                       <span className="text-xs font-bold text-[#2B1B17]">Cash on Delivery (COD)</span>
                     </div>
-                    <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${
-                      paymentMethod === 'cod' ? 'bg-[#7A0C1E] border-[#7A0C1E] text-white' : 'border-gray-300'
-                    }`}>
+                    <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${paymentMethod === 'cod' ? 'bg-[#7A0C1E] border-[#7A0C1E] text-white' : 'border-gray-300'
+                      }`}>
                       {paymentMethod === 'cod' && <Check className="w-2.5 h-2.5" />}
                     </div>
                   </div>
@@ -480,6 +624,28 @@ export default function CheckoutPage() {
                 </div>
               </div>
             </div>
+
+            {/* Checkout Error Card Banner */}
+            {checkoutError && (
+              <div className="bg-red-50 border-2 border-red-200 rounded-2xl p-4 flex items-center justify-between gap-3 text-red-700 animate-fadeIn shadow-xs">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-red-100 flex items-center justify-center text-red-600 shrink-0">
+                    <AlertCircle className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <p className="font-extrabold text-xs text-red-900 uppercase tracking-wider">Payment / Field Required</p>
+                    <p className="text-xs text-red-700 font-semibold mt-0.5">{checkoutError}</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setCheckoutError('')}
+                  className="p-1.5 rounded-lg hover:bg-red-100 text-red-500 transition-colors cursor-pointer"
+                  title="Dismiss error"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            )}
 
             {/* Place Order CTA */}
             <button
@@ -494,30 +660,81 @@ export default function CheckoutPage() {
 
           {/* Right Column: Order Summary (Lg: 5 columns) */}
           <div className="lg:col-span-5 space-y-6">
-            
+
             {/* Promo Code Block */}
             <div className="bg-white p-5 rounded-2xl border border-[#E8DACD] shadow-xs">
-              <span className="block text-xs font-bold text-[#2B1B17] uppercase tracking-wider mb-2">Apply Promo Code</span>
-              <form onSubmit={handleApplyPromo} className="flex gap-2">
-                <input
-                  type="text"
-                  value={promoCode}
-                  onChange={(e) => setPromoCode(e.target.value)}
-                  placeholder="e.g. CAFLORE10"
-                  className="flex-1 bg-[#FAF5EF] border border-[#E8DACD] rounded-xl px-4 py-2 text-xs text-[#2B1B17] uppercase focus:outline-none focus:border-[#7A0C1E]"
-                />
-                <button
-                  type="submit"
-                  className="bg-[#2B1B17] hover:bg-[#7A0C1E] text-white px-4 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer shrink-0"
-                >
-                  Apply
-                </button>
-              </form>
-              {promoSuccess && <p className="text-[10px] text-green-700 font-semibold mt-2">{promoSuccess}</p>}
-              {promoError && <p className="text-[10px] text-red-600 font-semibold mt-2">{promoError}</p>}
-              <div className="mt-3 bg-[#FAF5EF] border border-[#E8DACD] rounded-xl p-2.5 text-[10px] text-gray-500">
-                💡 Tip: Try code <span className="font-bold text-[#7A0C1E]">CAFLORE10</span> for 10% off.
-              </div>
+              {appliedDiscount > 0 && promoCode ? (
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="block text-xs font-bold text-[#2B1B17] uppercase tracking-wider">Coupon Applied</span>
+                    <span className="text-[10px] font-bold text-green-700 bg-green-50 px-2.5 py-0.5 rounded-full border border-green-200 uppercase">
+                      Applied
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between bg-[#FAF5EF] p-3 rounded-xl border border-[#E8DACD]">
+                    <div className="flex items-center gap-2.5">
+                      <div className="p-2 rounded-lg bg-[#7A0C1E] text-white">
+                        <Tag className="w-4 h-4" />
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="font-mono font-bold text-xs text-[#7A0C1E] uppercase">{promoCode}</span>
+                          <span className="text-[10px] font-bold text-green-700 bg-green-100 px-1.5 py-0.5 rounded">
+                            {appliedDiscount}% OFF
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-gray-500 font-medium pt-0.5">Coupon successfully applied</p>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        removeCoupon();
+                        try {
+                          localStorage.removeItem('applied_coupon');
+                        } catch (e) {}
+                      }}
+                      className="p-1.5 rounded-lg text-gray-400 hover:text-red-600 hover:bg-gray-100 transition-colors cursor-pointer"
+                      title="Remove Coupon"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <span className="block text-xs font-bold text-[#2B1B17] uppercase tracking-wider mb-2">Apply Promo Code</span>
+                  <form onSubmit={handleApplyPromo} className="flex gap-2">
+                    <div className="relative flex-1">
+                      <input
+                        type="text"
+                        value={promoCode}
+                        onChange={(e) => setPromoCode(e.target.value)}
+                        placeholder="e.g. FLEUR NOTES10"
+                        className="w-full bg-[#FAF5EF] border border-[#E8DACD] rounded-xl pl-4 pr-8 py-2 text-xs text-[#2B1B17] uppercase focus:outline-none focus:border-[#7A0C1E]"
+                      />
+                      {promoCode && (
+                        <button
+                          type="button"
+                          onClick={removeCoupon}
+                          className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-red-500 p-0.5 rounded-full hover:bg-gray-200 transition-colors cursor-pointer"
+                          title="Remove coupon"
+                        >
+                          <X className="w-3.5 h-3.5" />
+                        </button>
+                      )}
+                    </div>
+                    <button
+                      type="submit"
+                      className="bg-[#2B1B17] hover:bg-[#7A0C1E] text-white px-4 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer shrink-0"
+                    >
+                      Apply
+                    </button>
+                  </form>
+                  {promoSuccess && <p className="text-[10px] text-green-700 font-semibold mt-2">{promoSuccess}</p>}
+                  {promoError && <p className="text-[10px] text-red-600 font-semibold mt-2">{promoError}</p>}
+                </>
+              )}
             </div>
 
             {/* Cart Items Summary */}
@@ -530,7 +747,7 @@ export default function CheckoutPage() {
                 {cartItems.map((item) => (
                   <div key={item.id} className="flex items-center gap-3 pt-4 first:pt-0">
                     <div className="relative w-12 h-12 rounded-lg overflow-hidden border border-[#E8DACD] bg-[#FAF5EF] shrink-0">
-                      <Image src={item.image} alt={item.name} fill className="object-cover" />
+                      <img src={extractProductImage(item)} alt={item.name} className="w-full h-full object-cover" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <h4 className="text-xs font-bold text-[#2B1B17] truncate">{item.name}</h4>
@@ -567,7 +784,7 @@ export default function CheckoutPage() {
                   )}
                 </div>
                 <div className="flex justify-between">
-                  <span>GST / Taxes (5%)</span>
+                  <span>GST / Taxes ({currentTaxRate}%)</span>
                   <span className="font-semibold text-[#2B1B17]">{formatPrice(taxAmount)}</span>
                 </div>
                 <div className="flex justify-between pt-3 border-t border-[#E8DACD]/60 text-sm font-bold text-[#2B1B17]">
@@ -597,7 +814,7 @@ export default function CheckoutPage() {
             <div className="w-16 h-16 bg-green-50 text-green-700 rounded-full flex items-center justify-center mx-auto border border-green-200">
               <Check className="w-8 h-8" />
             </div>
-            
+
             <div className="space-y-2">
               <span className="text-[10px] uppercase font-bold tracking-wider text-[#A87B39] flex items-center justify-center gap-1">
                 <Sparkles className="w-3.5 h-3.5 fill-[#A87B39]" />

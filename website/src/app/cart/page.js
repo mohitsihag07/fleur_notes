@@ -16,22 +16,42 @@ import {
   RotateCcw,
   Sparkles,
   Lock,
-  Gift
+  Gift,
+  X
 } from 'lucide-react';
 import { Container } from '@/components/ui/Container';
 import { ProductCard } from '@/components/shop/ProductCard';
 import { productService } from '@/services/productService';
-import { getFormattedImage } from '@/utils/formatImage';
+import { couponService } from '@/services/couponService';
+import { getFormattedImage, extractProductImage } from '@/utils/formatImage';
 import { formatPrice } from '@/utils/formatPrice';
 import { useShop } from '@/context/ShopContext';
 import { useSettings } from '@/context/SettingsContext';
 
 export default function CartPage() {
-  const { freeShippingThreshold, flatShippingRate, enableFreeShipping } = useSettings();
-  const { setCartCount } = useShop();
+  const { freeShippingThreshold, flatShippingRate, enableFreeShipping, taxRate } = useSettings();
+  const { setCartCount, removeFromCart, updateCartQuantity, clearCart: clearShopCart } = useShop();
   const [cartItems, setCartItems] = useState([]);
   const [frequentlyBought, setFrequentlyBought] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [availableCoupons, setAvailableCoupons] = useState([]);
+  const [isCouponsModalOpen, setIsCouponsModalOpen] = useState(false);
+
+  React.useEffect(() => {
+    async function fetchCoupons() {
+      try {
+        const fetched = await couponService.getCoupons();
+        const usedCoupons = typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('used_coupons') || '[]') : [];
+        const activeNotUsed = (Array.isArray(fetched) ? fetched : []).filter(
+          (c) => !usedCoupons.includes(c.code?.toUpperCase())
+        );
+        setAvailableCoupons(activeNotUsed);
+      } catch (err) {
+        console.error('Failed to load coupons:', err);
+      }
+    }
+    fetchCoupons();
+  }, []);
 
   React.useEffect(() => {
     async function loadCartData() {
@@ -56,7 +76,7 @@ export default function CartPage() {
               productId: p.id || p._id,
               name: p.name,
               slug: p.slug || p.id || p._id,
-              color: p.category_id?.name || 'Artisanal',
+              color: p.category_id?.name || '',
               price: p.sale_price ? parseFloat(p.sale_price) : parseFloat(p.price || 0),
               originalPrice: p.sale_price ? parseFloat(p.price) : null,
               quantity: 1,
@@ -71,24 +91,32 @@ export default function CartPage() {
           setFrequentlyBought(formatted.slice(3, 7));
         }
 
-        const userToken = localStorage.getItem('user_token');
-        if (!userToken) {
-          localStorage.removeItem('cart_items');
-          setCartItems([]);
-          setLoading(false);
-          return;
-        }
-
         const savedCart = localStorage.getItem('cart_items');
         if (savedCart !== null) {
           try {
             const parsed = JSON.parse(savedCart);
             if (Array.isArray(parsed)) {
-              const normalized = parsed.map((it) => ({
-                ...it,
-                image: getFormattedImage(it.image || (it.images && it.images[0]?.image) || null)
-              }));
+              const normalized = parsed.map((it) => {
+                const matchedProduct = realProducts.find((p) => {
+                  const pId = String(p._id || p.id);
+                  const rawItId = String(it.productId || it.id).replace(/^cart-/, '');
+                  return pId === rawItId || p.slug === it.slug || (p.name && it.name && p.name.trim().toLowerCase() === it.name.trim().toLowerCase());
+                });
+
+                let dynamicImg = it.image;
+                if (matchedProduct) {
+                  dynamicImg = extractProductImage(matchedProduct);
+                } else if (!dynamicImg) {
+                  dynamicImg = extractProductImage(it);
+                }
+
+                return {
+                  ...it,
+                  image: getFormattedImage(dynamicImg)
+                };
+              });
               setCartItems(normalized);
+              localStorage.setItem('cart_items', JSON.stringify(normalized));
             } else {
               setCartItems([]);
             }
@@ -97,6 +125,20 @@ export default function CartPage() {
           }
         } else {
           setCartItems([]);
+        }
+
+        const savedCoupon = localStorage.getItem('applied_coupon');
+        if (savedCoupon) {
+          try {
+            const parsed = JSON.parse(savedCoupon);
+            if (parsed?.code && parsed?.discount) {
+              setPromoCode(parsed.code);
+              setAppliedDiscount(parsed.discount);
+              setPromoSuccess(`Coupon ${parsed.code} applied! (${parsed.discount}% OFF)`);
+            }
+          } catch (e) {
+            console.error('Error parsing saved coupon:', e);
+          }
         }
       } catch (err) {
         console.error('Failed to load cart products:', err);
@@ -121,27 +163,43 @@ export default function CartPage() {
   const [giftNote, setGiftNote] = useState('');
 
   // Quantity updates
-  const updateQuantity = (id, delta) => {
-    const nextCart = cartItems
-      .map((item) => {
-        if (item.id === id) {
-          const newQty = item.quantity + delta;
-          return newQty > 0 ? { ...item, quantity: newQty } : item;
-        }
-        return item;
-      })
-      .filter((item) => item.quantity > 0);
+  const updateQuantity = async (id, delta) => {
+    const targetItem = cartItems.find((item) => item.id === id);
+    if (!targetItem) return;
 
-    saveCartState(nextCart);
+    const newQty = targetItem.quantity + delta;
+    const pId = targetItem.productId || targetItem.id;
+
+    if (newQty <= 0) {
+      await removeItem(id);
+      return;
+    }
+
+    const updated = await updateCartQuantity(pId, newQty);
+    if (Array.isArray(updated)) {
+      setCartItems(updated);
+    } else {
+      const nextCart = cartItems.map((item) => (item.id === id ? { ...item, quantity: newQty } : item));
+      saveCartState(nextCart);
+    }
   };
 
-  const removeItem = (id) => {
-    const nextCart = cartItems.filter((item) => item.id !== id);
-    saveCartState(nextCart);
+  const removeItem = async (id) => {
+    const targetItem = cartItems.find((item) => item.id === id);
+    const pId = targetItem ? (targetItem.productId || targetItem.id) : id;
+
+    const updated = await removeFromCart(pId);
+    if (Array.isArray(updated)) {
+      setCartItems(updated);
+    } else {
+      const nextCart = cartItems.filter((item) => item.id !== id);
+      saveCartState(nextCart);
+    }
   };
 
-  const clearCart = () => {
-    saveCartState([]);
+  const clearCart = async () => {
+    await clearShopCart();
+    setCartItems([]);
   };
 
   // Calculations
@@ -150,23 +208,97 @@ export default function CartPage() {
   const amountForFreeShipping = Math.max(0, freeShippingThreshold - subtotal);
   const shippingCost = subtotal === 0 || isFreeShipping ? 0 : flatShippingRate;
   const discountAmount = (subtotal * appliedDiscount) / 100;
-  const estimatedTax = (subtotal - discountAmount) * 0.05;
+  const currentTaxRate = taxRate !== undefined && taxRate !== null ? taxRate : 18;
+  const estimatedTax = (subtotal - discountAmount) * (currentTaxRate / 100);
   const grandTotal = Math.max(0, subtotal - discountAmount + shippingCost + estimatedTax);
+
+  // Auto re-validate applied coupon whenever subtotal or availableCoupons change
+  React.useEffect(() => {
+    if (!promoCode || availableCoupons.length === 0) return;
+    const cleanCode = promoCode.trim().toUpperCase();
+    const foundCoupon = availableCoupons.find((c) => c.code?.toUpperCase() === cleanCode);
+
+    if (foundCoupon && foundCoupon.minAmount && subtotal < foundCoupon.minAmount) {
+      setAppliedDiscount(0);
+      setPromoSuccess('');
+      setPromoError(`Minimum spend of ${formatPrice(foundCoupon.minAmount)} required for ${cleanCode}.`);
+      try {
+        localStorage.removeItem('applied_coupon');
+      } catch (e) {}
+    } else if (foundCoupon && (!foundCoupon.minAmount || subtotal >= foundCoupon.minAmount)) {
+      const discountVal = foundCoupon.value || (foundCoupon.type === 'percentage' ? foundCoupon.value : 10);
+      setAppliedDiscount(discountVal);
+      setPromoSuccess(`Coupon ${cleanCode} applied! (${foundCoupon.discountText || `${discountVal}% OFF`})`);
+      setPromoError('');
+    }
+  }, [subtotal, availableCoupons, promoCode]);
+
+  const applyCouponCode = (targetCode) => {
+    const cleanCode = targetCode ? targetCode.trim().toUpperCase() : '';
+    if (!cleanCode) {
+      setPromoError('Please enter a coupon code.');
+      setPromoSuccess('');
+      setAppliedDiscount(0);
+      return;
+    }
+
+    const usedCoupons = typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('used_coupons') || '[]') : [];
+    if (usedCoupons.includes(cleanCode)) {
+      setPromoError(`You have already used coupon code "${cleanCode}".`);
+      setPromoSuccess('');
+      setAppliedDiscount(0);
+      try {
+        localStorage.removeItem('applied_coupon');
+      } catch (e) {}
+      return;
+    }
+
+    const foundCoupon = availableCoupons.find((c) => c.code?.toUpperCase() === cleanCode);
+
+    if (foundCoupon) {
+      if (foundCoupon.minAmount && subtotal < foundCoupon.minAmount) {
+        setPromoError(`Minimum spend of ${formatPrice(foundCoupon.minAmount)} required for ${cleanCode}.`);
+        setPromoSuccess('');
+        setAppliedDiscount(0);
+        setPromoCode(cleanCode);
+        try {
+          localStorage.removeItem('applied_coupon');
+        } catch (e) {}
+        return;
+      }
+
+      const discountVal = foundCoupon.value || (foundCoupon.type === 'percentage' ? foundCoupon.value : 10);
+      setAppliedDiscount(discountVal);
+      setPromoSuccess(`Coupon ${cleanCode} applied! (${foundCoupon.discountText || `${discountVal}% OFF`})`);
+      setPromoError('');
+      setPromoCode(cleanCode);
+      setIsCouponsModalOpen(false);
+      try {
+        localStorage.setItem('applied_coupon', JSON.stringify({ code: cleanCode, discount: discountVal }));
+      } catch (e) {}
+    } else {
+      setPromoError(`Invalid or inactive coupon code: "${cleanCode}".`);
+      setPromoSuccess('');
+      setAppliedDiscount(0);
+      try {
+        localStorage.removeItem('applied_coupon');
+      } catch (e) {}
+    }
+  };
+
+  const removeCoupon = () => {
+    setPromoCode('');
+    setAppliedDiscount(0);
+    setPromoSuccess('');
+    setPromoError('');
+    try {
+      localStorage.removeItem('applied_coupon');
+    } catch (e) {}
+  };
 
   const handleApplyPromo = (e) => {
     e.preventDefault();
-    if (promoCode.trim().toUpperCase() === 'CAFLORE10') {
-      setAppliedDiscount(10);
-      setPromoSuccess('Coupon applied! (10% OFF)');
-      setPromoError('');
-    } else if (promoCode.trim().toUpperCase() === 'WELCOME15') {
-      setAppliedDiscount(15);
-      setPromoSuccess('Coupon applied! (15% OFF)');
-      setPromoError('');
-    } else {
-      setPromoError('Invalid coupon code. Try CAFLORE10');
-      setPromoSuccess('');
-    }
+    applyCouponCode(promoCode);
   };
 
   return (
@@ -247,17 +379,17 @@ export default function CartPage() {
                   <div key={item.id} className="p-4 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                     {/* Image & Product Title */}
                     <div className="flex items-center gap-4 flex-1">
-                      <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-xl overflow-hidden bg-[#FAF5EF] border border-[#E8DACD] shrink-0">
-                        <img
-                          src={getFormattedImage(
-                            item.image || item.product?.image || (item.product && item.product.images && item.product.images[0]?.image) || null
-                          )}
-                          alt={item.name || 'Product'}
-                          className="w-full h-full object-cover"
-                          onError={(e) => {
-                            e.currentTarget.src = 'https://images.unsplash.com/photo-1603006905003-be475563bc59?auto=format&fit=crop&q=80&w=600';
-                          }}
-                        />
+                      <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-xl overflow-hidden bg-[#FAF5EF] border border-[#E8DACD] shrink-0 flex items-center justify-center">
+                        {extractProductImage(item) ? (
+                          <img
+                            src={extractProductImage(item)}
+                            alt={item.name || 'Product'}
+                            className="w-full h-full object-cover"
+                            onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                          />
+                        ) : (
+                          <ShoppingBag className="w-8 h-8 text-gray-300" />
+                        )}
                       </div>
                       <div className="space-y-1">
                         <Link href={`/product/${item.slug}`} className="font-semibold text-sm sm:text-base text-[#2B1B17] hover:text-[#7A0C1E] transition-colors line-clamp-1">
@@ -375,7 +507,7 @@ export default function CartPage() {
                   </div>
 
                   <div className="flex justify-between text-gray-600">
-                    <span>Estimated Tax (5%)</span>
+                    <span>Estimated Tax ({currentTaxRate}%)</span>
                     <span className="font-semibold text-[#2B1B17]">{formatPrice(estimatedTax)}</span>
                   </div>
 
@@ -387,7 +519,17 @@ export default function CartPage() {
 
                 {/* Promo Code Form */}
                 <form onSubmit={handleApplyPromo} className="space-y-2 pt-2 border-t border-[#E8DACD]">
-                  <label className="block text-xs font-semibold text-[#2B1B17]">Promo Code / Coupon</label>
+                  <div className="flex items-center justify-between gap-2">
+                    <label className="block text-xs font-semibold text-[#2B1B17]">Promo Code / Coupon</label>
+                    <button
+                      type="button"
+                      onClick={() => setIsCouponsModalOpen(true)}
+                      className="inline-flex items-center gap-1.5 text-[11px] font-bold text-[#7A0C1E] hover:text-[#5F0917] hover:underline cursor-pointer bg-[#F2E6DA] px-2.5 py-1 rounded-lg border border-[#E8DACD] transition-colors"
+                    >
+                      <Tag className="w-3 h-3 text-[#7A0C1E]" />
+                      <span>Available Coupons ({availableCoupons.length})</span>
+                    </button>
+                  </div>
                   <div className="flex gap-2">
                     <div className="relative flex-1">
                       <Tag className="w-3.5 h-3.5 text-gray-400 absolute left-3 top-3" />
@@ -395,9 +537,19 @@ export default function CartPage() {
                         type="text"
                         value={promoCode}
                         onChange={(e) => setPromoCode(e.target.value)}
-                        placeholder="e.g. CAFLORE10"
-                        className="w-full pl-9 pr-3 py-2 text-xs rounded-xl border border-[#E8DACD] outline-none uppercase font-semibold text-[#2B1B17]"
+                        placeholder="e.g. FLEUR NOTES10"
+                        className="w-full pl-9 pr-8 py-2 text-xs rounded-xl border border-[#E8DACD] outline-none uppercase font-semibold text-[#2B1B17]"
                       />
+                      {promoCode && (
+                        <button
+                          type="button"
+                          onClick={removeCoupon}
+                          className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-red-500 p-0.5 rounded-full hover:bg-gray-100 transition-colors cursor-pointer"
+                          title="Remove coupon"
+                        >
+                          <X className="w-3.5 h-3.5" />
+                        </button>
+                      )}
                     </div>
                     <button
                       type="submit"
@@ -430,7 +582,7 @@ export default function CartPage() {
                   </div>
                   <div className="flex items-center gap-2">
                     <RotateCcw className="w-4 h-4 text-[#7A0C1E] shrink-0" />
-                    <span>30-Day Hassle-Free Returns</span>
+                    <span>-Day Hassle-Free Returns</span>
                   </div>
                 </div>
               </div>
@@ -448,6 +600,84 @@ export default function CartPage() {
               {frequentlyBought.map((p) => (
                 <ProductCard key={p.id} product={p} />
               ))}
+            </div>
+          </div>
+        )}
+
+        {/* Available Coupons Modal */}
+        {isCouponsModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-fadeIn">
+            <div className="bg-white rounded-3xl border border-[#E8DACD] shadow-2xl max-w-md w-full p-6 space-y-4 relative">
+              <div className="flex items-center justify-between border-b border-[#E8DACD] pb-3">
+                <div className="flex items-center gap-2">
+                  <div className="p-2 rounded-xl bg-[#F2E6DA] text-[#7A0C1E]">
+                    <Tag className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h3 className="text-base font-bold text-[#2B1B17]">Available Coupons</h3>
+                    <p className="text-[11px] text-gray-500">Click Apply to use a coupon code</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setIsCouponsModalOpen(false)}
+                  className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-500 flex items-center justify-center font-bold text-sm cursor-pointer"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <div className="space-y-3 max-h-[60vh] overflow-y-auto pr-1">
+                {availableCoupons.length === 0 ? (
+                  <p className="text-xs text-gray-500 text-center py-6">No coupons available at the moment.</p>
+                ) : (
+                  availableCoupons.map((coupon, idx) => {
+                    const isMinMet = !coupon.minAmount || subtotal >= coupon.minAmount;
+                    return (
+                      <div
+                        key={coupon.id || coupon.code || idx}
+                        className={`p-4 rounded-2xl border transition-all ${
+                          isMinMet
+                            ? 'border-[#E8DACD] bg-[#FAF5EF] hover:border-[#7A0C1E]/50'
+                            : 'border-gray-200 bg-gray-50 opacity-75'
+                        }`}
+                      >
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="space-y-1 flex-1">
+                            <div className="flex items-center gap-2">
+                              <span className="font-mono font-black text-xs px-2.5 py-1 rounded-lg bg-[#7A0C1E] text-white tracking-wider">
+                                {coupon.code}
+                              </span>
+                              <span className="text-xs font-bold text-[#7A0C1E] bg-[#F2E6DA] px-2 py-0.5 rounded-md">
+                                {coupon.discountText || `${coupon.value}% OFF`}
+                              </span>
+                            </div>
+                            <p className="text-xs text-gray-600 font-medium pt-1">
+                              {coupon.description || `Get discount on your order.`}
+                            </p>
+                            {coupon.minAmount > 0 && (
+                              <p className="text-[10px] text-gray-400">
+                                Min. Spend: <strong>{formatPrice(coupon.minAmount)}</strong>
+                              </p>
+                            )}
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => applyCouponCode(coupon.code)}
+                            disabled={!isMinMet}
+                            className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                              isMinMet
+                                ? 'bg-[#7A0C1E] text-white hover:bg-[#5F0917]'
+                                : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                            }`}
+                          >
+                            Apply
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })
+                )}
+              </div>
             </div>
           </div>
         )}

@@ -78,7 +78,7 @@ export default function ContactPage() {
     {
       icon: Mail,
       title: 'Email Us',
-      line1: contactEmail || 'hello@caflore.com',
+      line1: contactEmail || 'hello@Fleur Notes.com',
       line2: null
     },
     {

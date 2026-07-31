@@ -1,7 +1,9 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { getFormattedImage } from '@/utils/formatImage';
+import { getFormattedImage, extractProductImage } from '@/utils/formatImage';
+import { cartService } from '@/services/cartService';
+import { wishlistService } from '@/services/wishlistService';
 
 const ShopContext = createContext({
   cartCount: 0,
@@ -18,17 +20,30 @@ export const ShopProvider = ({ children }) => {
   const [cartCount, setCartCountState] = useState(0);
   const [wishlistCount, setWishlistCountState] = useState(0);
 
-  const refreshCounts = () => {
+  const refreshCounts = async () => {
     try {
       const token = typeof window !== 'undefined' ? localStorage.getItem('user_token') : null;
-      if (!token) {
-        if (typeof window !== 'undefined') {
-          localStorage.removeItem('cart_items');
-          localStorage.removeItem('wishlist_items');
+      if (token && token !== 'null' && token !== 'undefined') {
+        try {
+          const [apiCartItems, apiWishlistItems] = await Promise.all([
+            cartService.getCart(),
+            wishlistService.getWishlist()
+          ]);
+
+          if (Array.isArray(apiCartItems)) {
+            const totalQty = apiCartItems.reduce((sum, item) => sum + (item.quantity || 1), 0);
+            setCartCountState(totalQty);
+            localStorage.setItem('cart_items', JSON.stringify(apiCartItems));
+          }
+
+          if (Array.isArray(apiWishlistItems)) {
+            setWishlistCountState(apiWishlistItems.length);
+            localStorage.setItem('wishlist_items', JSON.stringify(apiWishlistItems));
+          }
+          return;
+        } catch (apiErr) {
+          console.warn('API cart/wishlist sync failed:', apiErr);
         }
-        setCartCountState(0);
-        setWishlistCountState(0);
-        return;
       }
 
       const savedCart = localStorage.getItem('cart_items');
@@ -84,13 +99,25 @@ export const ShopProvider = ({ children }) => {
     setWishlistCountState(count);
   };
 
-  const addToCart = (product, quantity = 1) => {
+  const addToCart = async (product, quantity = 1) => {
     try {
+      const token = typeof window !== 'undefined' ? localStorage.getItem('user_token') : null;
+      const pId = product.id || product._id;
+
+      if (token && pId) {
+        const apiCart = await cartService.addToCart(pId, quantity);
+        if (Array.isArray(apiCart)) {
+          localStorage.setItem('cart_items', JSON.stringify(apiCart));
+          const totalQty = apiCart.reduce((sum, item) => sum + (item.quantity || 1), 0);
+          setCartCountState(totalQty);
+          return true;
+        }
+      }
+
       const savedCart = localStorage.getItem('cart_items');
       let currentCart = savedCart ? JSON.parse(savedCart) : [];
       if (!Array.isArray(currentCart)) currentCart = [];
 
-      const pId = product.id || product._id;
       const existingIndex = currentCart.findIndex((item) => item.id === pId || item.productId === pId);
 
       if (existingIndex > -1) {
@@ -104,8 +131,8 @@ export const ShopProvider = ({ children }) => {
           price: product.sale_price ? parseFloat(product.sale_price) : parseFloat(product.price || 0),
           originalPrice: product.sale_price ? parseFloat(product.price) : null,
           quantity: quantity,
-          image: getFormattedImage(product.image || (product.images && product.images[0]?.image) || null),
-          color: product.color || product.category_id?.name || 'Artisanal',
+          image: extractProductImage(product),
+          color: product.color || product.category_id?.name || '',
           inStock: true
         };
         currentCart.push(newItem);
@@ -120,13 +147,24 @@ export const ShopProvider = ({ children }) => {
     }
   };
 
-  const toggleWishlist = (product) => {
+  const toggleWishlist = async (product) => {
     try {
+      const token = typeof window !== 'undefined' ? localStorage.getItem('user_token') : null;
+      const pId = product.id || product._id;
+
+      if (token && pId) {
+        const result = await wishlistService.toggleWishlist(pId);
+        if (result && Array.isArray(result.items)) {
+          localStorage.setItem('wishlist_items', JSON.stringify(result.items));
+          setWishlistCountState(result.items.length);
+          return Boolean(result.isAdded);
+        }
+      }
+
       const savedWishlist = localStorage.getItem('wishlist_items');
       let currentWishlist = savedWishlist ? JSON.parse(savedWishlist) : [];
       if (!Array.isArray(currentWishlist)) currentWishlist = [];
 
-      const pId = product.id || product._id;
       const index = currentWishlist.findIndex((item) => item.id === pId || item.productId === pId);
 
       let isAdded = false;
@@ -141,7 +179,7 @@ export const ShopProvider = ({ children }) => {
           slug: product.slug || pId,
           price: product.sale_price ? parseFloat(product.sale_price) : parseFloat(product.price || 0),
           originalPrice: product.sale_price ? parseFloat(product.price) : null,
-          image: getFormattedImage(product.image || (product.images && product.images[0]?.image) || null),
+          image: extractProductImage(product),
           isNew: Boolean(product.isNew || product.is_new_arrival),
           isBestSeller: Boolean(product.isBestSeller || product.is_best_seller),
           rating: product.rating || 4.8
@@ -171,6 +209,109 @@ export const ShopProvider = ({ children }) => {
     }
   };
 
+  const removeFromCart = async (productId) => {
+    try {
+      const token = typeof window !== 'undefined' ? localStorage.getItem('user_token') : null;
+      const cleanId = String(productId).replace(/^cart-/, '');
+
+      if (token && cleanId) {
+        const apiCart = await cartService.removeFromCart(cleanId);
+        if (Array.isArray(apiCart)) {
+          localStorage.setItem('cart_items', JSON.stringify(apiCart));
+          const totalQty = apiCart.reduce((sum, item) => sum + (item.quantity || 1), 0);
+          setCartCountState(totalQty);
+          return apiCart;
+        }
+      }
+
+      const savedCart = localStorage.getItem('cart_items');
+      let currentCart = savedCart ? JSON.parse(savedCart) : [];
+      if (!Array.isArray(currentCart)) currentCart = [];
+
+      currentCart = currentCart.filter(
+        (item) => String(item.id) !== String(productId) && String(item.productId) !== String(cleanId)
+      );
+
+      localStorage.setItem('cart_items', JSON.stringify(currentCart));
+      const totalQty = currentCart.reduce((sum, item) => sum + (item.quantity || 1), 0);
+      setCartCountState(totalQty);
+      return currentCart;
+    } catch (e) {
+      console.error('Failed to remove from cart:', e);
+      return null;
+    }
+  };
+
+  const updateCartQuantity = async (productId, quantity) => {
+    try {
+      const token = typeof window !== 'undefined' ? localStorage.getItem('user_token') : null;
+      const cleanId = String(productId).replace(/^cart-/, '');
+
+      if (token && cleanId) {
+        const apiCart = await cartService.updateCartItem(cleanId, quantity);
+        if (Array.isArray(apiCart)) {
+          localStorage.setItem('cart_items', JSON.stringify(apiCart));
+          const totalQty = apiCart.reduce((sum, item) => sum + (item.quantity || 1), 0);
+          setCartCountState(totalQty);
+          return apiCart;
+        }
+      }
+
+      const savedCart = localStorage.getItem('cart_items');
+      let currentCart = savedCart ? JSON.parse(savedCart) : [];
+      if (!Array.isArray(currentCart)) currentCart = [];
+
+      const idx = currentCart.findIndex(
+        (item) => String(item.id) === String(productId) || String(item.productId) === String(cleanId)
+      );
+
+      if (idx > -1) {
+        if (quantity <= 0) {
+          currentCart.splice(idx, 1);
+        } else {
+          currentCart[idx].quantity = quantity;
+        }
+      }
+
+      localStorage.setItem('cart_items', JSON.stringify(currentCart));
+      const totalQty = currentCart.reduce((sum, item) => sum + (item.quantity || 1), 0);
+      setCartCountState(totalQty);
+      return currentCart;
+    } catch (e) {
+      console.error('Failed to update cart quantity:', e);
+      return null;
+    }
+  };
+
+  const clearCart = async () => {
+    try {
+      const token = typeof window !== 'undefined' ? localStorage.getItem('user_token') : null;
+      if (token) {
+        await cartService.clearCart();
+      }
+      localStorage.removeItem('cart_items');
+      setCartCountState(0);
+    } catch (e) {
+      console.error('Failed to clear cart:', e);
+    }
+  };
+
+  const getCartItemQuantity = (productId) => {
+    try {
+      const savedCart = typeof window !== 'undefined' ? localStorage.getItem('cart_items') : null;
+      if (!savedCart) return 0;
+      const parsed = JSON.parse(savedCart);
+      if (!Array.isArray(parsed)) return 0;
+      const cleanId = String(productId).replace(/^cart-/, '');
+      const found = parsed.find(
+        (item) => String(item.id).replace(/^cart-/, '') === cleanId || String(item.productId).replace(/^cart-/, '') === cleanId
+      );
+      return found ? (found.quantity || 1) : 0;
+    } catch (e) {
+      return 0;
+    }
+  };
+
   return (
     <ShopContext.Provider
       value={{
@@ -180,6 +321,10 @@ export const ShopProvider = ({ children }) => {
         setWishlistCount,
         refreshCounts,
         addToCart,
+        removeFromCart,
+        updateCartQuantity,
+        clearCart,
+        getCartItemQuantity,
         toggleWishlist,
         isInWishlist
       }}

@@ -107,7 +107,7 @@ const verifyEmailOtp = async (req, res) => {
 
     const token = jwt.sign(
       { id: user._id, role: user.role },
-      process.env.JWT_SECRET || 'caflore_secret_jwt_key_2026',
+      process.env.JWT_SECRET || 'fleur_notes_secret_jwt_key_2026',
       { expiresIn: "30d" }
     );
 
@@ -165,7 +165,7 @@ const loginUser = async (req, res) => {
 
     const token = jwt.sign(
       { id: user._id, role: user.role },
-      process.env.JWT_SECRET || 'caflore_secret_jwt_key_2026',
+      process.env.JWT_SECRET || 'fleur_notes_secret_jwt_key_2026',
       { expiresIn: "30d" }
     );
 
@@ -297,7 +297,7 @@ const verifyOtp = async (req, res) => {
 
     const token = jwt.sign(
       { id: user._id, role: user.role },
-      process.env.JWT_SECRET || 'caflore_secret_jwt_key_2026',
+      process.env.JWT_SECRET || 'fleur_notes_secret_jwt_key_2026',
       { expiresIn: "30d" }
     );
 

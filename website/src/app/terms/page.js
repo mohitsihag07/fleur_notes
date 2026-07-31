@@ -6,10 +6,10 @@ import Link from 'next/link';
 import { ArrowLeft, BookOpen, Sparkles } from 'lucide-react';
 import { Container } from '@/components/ui/Container';
 import { cmsService } from '@/services/cmsService';
-
+import { useSettingsStore } from '@/context/SettingsContext';
 const DEFAULT_TERMS = {
   title: 'Terms & Conditions',
-  description: `Welcome to Caflore. By accessing or purchasing from our store, you agree to be bound by these Terms and Conditions.
+  description: `Welcome to ${siteName}. By accessing or purchasing from our store, you agree to be bound by these Terms and Conditions.
 
 1. General Conditions:
 We reserve the right to refuse service to anyone for any reason at any time. Prices for our products are subject to change without notice.

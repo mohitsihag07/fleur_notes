@@ -24,9 +24,9 @@ const Login = () => {
     formState: { errors },
   } = useForm({
     defaultValues: {
-      email: localStorage.getItem('caflore_remember_email') || '',
+      email: localStorage.getItem('fleur_notes_remember_email') || '',
       password: '',
-      rememberMe: !!localStorage.getItem('caflore_remember_email'),
+      rememberMe: !!localStorage.getItem('fleur_notes_remember_email'),
     }
   });
 
@@ -37,9 +37,9 @@ const Login = () => {
       if (result?.success) {
         toast.success(result.message || 'Welcome back!');
         if (data.rememberMe) {
-          localStorage.setItem('caflore_remember_email', data.email);
+          localStorage.setItem('fleur_notes_remember_email', data.email);
         } else {
-          localStorage.removeItem('caflore_remember_email');
+          localStorage.removeItem('fleur_notes_remember_email');
         }
         navigate('/dashboard');
       } else {

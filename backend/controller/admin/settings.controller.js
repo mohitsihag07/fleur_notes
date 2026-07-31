@@ -8,25 +8,25 @@ const logActivity = async (userId, action, description, req) => {
 };
 
 const DEFAULT_SETTINGS = {
-  site_name: 'Caflore',
-  site_tagline: 'Handcrafted Stationery & Gifts',
-  contact_email: 'hello@caflore.com',
-  contact_phone: '+1 (800) 555-0199',
-  store_address: '123 Blossom Avenue, Suite 400, New York, NY 10001',
-  business_hours: 'Mon – Fri: 9:00 AM – 6:00 PM (EST)',
-  currency: 'INR (₹)',
-  tax_rate: '18',
-  flat_shipping_rate: '10.00',
-  free_shipping_threshold: '100.00',
-  enable_free_shipping: 'true',
-  enable_stripe: 'true',
-  enable_cod: 'true',
-  stripe_public_key: 'pk_test_sample_caflore',
-  instagram_url: 'https://instagram.com/caflore.co',
-  facebook_url: 'https://facebook.com/caflore.co',
-  pinterest_url: 'https://pinterest.com/caflore.co',
-  newsletter_title: 'Get 10% Off Your First Order!',
-  newsletter_subtitle: 'Join our newsletter for exclusive offers, new arrivals, and more.'
+  site_name: '',
+  site_tagline: '',
+  contact_email: '',
+  contact_phone: '',
+  store_address: '',
+  business_hours: '',
+  currency: '',
+  tax_rate: '',
+  flat_shipping_rate: '',
+  free_shipping_threshold: '',
+  enable_free_shipping: '',
+  enable_stripe: '',
+  enable_cod: '',
+  stripe_public_key: '',
+  instagram_url: '',
+  facebook_url: '',
+  pinterest_url: '',
+  newsletter_title: '',
+  newsletter_subtitle: ''
 };
 
 const getSettings = async (req, res) => {

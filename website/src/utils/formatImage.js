@@ -2,9 +2,15 @@ const rawApiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3131';
 export const backendUrl = rawApiUrl.replace(/\/api\/?$/, '');
 
 export const getFormattedImage = (rawImg) => {
-  const fallback = 'https://images.unsplash.com/photo-1603006905003-be475563bc59?auto=format&fit=crop&q=80&w=600';
+  const fallback = '';
   if (!rawImg) return fallback;
-  if (typeof rawImg === 'object' && rawImg.image) rawImg = rawImg.image;
+
+  if (typeof rawImg === 'object') {
+    if (rawImg.image) rawImg = rawImg.image;
+    else if (rawImg.url) rawImg = rawImg.url;
+    else if (rawImg.src) rawImg = rawImg.src;
+  }
+
   if (typeof rawImg !== 'string' || !rawImg.trim()) return fallback;
   if (rawImg.startsWith('http://') || rawImg.startsWith('https://') || rawImg.startsWith('data:')) return rawImg;
 
@@ -21,4 +27,27 @@ export const getFormattedImage = (rawImg) => {
     cleanPath = `/${cleanPath}`;
   }
   return `${backendUrl}${cleanPath}`;
+};
+
+export const extractProductImage = (item) => {
+  if (!item) return getFormattedImage(null);
+  if (typeof item === 'string') return getFormattedImage(item);
+
+  if (item.image) return getFormattedImage(item.image);
+  if (item.product?.image) return getFormattedImage(item.product.image);
+
+  if (Array.isArray(item.images) && item.images.length > 0) {
+    const thumb = item.images.find((i) => i && (i.is_thumbnail || i.isThumbnail)) || item.images[0];
+    return getFormattedImage(thumb);
+  }
+
+  if (item.product && Array.isArray(item.product.images) && item.product.images.length > 0) {
+    const thumb = item.product.images.find((i) => i && (i.is_thumbnail || i.isThumbnail)) || item.product.images[0];
+    return getFormattedImage(thumb);
+  }
+
+  if (item.thumbnail) return getFormattedImage(item.thumbnail);
+  if (item.product_image) return getFormattedImage(item.product_image);
+
+  return getFormattedImage(null);
 };

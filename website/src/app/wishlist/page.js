@@ -3,44 +3,74 @@
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Heart, Trash2, ShoppingBag, Share2, Loader2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { Heart, Trash2, ShoppingBag, Share2, Loader2, Plus, Minus } from 'lucide-react';
 import { Container } from '@/components/ui/Container';
 import { ProductCard } from '@/components/shop/ProductCard';
 import { productService } from '@/services/productService';
-import { getFormattedImage } from '@/utils/formatImage';
+import { getFormattedImage, extractProductImage } from '@/utils/formatImage';
 import { formatPrice } from '@/utils/formatPrice';
 import { useShop } from '@/context/ShopContext';
 
 export default function WishlistPage() {
-  const { setWishlistCount } = useShop();
+  const router = useRouter();
+  const {
+    setWishlistCount,
+    addToCart,
+    removeFromCart,
+    updateCartQuantity,
+    getCartItemQuantity,
+    toggleWishlist,
+    cartCount,
+    refreshCounts
+  } = useShop();
   const [wishlistItems, setWishlistItems] = useState([]);
   const [recommendations, setRecommendations] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const getItemCartQty = (prod) => {
+    if (!getCartItemQuantity) return 0;
+    const pId = prod.id || prod._id || prod.productId;
+    return getCartItemQuantity(pId);
+  };
+
+  const handleIncrement = async (prod) => {
+    const pId = prod.id || prod._id || prod.productId;
+    const currentQty = getItemCartQty(prod);
+    await updateCartQuantity(pId, currentQty + 1);
+  };
+
+  const handleDecrement = async (prod) => {
+    const pId = prod.id || prod._id || prod.productId;
+    const currentQty = getItemCartQty(prod);
+    if (currentQty <= 1) {
+      await removeFromCart(pId);
+    } else {
+      await updateCartQuantity(pId, currentQty - 1);
+    }
+  };
+
+  const handleAddToCartClick = async (prod) => {
+    await addToCart(prod, 1);
+  };
 
   useEffect(() => {
     async function loadWishlistData() {
       setLoading(true);
       try {
-        const response = await productService.getProducts({ limit: 12, status: 'active' });
+        const response = await productService.getProducts({ limit: 50, status: 'active' });
         const realProducts = response?.data || [];
 
         let formatted = [];
         if (realProducts.length > 0) {
           formatted = realProducts.map((p) => {
-            let imgUrl = null;
-            if (p.images && p.images.length > 0) {
-              const thumb = p.images.find((i) => i.is_thumbnail) || p.images[0];
-              imgUrl = thumb?.image;
-            } else if (p.image) {
-              imgUrl = p.image;
-            }
             return {
               id: p.id || p._id,
               name: p.name,
               slug: p.slug || p.id || p._id,
               price: p.sale_price ? parseFloat(p.sale_price) : parseFloat(p.price || 0),
               originalPrice: p.sale_price ? parseFloat(p.price) : null,
-              image: getFormattedImage(imgUrl),
+              image: extractProductImage(p),
               isNew: Boolean(p.is_new_arrival || p.is_new),
               isBestSeller: Boolean(p.is_best_seller || p.is_bestseller),
               rating: 4.8,
@@ -64,8 +94,21 @@ export default function WishlistPage() {
         if (savedWishlist !== null) {
           try {
             const parsed = JSON.parse(savedWishlist);
-            setWishlistItems(parsed);
-            setWishlistCount(parsed.length);
+            if (Array.isArray(parsed)) {
+              const normalized = parsed.map((it) => {
+                const matchedProduct = realProducts.find((p) => {
+                  const pId = String(p._id || p.id);
+                  const rawItId = String(it.productId || it.id).replace(/^wishlist-/, '');
+                  return pId === rawItId || p.slug === it.slug || (p.name && it.name && p.name.trim().toLowerCase() === it.name.trim().toLowerCase());
+                });
+                return {
+                  ...it,
+                  image: matchedProduct ? extractProductImage(matchedProduct) : extractProductImage(it)
+                };
+              });
+              setWishlistItems(normalized);
+              setWishlistCount(normalized.length);
+            }
           } catch (e) {
             setWishlistItems([]);
             setWishlistCount(0);
@@ -89,9 +132,36 @@ export default function WishlistPage() {
     setWishlistCount(items.length);
   };
 
-  const removeItem = (id) => {
-    const updated = wishlistItems.filter((item) => item.id !== id);
+  const removeItem = async (id) => {
+    const updated = wishlistItems.filter((item) => (item.id || item._id || item.productId) !== id);
     saveWishlistState(updated);
+    const targetProd = wishlistItems.find((item) => (item.id || item._id || item.productId) === id);
+    if (targetProd) {
+      await toggleWishlist(targetProd);
+    }
+  };
+
+  const handleSingleAddToCart = async (prod) => {
+    await addToCart(prod, 1);
+    const pId = prod.id || prod._id || prod.productId;
+    const updated = wishlistItems.filter((item) => (item.id || item._id || item.productId) !== pId);
+    saveWishlistState(updated);
+    await toggleWishlist(prod);
+    router.push('/cart');
+  };
+
+  const handleMoveAllToCart = async () => {
+    if (wishlistItems.length === 0) {
+      router.push('/cart');
+      return;
+    }
+    const itemsToMove = [...wishlistItems];
+    saveWishlistState([]);
+    for (const prod of itemsToMove) {
+      await addToCart(prod, 1);
+      await toggleWishlist(prod);
+    }
+    router.push('/cart');
   };
 
   return (
@@ -113,10 +183,13 @@ export default function WishlistPage() {
               <Share2 className="w-4 h-4 text-gray-500" />
               <span>Share Wishlist</span>
             </button>
-            <Link href="/cart" className="flex items-center gap-2 py-2.5 px-4 bg-[#7A0C1E] text-white rounded-xl text-xs font-semibold hover:bg-[#5F0917] transition-all">
+            <button
+              onClick={handleMoveAllToCart}
+              className="flex items-center gap-2 py-2.5 px-4 bg-[#7A0C1E] text-white rounded-xl text-xs font-semibold hover:bg-[#5F0917] transition-all cursor-pointer"
+            >
               <ShoppingBag className="w-4 h-4" />
               <span>Move All to Cart</span>
-            </Link>
+            </button>
           </div>
         </div>
 
@@ -143,9 +216,7 @@ export default function WishlistPage() {
                     src={getFormattedImage(prod.image)}
                     alt={prod.name || 'Product'}
                     className="w-full h-full object-cover"
-                    onError={(e) => {
-                      e.currentTarget.src = 'https://images.unsplash.com/photo-1603006905003-be475563bc59?auto=format&fit=crop&q=80&w=600';
-                    }}
+                    onError={(e) => { e.currentTarget.style.display = 'none'; }}
                   />
                   <button
                     onClick={() => removeItem(prod.id)}
@@ -166,21 +237,50 @@ export default function WishlistPage() {
                     </span>
                   </div>
 
-                  <div className="flex items-center gap-1.5 pt-2">
-                    <button
-                      onClick={() => removeItem(prod.id)}
-                      className="p-2 sm:p-2.5 rounded-xl border border-[#E8DACD] text-gray-400 hover:text-red-500 hover:border-red-200 shrink-0 cursor-pointer"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                    <Link
-                      href="/cart"
-                      className="flex-1 flex items-center justify-center gap-1 sm:gap-2 py-2 sm:py-2.5 px-1 bg-[#7A0C1E] hover:bg-[#5F0917] text-white rounded-xl text-[10px] sm:text-xs font-bold transition-all"
-                    >
-                      <ShoppingBag className="w-3.5 h-3.5 shrink-0" />
-                      <span className="truncate">Add to Cart</span>
-                    </Link>
-                  </div>
+                  {(() => {
+                    const cartQty = getItemCartQty(prod);
+                    return (
+                      <div className="flex items-center gap-1.5 pt-2">
+                        <button
+                          onClick={() => removeItem(prod.id || prod._id || prod.productId)}
+                          className="p-2 sm:p-2.5 rounded-xl border border-[#E8DACD] text-gray-400 hover:text-red-500 hover:border-red-200 shrink-0 cursor-pointer h-[38px] sm:h-[42px] flex items-center justify-center"
+                          title="Remove from Wishlist"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+
+                        {cartQty > 0 ? (
+                          <div className="flex-1 flex items-center justify-between bg-[#7A0C1E] text-white rounded-xl overflow-hidden border border-[#7A0C1E] py-1 px-1.5 h-[38px] sm:h-[42px]">
+                            <button
+                              onClick={() => handleDecrement(prod)}
+                              className="p-1 sm:p-1.5 hover:bg-[#5F0917] transition-colors rounded-lg flex items-center justify-center cursor-pointer"
+                              aria-label="Decrease quantity"
+                            >
+                              <Minus className="w-3.5 h-3.5 text-white" />
+                            </button>
+                            <span className="text-xs sm:text-sm font-bold px-1 select-none text-white">
+                              {cartQty}
+                            </span>
+                            <button
+                              onClick={() => handleIncrement(prod)}
+                              className="p-1 sm:p-1.5 hover:bg-[#5F0917] transition-colors rounded-lg flex items-center justify-center cursor-pointer"
+                              aria-label="Increase quantity"
+                            >
+                              <Plus className="w-3.5 h-3.5 text-white" />
+                            </button>
+                          </div>
+                        ) : (
+                          <button
+                            onClick={() => handleAddToCartClick(prod)}
+                            className="flex-1 flex items-center justify-center gap-1 sm:gap-2 py-2 sm:py-2.5 px-1 bg-[#7A0C1E] hover:bg-[#5F0917] text-white rounded-xl text-[10px] sm:text-xs font-bold transition-all cursor-pointer h-[38px] sm:h-[42px]"
+                          >
+                            <ShoppingBag className="w-3.5 h-3.5 shrink-0" />
+                            <span className="truncate">Add to Cart</span>
+                          </button>
+                        )}
+                      </div>
+                    );
+                  })()}
                 </div>
               </div>
             ))}

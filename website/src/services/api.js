@@ -12,6 +12,13 @@ export async function apiRequest(endpoint, options = {}) {
     ...options.headers,
   };
 
+  if (typeof window !== 'undefined' && !headers['Authorization'] && !headers['authorization']) {
+    const token = localStorage.getItem('user_token');
+    if (token && token !== 'null' && token !== 'undefined') {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+  }
+
   const config = {
     ...options,
     headers,

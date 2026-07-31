@@ -184,7 +184,7 @@ export default function RegisterPage() {
                   <img src={logoUrl} alt={siteName || "Logo"} className="w-full h-full object-contain" />
                 </div>
                 <span className="font-serif-luxury text-3xl font-bold text-[#7A0C1E]">
-                  {siteName || 'Caflore'}
+                  {siteName || 'Fleur Notes'}
                 </span>
               </Link>
               <p className="text-xs text-gray-500 mt-1">Crafted with love, made for you.</p>
@@ -195,7 +195,7 @@ export default function RegisterPage() {
                 Create Your Account
               </h2>
               <p className="text-xs text-[#705B54] leading-relaxed">
-                Join Caflore and explore handmade treasures made just for you.
+                Join Fleur Notes and explore handmade treasures made just for you.
               </p>
             </div>
 

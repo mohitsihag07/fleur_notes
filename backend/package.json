@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "nodemon ./caflore.js",
+    "start": "nodemon ./fleur.js",
     "db:sync": "node sync-db.js",
     "db:sync:force": "node sync-db.js --force"
   },

@@ -32,12 +32,12 @@ const adminLogin = async (req, res) => {
     const cleanEmail = email.trim().toLowerCase();
     let user = await User.findOne({ email: cleanEmail });
     if (!user) {
-      if (cleanEmail === 'admin@caflore.com') {
+      if (cleanEmail === 'admin@fleur.com') {
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash('admin123', salt);
         user = await User.create({
-          name: 'Caflore Admin',
-          email: 'admin@caflore.com',
+          name: 'Fleur Notes Admin',
+          email: 'admin@fleur.com',
           password: hashedPassword,
           role: 'admin',
           status: 'active'
@@ -106,12 +106,12 @@ const forgotPassword = async (req, res) => {
     }
 
     if (!user) {
-      if (cleanEmail === 'admin@caflore.com') {
+      if (cleanEmail === 'admin@fleur.com') {
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash('admin123', salt);
         user = await User.create({
-          name: 'Caflore Admin',
-          email: 'admin@caflore.com',
+          name: 'Fleur Notes Admin',
+          email: 'admin@fleur.com',
           password: hashedPassword,
           role: 'admin',
           status: 'active'
@@ -135,7 +135,7 @@ const forgotPassword = async (req, res) => {
     try {
       await sendEmail({
         to: user.email,
-        subject: "Caflore - Password Reset Verification Code",
+        subject: "Fleur Notes - Password Reset Verification Code",
         text: `Your password reset verification code is: ${otp}. It will expire in 20 minutes.`,
         html: `<p>Your password reset verification code is: <strong>${otp}</strong>.</p><p>It will expire in 20 minutes.</p>`
       });

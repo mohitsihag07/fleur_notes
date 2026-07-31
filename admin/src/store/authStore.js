@@ -7,7 +7,7 @@ const enforceLightTheme = () => {
   const root = document.documentElement;
   root.classList.remove('dark', 'dark-theme');
   root.classList.add('light-theme');
-  localStorage.removeItem('caflore_theme');
+  localStorage.removeItem('fleur_notes_theme');
 };
 
 // Immediately enforce light theme on store load
@@ -30,7 +30,7 @@ const useAuthStore = create((set) => ({
   initialize: async () => {
     enforceLightTheme();
 
-    const token = localStorage.getItem('caflore_admin_token');
+    const token = localStorage.getItem('fleur_notes_admin_token');
     if (!token) {
       set({ user: null, isAuthenticated: false, isLoading: false });
       return;
@@ -45,8 +45,8 @@ const useAuthStore = create((set) => ({
       }
     } catch (error) {
       console.error('Session initialization failed:', error);
-      localStorage.removeItem('caflore_admin_token');
-      localStorage.removeItem('caflore_admin_refresh_token');
+      localStorage.removeItem('fleur_notes_admin_token');
+      localStorage.removeItem('fleur_notes_admin_refresh_token');
       set({ user: null, isAuthenticated: false, isLoading: false });
     }
   },
@@ -59,8 +59,8 @@ const useAuthStore = create((set) => ({
       const response = await ApiInstance.post('/login', { email, password, timezone: userTimezone });
       if (response.data.success) {
         const { token, user } = response.data.data;
-        localStorage.setItem('caflore_admin_token', token);
-        localStorage.setItem('caflore_admin_refresh_token', token);
+        localStorage.setItem('fleur_notes_admin_token', token);
+        localStorage.setItem('fleur_notes_admin_refresh_token', token);
 
         set({ user, isAuthenticated: true, isLoading: false });
         return { success: true, message: response.data.message || 'Login successful. Welcome back!' };
@@ -78,8 +78,8 @@ const useAuthStore = create((set) => ({
 
   // Perform logout
   logout: () => {
-    localStorage.removeItem('caflore_admin_token');
-    localStorage.removeItem('caflore_admin_refresh_token');
+    localStorage.removeItem('fleur_notes_admin_token');
+    localStorage.removeItem('fleur_notes_admin_refresh_token');
     set({ user: null, isAuthenticated: false, isLoading: false });
   }
 }));

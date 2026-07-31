@@ -175,8 +175,8 @@ const Profile = () => {
     );
   }
 
-  const currentUserName = profileForm.watch('name') || user?.name || 'CafloreAdmin';
-  const currentUserEmail = profileForm.watch('email') || user?.email || 'admin@caflore.com';
+  const currentUserName = profileForm.watch('name') || user?.name;
+  const currentUserEmail = profileForm.watch('email') || user?.email;
 
   return (
     <div className="max-w-4xl mx-auto space-y-6 pb-12">
@@ -279,7 +279,7 @@ const Profile = () => {
                     <input
                       type="text"
                       className="w-full pl-10 pr-4 py-2.5 rounded-2xl bg-[#FAF5EF] text-xs font-semibold text-gray-800 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E]"
-                      placeholder="CafloreAdmin"
+                      placeholder="Fleur Notes Admin"
                       {...profileForm.register('name', { required: 'Name is required' })}
                     />
                   </div>
@@ -298,10 +298,13 @@ const Profile = () => {
                       type="email"
                       readOnly={true}
                       className="w-full pl-10 pr-4 py-2.5 rounded-2xl bg-gray-100 text-xs font-semibold text-gray-500 border border-[#E8DACD]/50 cursor-not-allowed"
-                      placeholder="admin@caflore.com"
+                      placeholder="admin@fleur.com"
                       {...profileForm.register('email')}
                     />
                   </div>
+                  {profileForm.formState.errors.email && (
+                    <span className="text-[11px] font-bold text-red-500 mt-1 block">{profileForm.formState.errors.email.message}</span>
+                  )}
                 </div>
               </div>
 

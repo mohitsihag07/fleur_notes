@@ -9,7 +9,7 @@ import { cmsService } from '@/services/cmsService';
 
 const DEFAULT_PRIVACY = {
   title: 'Privacy Policy',
-  description: `At Caflore, your privacy is extremely important to us. This Privacy Policy document outlines the types of personal information that is received and collected by Caflore and how it is used.
+  description: `At Fleur Notes, your privacy is extremely important to us. This Privacy Policy document outlines the types of personal information that is received and collected by Fleur Notes and how it is used.
 
 We collect information from you when you register on our site, place an order, subscribe to our newsletter or fill out a form. When ordering or registering on our site, as appropriate, you may be asked to enter your name, e-mail address, mailing address, phone number or payment details.
 

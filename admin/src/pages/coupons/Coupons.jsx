@@ -352,7 +352,10 @@ const Coupons = () => {
               {coupons.map((coupon) => {
                 const isActive = coupon.status === 'active';
                 const isPercentage = coupon.type === 'percentage';
-                const usageText = `${coupon.usage_count || 0} / ${coupon.usage_limit || '∞'}`;
+                const usedCount = (coupon.used_count !== undefined && coupon.used_count !== null)
+                  ? coupon.used_count
+                  : ((coupon.usage_count !== undefined && coupon.usage_count !== null) ? coupon.usage_count : 0);
+                const usageText = `${usedCount} / ${coupon.usage_limit || '∞'}`;
 
                 return (
                   <div
@@ -528,7 +531,10 @@ const Coupons = () => {
                     coupons.map((coupon) => {
                       const isActive = coupon.status === 'active';
                       const isPercentage = coupon.type === 'percentage';
-                      const usageText = `${coupon.usage_count || 0} / ${coupon.usage_limit || '∞'}`;
+                      const usedCount = (coupon.used_count !== undefined && coupon.used_count !== null)
+                        ? coupon.used_count
+                        : ((coupon.usage_count !== undefined && coupon.usage_count !== null) ? coupon.usage_count : 0);
+                      const usageText = `${usedCount} / ${coupon.usage_limit || '∞'}`;
                       const cId = coupon._id || coupon.id;
 
                       return (

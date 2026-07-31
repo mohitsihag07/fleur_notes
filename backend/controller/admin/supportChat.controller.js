@@ -60,7 +60,7 @@ const sendAdminReply = async (req, res) => {
       conversation_id,
       sender_type: 'admin',
       sender_id: adminUser?._id || null,
-      sender_name: adminUser?.name || 'Caflore Support Agent',
+      sender_name: adminUser?.name || 'Fleur Notes Support Agent',
       message: message.trim(),
       is_read: false
     });

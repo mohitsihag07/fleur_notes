@@ -13,7 +13,8 @@ import {
   FiChevronLeft,
   FiChevronRight,
   FiUser,
-  FiDollarSign
+  FiDollarSign,
+  FiPackage
 } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import ApiInstance from '../../utils/ApiInstance';
@@ -136,6 +137,15 @@ const Orders = () => {
       day: 'numeric',
       year: 'numeric'
     });
+  };
+
+  const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
+  const formatImageUrl = (imgPath) => {
+    if (!imgPath || typeof imgPath !== 'string') return null;
+    if (imgPath.startsWith('http://') || imgPath.startsWith('https://') || imgPath.startsWith('data:')) {
+      return imgPath;
+    }
+    return `${backendUrl}${imgPath.startsWith('/') ? '' : '/'}${imgPath}`;
   };
 
   return (
@@ -261,35 +271,83 @@ const Orders = () => {
             <thead className="bg-[#FAF5EF] text-[#7A0C1E] font-extrabold text-xs uppercase tracking-wider">
               <tr>
                 <th className="py-4 px-6">Order ID & Date</th>
+                <th className="py-4 px-6">Product</th>
                 <th className="py-4 px-6">Customer</th>
                 <th className="py-4 px-6">Grand Total</th>
                 <th className="py-4 px-6">Payment</th>
                 <th className="py-4 px-6">Order Status</th>
-                <th className="py-4 px-6 text-right">Actions</th>
+                <th className="py-4 px-6 text-center">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[#E8DACD]/60 font-medium text-gray-700">
               {!isLoading && orders.length === 0 ? (
                 <tr>
-                  <td colSpan="6" className="py-12 text-center text-gray-400 font-bold">
+                  <td colSpan="7" className="py-12 text-center text-gray-400 font-bold">
                     No customer orders found matching your filter.
                   </td>
                 </tr>
               ) : (
                 orders.map((order) => {
+                  const targetId = order._id || order.id;
                   const customerName = order.user?.name || 'Guest Customer';
                   const customerEmail = order.user?.email || 'N/A';
+                  const items = order.items || [];
 
                   return (
-                    <tr key={order.id} className="hover:bg-[#FAF5EF]/40 transition-colors">
+                    <tr key={targetId} className="hover:bg-[#FAF5EF]/40 transition-colors">
                       {/* Order ID & Date */}
                       <td className="py-4 px-6">
                         <span className="font-mono font-black text-xs text-gray-900 block">
-                          #{order.order_number || `ORD-${order.id}`}
+                          #{order.order_number || `ORD-${targetId}`}
                         </span>
                         <span className="text-[11px] text-gray-400 font-semibold">
                           {formatDate(order.createdAt || order.created_at)}
                         </span>
+                      </td>
+
+                      {/* Product Thumbnail & Name */}
+                      <td className="py-4 px-6">
+                        {items.length > 0 ? (
+                          (() => {
+                            const firstItem = items[0];
+                            const pObj = firstItem.product_id && typeof firstItem.product_id === 'object' ? firstItem.product_id : {};
+                            const title = firstItem.product_name || pObj.name || firstItem.name || 'Product';
+                            let rawImg = firstItem.image || pObj.image || pObj.image_url;
+                            if (!rawImg && Array.isArray(pObj.images) && pObj.images.length > 0) {
+                              rawImg = pObj.images[0]?.url || pObj.images[0];
+                            }
+                            const imgUrl = formatImageUrl(rawImg);
+
+                            return (
+                              <div className="flex items-center gap-2.5">
+                                {imgUrl ? (
+                                  <img
+                                    src={imgUrl}
+                                    alt={title}
+                                    className="w-10 h-10 object-cover rounded-xl border border-[#E8DACD] shrink-0"
+                                    onError={(e) => { e.target.style.display = 'none'; }}
+                                  />
+                                ) : (
+                                  <div className="w-10 h-10 bg-[#FAF5EF] rounded-xl border border-[#E8DACD] flex items-center justify-center text-gray-400 shrink-0">
+                                    <FiPackage className="w-4 h-4" />
+                                  </div>
+                                )}
+                                <div>
+                                  <p className="font-extrabold text-gray-900 text-xs truncate max-w-[140px]" title={title}>
+                                    {title}
+                                  </p>
+                                  {items.length > 1 && (
+                                    <span className="text-[10px] font-bold text-[#7A0C1E] block">
+                                      +{items.length - 1} more item{items.length - 1 > 1 ? 's' : ''}
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                            );
+                          })()
+                        ) : (
+                          <span className="text-gray-400 italic text-[11px]">No items</span>
+                        )}
                       </td>
 
                       {/* Customer Info */}
@@ -320,7 +378,7 @@ const Orders = () => {
                       <td className="py-4 px-6">
                         <select
                           value={order.status || 'pending'}
-                          onChange={(e) => handleStatusUpdate(order.id, e.target.value)}
+                          onChange={(e) => handleStatusUpdate(targetId, e.target.value)}
                           className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider border cursor-pointer focus:outline-none ${getStatusBadgeStyle(order.status)}`}
                         >
                           <option value="pending">Pending</option>
@@ -333,15 +391,14 @@ const Orders = () => {
                         </select>
                       </td>
 
-                      {/* View Action */}
-                      <td className="py-4 px-6 text-right">
+                      {/* View Action - Only Eye Icon */}
+                      <td className="py-4 px-6 text-center">
                         <button
-                          onClick={() => navigate(`/orders/${order.id}`)}
+                          onClick={() => navigate(`/orders/${targetId}`)}
                           title="View Order Details"
-                          className="p-2.5 rounded-2xl bg-[#FAF5EF] text-[#7A0C1E] hover:bg-[#7A0C1E] hover:text-white transition-all cursor-pointer shadow-2xs font-bold text-xs inline-flex items-center gap-1.5"
+                          className="w-9 h-9 rounded-2xl bg-[#FAF5EF] text-[#7A0C1E] hover:bg-[#7A0C1E] hover:text-white transition-all cursor-pointer shadow-2xs font-bold inline-flex items-center justify-center border border-[#E8DACD]/80 hover:border-[#7A0C1E]"
                         >
                           <FiEye className="w-4 h-4" />
-                          <span>View Details</span>
                         </button>
                       </td>
                     </tr>

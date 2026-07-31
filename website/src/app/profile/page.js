@@ -10,7 +10,6 @@ import {
   ShoppingBag,
   HelpCircle,
   RotateCcw,
-  Ticket,
   MapPin,
   Bell,
   LogOut,
@@ -21,10 +20,12 @@ import {
   ArrowLeft,
   Send,
   MessageCircle,
-  Loader2
+  Loader2,
+  X
 } from 'lucide-react';
 import { Container } from '@/components/ui/Container';
 import { getBackendURL } from '@/services/api';
+import { getFormattedImage } from '@/utils/formatImage';
 import { useAuth } from '@/context/AuthContext';
 
 function ProfileContent() {
@@ -123,7 +124,7 @@ function ProfileContent() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ 
             user_name: user?.name || 'Customer', 
-            user_email: user?.email || (user?.phone ? `+91 ${user.phone}` : 'customer@caflore.com') 
+            user_email: user?.email || user?.phone ? `+91 ${user.phone}`: 'customer@fleurnotes.com' 
           })
         });
         const initData = await initRes.json();
@@ -231,32 +232,9 @@ function ProfileContent() {
   // Dynamic Orders State
   const [orders, setOrders] = useState([]);
   const [loadingOrders, setLoadingOrders] = useState(false);
+  const [selectedOrderModal, setSelectedOrderModal] = useState(null);
 
-  // Dynamic Coupons State
-  const [coupons, setCoupons] = useState([]);
-  const [loadingCoupons, setLoadingCoupons] = useState(false);
 
-  useEffect(() => {
-    async function fetchCoupons() {
-      setLoadingCoupons(true);
-      try {
-        const backendUrl = getBackendURL ? getBackendURL() : 'http://localhost:3131';
-        const res = await fetch(`${backendUrl}/api/users/coupons`);
-        const data = await res.json();
-        if (data?.success && data?.data) {
-          setCoupons(data.data);
-        }
-      } catch (err) {
-        console.error('Failed to fetch coupons:', err);
-      } finally {
-        setLoadingCoupons(false);
-      }
-    }
-
-    if (activeTab === 'coupons') {
-      fetchCoupons();
-    }
-  }, [activeTab]);
 
   useEffect(() => {
     async function fetchUserOrders() {
@@ -291,7 +269,6 @@ function ProfileContent() {
     { id: 'orders', name: 'Your Orders', icon: ShoppingBag },
     { id: 'help', name: 'Help & Support', icon: HelpCircle },
     { id: 'refunds', name: 'Your Refunds', icon: RotateCcw },
-    { id: 'coupons', name: 'Coupons', icon: Ticket },
     { id: 'addresses', name: 'Saved Addresses', icon: MapPin },
     { id: 'notifications', name: 'Notifications', icon: Bell }
   ];
@@ -513,29 +490,182 @@ function ProfileContent() {
                       </div>
                     ) : (
                       <div className="space-y-3">
-                        {orders.map((order) => (
-                          <div key={order.id} className="flex items-center justify-between p-3.5 rounded-xl border border-[#E8DACD]/60 hover:bg-[#F2E6DA]/40 transition-colors">
-                            <div className="flex items-center gap-3">
-                              <div className="relative w-12 h-12 rounded-lg overflow-hidden border border-[#E8DACD] bg-[#FAF5EF] shrink-0">
-                                <img src={order.image} alt={order.id} className="w-full h-full object-cover" />
-                              </div>
-                              <div>
-                                <h4 className="font-bold text-xs text-[#2B1B17]">Order {order.id}</h4>
-                                <p className="text-[11px] text-gray-500">{order.date} • {order.itemsCount}</p>
-                              </div>
-                            </div>
+                        {orders.map((order) => {
+                          const backendUrl = getBackendURL ? getBackendURL() : 'http://localhost:3131';
+                          const imgUrl = getFormattedImage(order.image, backendUrl);
+                          const title = order.primaryProductName || `Order ${order.id}`;
 
-                            <div className="flex items-center gap-4">
-                              <span className="font-bold text-xs text-[#2B1B17]">{order.total}</span>
-                              <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full ${order.statusClass}`}>
-                                {order.status}
-                              </span>
-                              <ChevronRight className="w-4 h-4 text-gray-300 hidden sm:block" />
+                          return (
+                            <div
+                              key={order.id}
+                              onClick={() => router.push(`/profile/orders/${order.orderNumber || order.rawId || order.id}`)}
+                              className="flex items-center justify-between p-3.5 rounded-xl border border-[#E8DACD]/60 hover:bg-[#FAF5EF] transition-all cursor-pointer shadow-2xs group"
+                            >
+                              <div className="flex items-center gap-3">
+                                <div className="relative w-12 h-12 rounded-xl overflow-hidden border border-[#E8DACD] bg-[#FAF5EF] shrink-0">
+                                  {imgUrl ? (
+                                    <img src={imgUrl} alt={title} className="w-full h-full object-cover" />
+                                  ) : (
+                                    <div className="w-full h-full flex items-center justify-center text-gray-400">
+                                      <ShoppingBag className="w-5 h-5" />
+                                    </div>
+                                  )}
+                                </div>
+                                <div>
+                                  <h4 className="font-bold text-xs text-[#2B1B17] group-hover:text-[#7A0C1E] transition-colors">
+                                    {title}
+                                  </h4>
+                                  <p className="text-[11px] text-gray-500 font-medium">
+                                    Order #{order.id} • {order.date} • {order.itemsCount}
+                                  </p>
+                                </div>
+                              </div>
+
+                              <div className="flex items-center gap-4">
+                                <span className="font-bold text-xs text-[#2B1B17]">{order.total}</span>
+                                <span className={`text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-full ${order.statusClass}`}>
+                                  {order.status}
+                                </span>
+                                <ChevronRight className="w-4 h-4 text-gray-400 group-hover:translate-x-0.5 transition-transform hidden sm:block" />
+                              </div>
                             </div>
-                          </div>
-                        ))}
+                          );
+                        })}
                       </div>
                     )}
+                  </div>
+                )}
+
+                {/* Order Details Modal Dialog */}
+                {selectedOrderModal && (
+                  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-4 animate-fadeIn">
+                    <div className="bg-white rounded-3xl max-w-lg w-full max-h-[90vh] overflow-y-auto p-6 shadow-2xl border border-[#E8DACD] space-y-6 relative">
+                      {/* Modal Header */}
+                      <div className="flex items-center justify-between pb-4 border-b border-[#E8DACD]">
+                        <div>
+                          <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#7A0C1E] block">
+                            Order Details
+                          </span>
+                          <h3 className="font-serif-luxury text-xl font-bold text-[#2B1B17]">
+                            #{selectedOrderModal.id}
+                          </h3>
+                          <p className="text-xs text-gray-400 font-semibold mt-0.5">
+                            Placed on {selectedOrderModal.date}
+                          </p>
+                        </div>
+                        <button
+                          onClick={() => setSelectedOrderModal(null)}
+                          className="p-2 rounded-full bg-[#FAF5EF] text-gray-500 hover:bg-[#E8DACD] hover:text-[#7A0C1E] transition-colors cursor-pointer"
+                        >
+                          <X className="w-5 h-5" />
+                        </button>
+                      </div>
+
+                      {/* Status Badges */}
+                      <div className="flex items-center justify-between bg-[#FAF5EF]/60 p-3.5 rounded-2xl border border-[#E8DACD]">
+                        <div>
+                          <span className="text-[10px] text-gray-400 font-extrabold uppercase block">Order Status</span>
+                          <span className={`inline-block mt-0.5 text-xs font-black px-3 py-1 rounded-full uppercase tracking-wider ${selectedOrderModal.statusClass}`}>
+                            {selectedOrderModal.status}
+                          </span>
+                        </div>
+                        <div className="text-right">
+                          <span className="text-[10px] text-gray-400 font-extrabold uppercase block">Payment ({selectedOrderModal.paymentMethod || 'COD'})</span>
+                          <span className="inline-block mt-0.5 text-xs font-black px-3 py-1 rounded-full uppercase tracking-wider bg-amber-100 text-amber-800">
+                            {selectedOrderModal.paymentStatus || 'Pending'}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Ordered Items List */}
+                      <div className="space-y-3">
+                        <h4 className="text-xs font-black text-gray-900 uppercase tracking-wider">
+                          Items Ordered ({selectedOrderModal.items?.length || 0})
+                        </h4>
+                        <div className="divide-y divide-[#E8DACD]/60 border border-[#E8DACD] rounded-2xl overflow-hidden bg-white">
+                          {selectedOrderModal.items?.map((item, idx) => {
+                            const backendUrl = getBackendURL ? getBackendURL() : 'http://localhost:3131';
+                            const itemImg = getFormattedImage(item.image, backendUrl);
+
+                            return (
+                              <div key={idx} className="p-3 flex items-center justify-between gap-3">
+                                <div className="flex items-center gap-3">
+                                  <div className="w-12 h-12 rounded-xl bg-[#FAF5EF] border border-[#E8DACD] overflow-hidden shrink-0">
+                                    {itemImg ? (
+                                      <img src={itemImg} alt={item.name} className="w-full h-full object-cover" />
+                                    ) : (
+                                      <div className="w-full h-full flex items-center justify-center text-gray-400">
+                                        <ShoppingBag className="w-5 h-5" />
+                                      </div>
+                                    )}
+                                  </div>
+                                  <div>
+                                    <p className="font-extrabold text-xs text-[#2B1B17]">{item.name}</p>
+                                    <p className="text-[11px] text-gray-500 font-semibold mt-0.5">
+                                      ₹{Number(item.price || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })} × {item.quantity}
+                                    </p>
+                                  </div>
+                                </div>
+                                <span className="font-black text-xs text-[#2B1B17]">
+                                  ₹{Number(item.total || (item.price * item.quantity)).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                                </span>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+
+                      {/* Shipping Address */}
+                      {selectedOrderModal.address && (
+                        <div className="space-y-2 pt-2 border-t border-[#E8DACD]">
+                          <h4 className="text-xs font-black text-gray-900 uppercase tracking-wider flex items-center gap-1.5">
+                            <MapPin className="w-4 h-4 text-[#7A0C1E]" />
+                            <span>Shipping Address</span>
+                          </h4>
+                          <div className="bg-[#FAF5EF]/40 p-4 rounded-2xl border border-[#E8DACD] text-xs space-y-1 text-gray-700 font-semibold">
+                            <p className="font-bold text-[#2B1B17] text-sm">
+                              {selectedOrderModal.address.full_name || selectedOrderModal.address.name}
+                            </p>
+                            <p>{selectedOrderModal.address.address_line1 || selectedOrderModal.address.address_line_1 || selectedOrderModal.address.address}</p>
+                            {(selectedOrderModal.address.address_line2 || selectedOrderModal.address.landmark) && (
+                              <p>{selectedOrderModal.address.address_line2 || selectedOrderModal.address.landmark}</p>
+                            )}
+                            <p>
+                              {selectedOrderModal.address.city}, {selectedOrderModal.address.state} - {selectedOrderModal.address.pincode}
+                            </p>
+                            <p className="text-[#7A0C1E] font-bold pt-1">
+                              Phone: {selectedOrderModal.address.phone}
+                            </p>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Order Summary Totals */}
+                      <div className="bg-[#FAF5EF] p-4 rounded-2xl border border-[#E8DACD] space-y-2 text-xs">
+                        <div className="flex items-center justify-between text-gray-600 font-semibold">
+                          <span>Subtotal:</span>
+                          <span>₹{Number(selectedOrderModal.subtotal || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
+                        </div>
+                        {Number(selectedOrderModal.discount) > 0 && (
+                          <div className="flex items-center justify-between text-[#1E7741] font-semibold">
+                            <span>Coupon Discount:</span>
+                            <span>-₹{Number(selectedOrderModal.discount).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
+                          </div>
+                        )}
+                        <div className="flex items-center justify-between text-gray-600 font-semibold">
+                          <span>Shipping Fee:</span>
+                          <span>
+                            {Number(selectedOrderModal.shippingCharge) > 0
+                              ? `₹${Number(selectedOrderModal.shippingCharge).toLocaleString('en-IN', { minimumFractionDigits: 2 })}`
+                              : 'Free'}
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between text-[#2B1B17] font-black text-sm pt-2 border-t border-[#E8DACD]">
+                          <span>Grand Total:</span>
+                          <span className="text-[#7A0C1E]">{selectedOrderModal.total}</span>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 )}
 
@@ -544,7 +674,7 @@ function ProfileContent() {
                   <div className="bg-white rounded-2xl border border-[#E8DACD] p-6 shadow-sm space-y-6 animate-fadeIn">
                     <div>
                       <h3 className="font-serif-luxury text-xl font-bold text-[#2B1B17]">Customer Support</h3>
-                      <p className="text-xs text-gray-500 mt-0.5">Chat with our Caflore Support Assistant for immediate assistance.</p>
+                      <p className="text-xs text-gray-500 mt-0.5">Chat with our Fleur Notes Support Assistant for immediate assistance.</p>
                     </div>
 
                     {/* Support Chat Widget */}
@@ -557,7 +687,7 @@ function ProfileContent() {
                             <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 border-2 border-[#FAF5EF] rounded-full animate-pulse" />
                           </div>
                           <div>
-                            <h4 className="text-xs font-bold text-[#2B1B17]">CafloreSupport Agent</h4>
+                            <h4 className="text-xs font-bold text-[#2B1B17]">FleurNotes Support Agent</h4>
                             <span className="text-[10px] text-green-600 font-medium">Online & ready to help</span>
                           </div>
                         </div>
@@ -687,49 +817,6 @@ function ProfileContent() {
                       <RotateCcw className="w-8 h-8 text-gray-300 mx-auto mb-2 animate-spin" style={{ animationDuration: '3s' }} />
                       <p className="text-xs text-gray-500">No active or previous refunds found.</p>
                     </div>
-                  </div>
-                )}
-
-                {activeTab === 'coupons' && (
-                  /* Dynamic Coupons Section */
-                  <div className="bg-white rounded-2xl border border-[#E8DACD] p-6 shadow-sm space-y-4 animate-fadeIn">
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <h3 className="font-semibold text-base text-[#2B1B17]">Available Coupons</h3>
-                        <p className="text-xs text-gray-500">Use these promo codes at checkout to get discounts.</p>
-                      </div>
-                      <span className="text-xs text-gray-400 font-semibold">{coupons.length} {coupons.length === 1 ? 'coupon' : 'coupons'} available</span>
-                    </div>
-
-                    {loadingCoupons ? (
-                      <div className="text-center py-8">
-                        <div className="w-6 h-6 border-2 border-[#7A0C1E] border-t-transparent rounded-full animate-spin mx-auto mb-2" />
-                        <p className="text-xs text-gray-500">Loading coupons...</p>
-                      </div>
-                    ) : coupons.length === 0 ? (
-                      <div className="text-center py-8 bg-[#FAF5EF]/30 rounded-xl border border-dashed border-[#E8DACD]">
-                        <Ticket className="w-8 h-8 text-gray-300 mx-auto mb-2" />
-                        <p className="text-xs text-gray-500 font-medium">No active promo coupons available right now.</p>
-                        <p className="text-[10px] text-gray-400 mt-0.5">Check back later for seasonal discounts and special offers.</p>
-                      </div>
-                    ) : (
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-                        {coupons.map((coupon) => (
-                          <div key={coupon.id} className="border border-dashed border-[#7A0C1E] bg-[#FAF5EF] p-4 rounded-xl space-y-2 relative group hover:border-[#5F0917] transition-colors">
-                            <span className="inline-block bg-[#7A0C1E] text-white text-[10px] font-bold px-2 py-0.5 rounded">
-                              {coupon.discountText}
-                            </span>
-                            <h4 className="font-bold text-sm text-[#2B1B17] tracking-wider font-mono">{coupon.code}</h4>
-                            <p className="text-[10px] text-gray-600 leading-relaxed">{coupon.description}</p>
-                            {coupon.expiryDate && (
-                              <span className="block text-[9px] text-gray-400 font-medium pt-1 border-t border-[#E8DACD]/60">
-                                Expires: {coupon.expiryDate}
-                              </span>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    )}
                   </div>
                 )}
 

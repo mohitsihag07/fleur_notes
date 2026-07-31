@@ -7,7 +7,7 @@ import { AuthProvider } from '@/context/AuthContext';
 import { ShopProvider } from '@/context/ShopContext';
 
 export const metadata = {
-  title: 'Caflore | Beautiful Handmade Things For Every Moment',
+  title: 'Fleur Notes | Beautiful Handmade Things For Every Moment',
   description: 'Discover handcrafted luxury home decor, natural soy candles, artisanal gift hampers, and boutique accessories.',
 };
 

@@ -28,12 +28,19 @@ const getCouponsList = async (req, res) => {
       Coupon.countDocuments({ status: 'expired' })
     ]);
 
-    const rowsWithId = rows.map(c => ({
-      ...c,
-      id: c._id
+    const rowsWithId = await Promise.all(rows.map(async (c) => {
+      const dbUsageCount = await CouponUsage.countDocuments({ coupon_id: c._id });
+      const currentUsed = (c.used_count !== undefined && c.used_count !== null && c.used_count > 0) ? c.used_count : dbUsageCount;
+
+      return {
+        ...c,
+        id: c._id,
+        used_count: currentUsed,
+        usage_count: currentUsed
+      };
     }));
 
-    await logActivity(req.user._id, 'VIEW_COUPONS', 'Fetched list of coupons', req);
+    await logActivity(req.user?._id, 'VIEW_COUPONS', 'Fetched list of coupons', req);
     return helper.success(res, 'Successfully fetched list of coupons', {
       data: rowsWithId,
       meta: { totalItems: count, totalPages: Math.ceil(count / limit), currentPage: page, limit, stats: { totalCoupons, activeCoupons, inactiveCoupons, expiredCoupons } }
@@ -61,8 +68,9 @@ const getCoupon = async (req, res) => {
 
     if (!coupon) return helper.error(res, "Coupon not found", 404);
     const usages = await CouponUsage.find({ coupon_id: coupon._id }).populate('user_id', 'id name email').lean({ virtuals: true });
+    const currentUsed = (coupon.used_count !== undefined && coupon.used_count !== null && coupon.used_count > 0) ? coupon.used_count : usages.length;
     if (req.user) await logActivity(req.user._id, 'VIEW_COUPON', `Coupon viewed for ID ${id}`, req);
-    return helper.success(res, "Coupon found", { ...coupon, id: coupon._id, usages }, 200);
+    return helper.success(res, "Coupon found", { ...coupon, id: coupon._id, used_count: currentUsed, usage_count: currentUsed, usages }, 200);
   } catch (e) { return helper.error(res, "Server error loading coupon", 500); }
 };
 

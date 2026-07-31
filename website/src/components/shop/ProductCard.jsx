@@ -4,36 +4,59 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { Heart, ShoppingBag, Check } from 'lucide-react';
+import { Heart, ShoppingBag, Check, Minus, Plus } from 'lucide-react';
 import { Rating } from '@/components/common/Rating';
 import { formatPrice } from '@/utils/formatPrice';
 
 import { useShop } from '@/context/ShopContext';
 
 export function ProductCard({ product, layout = 'grid' }) {
-  const { toggleWishlist, isInWishlist, addToCart } = useShop();
+  const { toggleWishlist, isInWishlist, addToCart, removeFromCart, updateCartQuantity, getCartItemQuantity, cartCount } = useShop();
   const [isWishlisted, setIsWishlisted] = useState(false);
-  const [isAdded, setIsAdded] = useState(false);
+  const [cartQty, setCartQty] = useState(0);
 
-  const fallbackImg = 'https://images.unsplash.com/photo-1603006905003-be475563bc59?auto=format&fit=crop&q=80&w=600';
-  const [imgSrc, setImgSrc] = useState(product?.image || fallbackImg);
+  const [imgSrc, setImgSrc] = useState(product?.image || extractProductImage(product));
+
+  const pId = product?.id || product?._id;
 
   React.useEffect(() => {
     if (product?.image) {
       setImgSrc(product.image);
     }
-    const pId = product?.id || product?._id;
     if (pId) {
       setIsWishlisted(isInWishlist(pId));
+      if (getCartItemQuantity) {
+        setCartQty(getCartItemQuantity(pId));
+      }
     }
-  }, [product?.image, product?.id, product?._id, isInWishlist]);
+  }, [product?.image, pId, isInWishlist, cartCount, getCartItemQuantity]);
 
-  const handleAddToCart = (e) => {
+  const handleAddToCart = async (e) => {
     e.preventDefault();
     e.stopPropagation();
-    addToCart(product);
-    setIsAdded(true);
-    setTimeout(() => setIsAdded(false), 2000);
+    const newQty = (cartQty || 0) + 1;
+    setCartQty(newQty);
+    await addToCart(product, 1);
+  };
+
+  const handleIncrement = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const newQty = cartQty + 1;
+    setCartQty(newQty);
+    await addToCart(product, 1);
+  };
+
+  const handleDecrement = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const newQty = cartQty - 1;
+    setCartQty(Math.max(0, newQty));
+    if (newQty <= 0) {
+      await removeFromCart(pId);
+    } else {
+      await updateCartQuantity(pId, newQty);
+    }
   };
 
   const handleWishlistToggle = (e) => {
@@ -105,40 +128,56 @@ export function ProductCard({ product, layout = 'grid' }) {
             </div>
 
             {/* Description */}
-            <p className="text-xs text-gray-500 mt-2 line-clamp-2 hidden sm:block">
-              {product.description || 'Artisanal product handcrafted with pure materials and exceptional quality for your boutique collection.'}
-            </p>
+            {product.description && (
+              <p className="text-xs text-gray-500 mt-2 line-clamp-2 hidden sm:block">
+                {product.description}
+              </p>
+            )}
           </div>
 
           {/* Price & Add to Cart Action */}
           <div className="mt-3 flex items-center justify-between pt-2 border-t border-[#F2E6DA]">
-            <div className="flex items-center gap-2">
-              <span className="font-bold text-sm sm:text-base text-[#2B1B17]">
+            <div className="flex flex-col sm:flex-row sm:items-baseline gap-0.5 sm:gap-1 min-w-0 pr-1">
+              <span className="font-bold text-xs sm:text-sm text-[#2B1B17] whitespace-nowrap">
                 {formatPrice(product.price)}
               </span>
               {product.originalPrice && (
-                <span className="text-[10px] sm:text-xs text-gray-400 line-through">
+                <span className="text-[9px] sm:text-[10px] text-gray-400 line-through whitespace-nowrap">
                   {formatPrice(product.originalPrice)}
                 </span>
               )}
             </div>
 
-            <motion.button
-              whileTap={{ scale: 0.92 }}
-              onClick={handleAddToCart}
-              className={`p-2 rounded-lg border transition-all duration-300 ${
-                isAdded
-                  ? 'bg-[#3A7D44] border-[#3A7D44] text-white'
-                  : 'border-[#E8DACD] text-[#2B1B17] hover:bg-[#7A0C1E] hover:border-[#7A0C1E] hover:text-white'
-              }`}
-              aria-label="Add to cart"
-            >
-              {isAdded ? (
-                <Check className="w-3.5 h-3.5" />
-              ) : (
+            {cartQty > 0 ? (
+              <div className="shrink-0 flex items-center bg-[#7A0C1E] text-white rounded-lg overflow-hidden border border-[#7A0C1E]">
+                <button
+                  onClick={handleDecrement}
+                  className="px-1.5 py-1 hover:bg-[#5F0917] transition-colors text-[10px] font-bold flex items-center justify-center cursor-pointer"
+                  aria-label="Decrease quantity"
+                >
+                  <Minus className="w-3 h-3" />
+                </button>
+                <span className="px-1 text-[10px] font-bold min-w-[14px] text-center select-none">
+                  {cartQty}
+                </span>
+                <button
+                  onClick={handleIncrement}
+                  className="px-1.5 py-1 hover:bg-[#5F0917] transition-colors text-[10px] font-bold flex items-center justify-center cursor-pointer"
+                  aria-label="Increase quantity"
+                >
+                  <Plus className="w-3 h-3" />
+                </button>
+              </div>
+            ) : (
+              <motion.button
+                whileTap={{ scale: 0.92 }}
+                onClick={handleAddToCart}
+                className="shrink-0 p-1.5 rounded-lg border border-[#E8DACD] text-[#2B1B17] hover:bg-[#7A0C1E] hover:border-[#7A0C1E] hover:text-white transition-all duration-300 cursor-pointer"
+                aria-label="Add to cart"
+              >
                 <ShoppingBag className="w-3.5 h-3.5" />
-              )}
-            </motion.button>
+              </motion.button>
+            )}
           </div>
         </div>
       </motion.div>
@@ -208,33 +247,47 @@ export function ProductCard({ product, layout = 'grid' }) {
 
         {/* Price & Add to Cart Action */}
         <div className="mt-4 flex items-center justify-between pt-2 border-t border-[#F2E6DA]">
-          <div className="flex items-center gap-2">
-            <span className="font-bold text-base sm:text-lg text-[#2B1B17]">
+          <div className="flex flex-col sm:flex-row sm:items-baseline gap-0.5 sm:gap-1 min-w-0 pr-1">
+            <span className="font-bold text-xs sm:text-sm text-[#2B1B17] whitespace-nowrap">
               {formatPrice(product.price)}
             </span>
             {product.originalPrice && (
-              <span className="text-xs text-gray-400 line-through">
+              <span className="text-[9px] sm:text-[10px] text-gray-400 line-through whitespace-nowrap">
                 {formatPrice(product.originalPrice)}
               </span>
             )}
           </div>
 
-          <motion.button
-            whileTap={{ scale: 0.92 }}
-            onClick={handleAddToCart}
-            className={`p-2.5 rounded-xl border transition-all duration-300 ${
-              isAdded
-                ? 'bg-[#3A7D44] border-[#3A7D44] text-white'
-                : 'border-[#E8DACD] text-[#2B1B17] hover:bg-[#7A0C1E] hover:border-[#7A0C1E] hover:text-white'
-            }`}
-            aria-label="Add to cart"
-          >
-            {isAdded ? (
-              <Check className="w-4 h-4" />
-            ) : (
-              <ShoppingBag className="w-4 h-4" />
-            )}
-          </motion.button>
+          {cartQty > 0 ? (
+            <div className="shrink-0 flex items-center bg-[#7A0C1E] text-white rounded-lg overflow-hidden border border-[#7A0C1E]">
+              <button
+                onClick={handleDecrement}
+                className="px-1.5 py-1 hover:bg-[#5F0917] transition-colors text-[10px] font-bold flex items-center justify-center cursor-pointer"
+                aria-label="Decrease quantity"
+              >
+                <Minus className="w-3 h-3" />
+              </button>
+              <span className="px-1 text-[10px] font-bold min-w-[14px] text-center select-none">
+                {cartQty}
+              </span>
+              <button
+                onClick={handleIncrement}
+                className="px-1.5 py-1 hover:bg-[#5F0917] transition-colors text-[10px] font-bold flex items-center justify-center cursor-pointer"
+                aria-label="Increase quantity"
+              >
+                <Plus className="w-3 h-3" />
+              </button>
+            </div>
+          ) : (
+            <motion.button
+              whileTap={{ scale: 0.92 }}
+              onClick={handleAddToCart}
+              className="shrink-0 p-2 rounded-xl border border-[#E8DACD] text-[#2B1B17] hover:bg-[#7A0C1E] hover:border-[#7A0C1E] hover:text-white transition-all duration-300 cursor-pointer"
+              aria-label="Add to cart"
+            >
+              <ShoppingBag className="w-3.5 h-3.5" />
+            </motion.button>
+          )}
         </div>
       </div>
     </motion.div>

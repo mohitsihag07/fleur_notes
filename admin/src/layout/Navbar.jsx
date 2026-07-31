@@ -618,7 +618,7 @@ const Navbar = () => {
                 {user?.profile_picture ? (
                   <img
                     src={user.profile_picture.startsWith('http') ? user.profile_picture : `http://localhost:3131${user.profile_picture.startsWith('/') ? '' : '/'}${user.profile_picture}`}
-                    alt={user?.name || 'CafloreAdmin'}
+                    alt={user?.name || 'Fleur NotesAdmin'}
                     className="w-10 h-10 rounded-full object-cover border-2 border-[#7A0C1E] shadow-sm group-hover:scale-105 transition-all"
                   />
                 ) : (
@@ -628,7 +628,7 @@ const Navbar = () => {
                 )}
                 <div className="hidden lg:flex flex-col text-left">
                   <span className="text-sm font-black text-gray-800 leading-snug group-hover:text-[#7A0C1E] transition-colors">
-                    {user?.name || 'CafloreAdmin'}
+                    {user?.name || 'Fleur Notes Admin'}
                   </span>
                   <span className="text-xs text-gray-500 capitalize font-medium">
                     {user?.role || 'Admin'}
@@ -643,8 +643,8 @@ const Navbar = () => {
 
                   {/* Dropdown Header Info */}
                   <div className="px-5 py-3 border-b border-[#E8DACD] bg-[#FAF5EF]">
-                    <p className="text-xs font-black text-gray-900 truncate">{user?.name || 'CafloreAdmin'}</p>
-                    <p className="text-[11px] font-semibold text-gray-500 truncate mt-0.5">{user?.email || 'admin@caflore.com'}</p>
+                    <p className="text-xs font-black text-gray-900 truncate">{user?.name}</p>
+                    <p className="text-[11px] font-semibold text-gray-500 truncate mt-0.5">{user?.email}</p>
                     <div className="mt-2 inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#7A0C1E]/20 text-[#7A0C1E] text-[10px] font-black uppercase">
                       <FiShield className="w-3 h-3 text-[#7A0C1E]" />
                       <span>{user?.role || 'Super Admin'}</span>

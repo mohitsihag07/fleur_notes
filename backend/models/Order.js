@@ -17,8 +17,12 @@ const orderSchema = new Schema({
     default: 'pending',
   },
   payment_status: { type: String, enum: ['pending', 'paid', 'failed', 'refunded'], default: 'pending' },
-  payment_method: { type: String, enum: ['razorpay', 'stripe', 'paypal', 'cod', null], default: null },
+  payment_method: { type: String, enum: ['razorpay', 'stripe', 'paypal', 'cod', 'upi', 'card', null], default: null },
   notes: { type: String, default: null },
+  return_type: { type: String, enum: ['return', 'exchange', null], default: null },
+  return_reason: { type: String, default: null },
+  return_notes: { type: String, default: null },
+  return_requested_at: { type: Date, default: null },
   cancelled_at: { type: Date, default: null },
   delivered_at: { type: Date, default: null },
 }, {

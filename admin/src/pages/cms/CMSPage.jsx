@@ -260,7 +260,7 @@ const CMSPage = () => {
                 {/* Page Title */}
                 <div className="space-y-2">
                   <label className="text-xs font-extrabold text-gray-700 uppercase tracking-wider">Page Title <span className="text-red-500">*</span></label>
-                  <input type="text" placeholder="e.g. About Caflore" value={title} onChange={(e) => setTitle(e.target.value)} className="w-full px-5 py-3.5 rounded-2xl bg-[#FAF5EF] text-sm font-extrabold text-gray-900 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all" />
+                  <input type="text" placeholder="e.g. About Fleur Notes" value={title} onChange={(e) => setTitle(e.target.value)} className="w-full px-5 py-3.5 rounded-2xl bg-[#FAF5EF] text-sm font-extrabold text-gray-900 border border-[#E8DACD]/80 focus:outline-none focus:ring-2 focus:ring-[#7A0C1E] transition-all" />
                 </div>
 
                 {/* Banner Image */}

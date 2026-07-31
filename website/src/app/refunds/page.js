@@ -54,7 +54,7 @@ export default function RefundsPage() {
             <div className="space-y-3">
               <h2 className="text-lg font-bold text-[#2B1B17]">2. How to Initiate a Return</h2>
               <p className="text-xs sm:text-sm text-[#705B54] leading-relaxed">
-                To start a return, please reach out to our team at <strong className="text-[#2B1B17]">{contactEmail || 'hello@caflore.com'}</strong> with your order number and reason for return. Our support team will guide you with return authorization instructions and shipping guidance.
+                To start a return, please reach out to our team at <strong className="text-[#2B1B17]">{contactEmail}</strong> with your order number and reason for return. Our support team will guide you with return authorization instructions and shipping guidance.
               </p>
             </div>
 

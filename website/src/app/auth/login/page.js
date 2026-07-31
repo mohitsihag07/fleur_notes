@@ -114,7 +114,7 @@ export default function LoginPage() {
                 <img src={logoUrl} alt={siteName || "Logo"} className="w-full h-full object-contain" />
               </div>
               <span className="font-serif-luxury text-3xl font-bold text-[#2B1B17]">
-                {siteName || 'Caflore'}
+                {siteName || 'Fleur Notes'}
               </span>
             </Link>
 
@@ -132,7 +132,7 @@ export default function LoginPage() {
           <div className="absolute inset-0 z-0">
             <Image
               src="/images/banners/hero_banner.jpg"
-              alt="Caflore Login"
+              alt="Fleur Notes Login"
               fill
               className="object-cover opacity-80"
             />
@@ -176,18 +176,16 @@ export default function LoginPage() {
               <button
                 type="button"
                 onClick={() => { setAuthMode('otp'); setErrorMessage(''); setSuccessMessage(''); }}
-                className={`py-2 rounded-lg transition-all ${
-                  authMode === 'otp' ? 'bg-[#7A0C1E] text-white shadow-xs' : 'text-gray-600 hover:text-[#2B1B17]'
-                }`}
+                className={`py-2 rounded-lg transition-all ${authMode === 'otp' ? 'bg-[#7A0C1E] text-white shadow-xs' : 'text-gray-600 hover:text-[#2B1B17]'
+                  }`}
               >
                 Phone OTP
               </button>
               <button
                 type="button"
                 onClick={() => { setAuthMode('email'); setErrorMessage(''); setSuccessMessage(''); }}
-                className={`py-2 rounded-lg transition-all ${
-                  authMode === 'email' ? 'bg-[#7A0C1E] text-white shadow-xs' : 'text-gray-600 hover:text-[#2B1B17]'
-                }`}
+                className={`py-2 rounded-lg transition-all ${authMode === 'email' ? 'bg-[#7A0C1E] text-white shadow-xs' : 'text-gray-600 hover:text-[#2B1B17]'
+                  }`}
               >
                 Email & Password
               </button>

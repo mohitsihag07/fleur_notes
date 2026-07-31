@@ -91,9 +91,10 @@ export default function ProductDetailPage() {
             }
 
             return {
-              id: p.id,
+              id: p._id || p.id,
+              _id: p._id || p.id,
               name: p.name,
-              slug: p.slug || p.id,
+              slug: p.slug || p._id || p.id,
               price: p.sale_price ? parseFloat(p.sale_price) : parseFloat(p.price || 0),
               originalPrice: p.sale_price ? parseFloat(p.price) : null,
               image: getFormattedImage(imgUrl),
@@ -140,14 +141,14 @@ export default function ProductDetailPage() {
   }, [slug]);
 
   const galleryImages = React.useMemo(() => {
-    if (!product) return ['https://images.unsplash.com/photo-1603006905003-be475563bc59?auto=format&fit=crop&q=80&w=600'];
+    if (!product) return [];
     if (product.images && product.images.length > 0) {
       return product.images.map((imgObj) => getFormattedImage(imgObj.image));
     }
     if (product.image) {
       return [getFormattedImage(product.image)];
     }
-    return ['https://images.unsplash.com/photo-1603006905003-be475563bc59?auto=format&fit=crop&q=80&w=600'];
+    return [];
   }, [product]);
 
   const selectImage = (idx) => {
@@ -227,12 +228,12 @@ export default function ProductDetailPage() {
   });
 
   const specsList = [
-    { label: 'Material', value: 'Ceramic / Stoneware' },
-    { label: 'Color', value: product?.color || 'Beige' },
-    { label: 'Weight', value: product?.weight ? `${product.weight} kg` : '0.45 kg' },
-    { label: 'Dimensions', value: (product?.length || product?.width || product?.height) ? `${product.length || 15} cm (L) × ${product.width || 10} cm (W) × ${product.height || 10} cm (H)` : '15 cm (H) × 10 cm (W)' },
-    { label: 'SKU', value: product?.sku || 'N/A' },
-    { label: 'Category', value: product?.category?.name || 'General' },
+    ...(product?.material ? [{ label: 'Material', value: product.material }] : []),
+    ...(product?.color ? [{ label: 'Color', value: product.color }] : []),
+    ...(product?.weight ? [{ label: 'Weight', value: `${product.weight} kg` }] : []),
+    ...((product?.length || product?.width || product?.height) ? [{ label: 'Dimensions', value: `${product.length || ''} cm (L) × ${product.width || ''} cm (W) × ${product.height || ''} cm (H)` }] : []),
+    ...(product?.sku ? [{ label: 'SKU', value: product.sku }] : []),
+    ...(product?.category?.name ? [{ label: 'Category', value: product.category.name }] : []),
     { label: 'Availability', value: stockQuantity > 0 ? `${stockQuantity} In Stock` : 'Out of stock' }
   ];
 
@@ -272,8 +273,7 @@ export default function ProductDetailPage() {
                       alt="Thumbnail"
                       className="w-full h-full object-cover"
                       onError={(e) => {
-                        e.currentTarget.onerror = null;
-                        e.currentTarget.src = 'https://images.unsplash.com/photo-1603006905003-be475563bc59?auto=format&fit=crop&q=80&w=600';
+                        e.currentTarget.style.display = 'none';
                       }}
                     />
                   </button>
@@ -300,8 +300,7 @@ export default function ProductDetailPage() {
                         alt={product.name}
                         className="w-full h-full object-cover"
                         onError={(e) => {
-                          e.currentTarget.onerror = null;
-                          e.currentTarget.src = 'https://images.unsplash.com/photo-1603006905003-be475563bc59?auto=format&fit=crop&q=80&w=600';
+                          e.currentTarget.style.display = 'none';
                         }}
                       />
                     </div>
@@ -383,25 +382,31 @@ export default function ProductDetailPage() {
                   <span className="font-bold text-[#2B1B17] ml-1">{avgRatingScore}</span>
                   <span className="text-gray-400">({totalReviewsCount} reviews)</span>
                 </div>
-                <span className="text-gray-300">|</span>
-                <span className="text-[#705B54] font-medium font-mono">SKU: {product.sku || 'PRD-CUSTOM'}</span>
+                  {product.sku && (
+                    <>
+                      <span className="text-gray-300">|</span>
+                      <span className="text-[#705B54] font-medium font-mono">SKU: {product.sku}</span>
+                    </>
+                  )}
+                </div>
               </div>
-            </div>
 
-            <div className="flex items-baseline gap-3">
-              <span className="text-3xl font-bold text-[#2B1B17]">
-                {formatPrice(effectivePrice)}
-              </span>
-              {originalPrice && (
-                <span className="text-lg text-gray-400 line-through">
-                  {formatPrice(originalPrice)}
+              <div className="flex items-baseline gap-3">
+                <span className="text-3xl font-bold text-[#2B1B17]">
+                  {formatPrice(effectivePrice)}
                 </span>
-              )}
-            </div>
+                {originalPrice && (
+                  <span className="text-lg text-gray-400 line-through">
+                    {formatPrice(originalPrice)}
+                  </span>
+                )}
+              </div>
 
-            <div>
-              {renderFormattedDescription(product.description || 'Handcrafted artisanal product made with premium materials for your home and lifestyle.')}
-            </div>
+              {product.description && (
+                <div>
+                  {renderFormattedDescription(product.description)}
+                </div>
+              )}
 
             <div className="flex flex-wrap items-center gap-4 py-3 border-y border-[#E8DACD] text-[11px] text-[#705B54]">
               <span className={`flex items-center gap-1 font-bold ${stockQuantity > 0 ? 'text-green-700' : 'text-rose-600'}`}>
@@ -585,7 +590,7 @@ export default function ProductDetailPage() {
                             </p>
                             {rev.admin_reply && (
                               <div className="mt-3 ml-11 p-3 bg-[#FAF5EF] rounded-xl border border-[#E8DACD]/60 text-xs">
-                                <span className="font-bold text-[#7A0C1E] block mb-1">Response from Caflore:</span>
+                                <span className="font-bold text-[#7A0C1E] block mb-1">Response from Fleur Notes:</span>
                                 <p className="text-gray-600">{rev.admin_reply}</p>
                               </div>
                             )}
@@ -613,8 +618,8 @@ export default function ProductDetailPage() {
         <div className="mt-16">
           <h3 className="font-serif-luxury text-2xl sm:text-3xl font-bold text-[#2B1B17] mb-6">You may also like</h3>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6">
-            {relatedProducts.slice(0, 4).map((p) => (
-              <ProductCard key={p.id} product={p} />
+            {relatedProducts.slice(0, 4).map((p, idx) => (
+              <ProductCard key={p._id || p.id || `related-${idx}`} product={p} />
             ))}
           </div>
         </div>

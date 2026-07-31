@@ -495,7 +495,7 @@ const LiveSupportChat = () => {
                             }`}
                         >
                           <div className="font-extrabold text-[10px] opacity-80 mb-0.5">
-                            {isAdmin ? 'CafloreSupport Agent' : msg.sender_name}
+                            {isAdmin ? 'Fleur Notes Support Agent' : msg.sender_name}
                           </div>
                           <p className="whitespace-pre-wrap">{msg.message}</p>
                           <span className={`block text-[9px] text-right mt-1 font-semibold ${isAdmin ? 'text-white/70' : 'text-gray-400'
@@ -517,7 +517,7 @@ const LiveSupportChat = () => {
                   'Hello! How can I assist you today?',
                   'Let me check your order details right away.',
                   'Your request has been processed successfully! 🌸',
-                  'Thank you for reaching out to Caflore Support!'
+                  'Thank you for reaching out to Fleur Notes Support!'
                 ].map((tmpl) => (
                   <button
                     key={tmpl}

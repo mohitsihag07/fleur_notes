@@ -104,9 +104,30 @@ const GetOrder = () => {
     );
   }
 
-  const user = order.user || {};
-  const address = order.address || {};
+  const user = order.user || order.user_id || {};
+  const address = order.address || order.address_id || {};
   const items = order.items || [];
+
+  const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
+  const formatImageUrl = (imgPath) => {
+    if (!imgPath || typeof imgPath !== 'string') return null;
+    if (imgPath.startsWith('http://') || imgPath.startsWith('https://') || imgPath.startsWith('data:')) {
+      return imgPath;
+    }
+    return `${backendUrl}${imgPath.startsWith('/') ? '' : '/'}${imgPath}`;
+  };
+
+  const addressLine1 = address.address_line1 || address.address_line_1 || address.address || address.street || '';
+  const addressLine2 = address.address_line2 || address.address_line_2 || address.landmark || '';
+  const recipientName = address.full_name || address.name || user.name || 'Valued Customer';
+  const recipientPhone = address.phone || user.phone || 'N/A';
+  const city = address.city || '';
+  const state = address.state || '';
+  const pincode = address.pincode || address.pinCode || address.zipCode || '';
+  const label = address.label || address.type || 'HOME';
+
+  const discountVal = parseFloat(order.discount || order.discount_amount || 0);
+  const taxVal = parseFloat(order.tax || order.tax_amount || 0);
 
   return (
     <div className="space-y-6 pb-12">
@@ -145,32 +166,41 @@ const GetOrder = () => {
             <span>Customer Details</span>
           </div>
           <div className="space-y-2 text-xs">
-            <p className="font-black text-gray-900 text-sm">{user.name || 'Guest User'}</p>
+            <p className="font-black text-gray-900 text-sm">{user.name || recipientName}</p>
             <p className="text-gray-500 font-semibold flex items-center gap-2">
               <FiMail className="w-3.5 h-3.5 text-gray-400" />
-              <span>{user.email || 'N/A'}</span>
+              <span>{user.email || 'No Email Registered'}</span>
             </p>
             <p className="text-gray-500 font-semibold flex items-center gap-2">
               <FiPhone className="w-3.5 h-3.5 text-gray-400" />
-              <span>{user.phone || 'N/A'}</span>
+              <span>{recipientPhone}</span>
             </p>
           </div>
         </div>
 
         {/* Shipping Address */}
         <div className="bg-white rounded-3xl p-6 shadow-sm border border-[#E8DACD] space-y-4">
-          <div className="flex items-center gap-3 text-gray-900 font-extrabold text-sm pb-3 border-b border-[#E8DACD]">
-            <FiMapPin className="w-4 h-4 text-[#7A0C1E]" />
-            <span>Shipping Address</span>
+          <div className="flex items-center justify-between pb-3 border-b border-[#E8DACD]">
+            <div className="flex items-center gap-3 text-gray-900 font-extrabold text-sm">
+              <FiMapPin className="w-4 h-4 text-[#7A0C1E]" />
+              <span>Shipping Address</span>
+            </div>
+            {label && (
+              <span className="text-[9px] uppercase font-extrabold tracking-wider px-2 py-0.5 rounded-full bg-[#FAF5EF] text-[#7A0C1E] border border-[#E8DACD]">
+                {label}
+              </span>
+            )}
           </div>
           <div className="space-y-1.5 text-xs text-gray-700 font-semibold leading-relaxed">
-            {address.address_line_1 ? (
+            {addressLine1 || recipientName ? (
               <>
-                <p className="font-bold text-gray-900">{address.name || user.name}</p>
-                <p>{address.address_line_1}</p>
-                {address.address_line_2 && <p>{address.address_line_2}</p>}
-                <p>{address.city}, {address.state} - {address.pincode}</p>
-                <p className="text-gray-400 text-[11px]">Phone: {address.phone || 'N/A'}</p>
+                <p className="font-bold text-gray-900 text-sm">{recipientName}</p>
+                {addressLine1 && <p>{addressLine1}</p>}
+                {addressLine2 && <p>{addressLine2}</p>}
+                {(city || state || pincode) && (
+                  <p>{city}{city && state ? ', ' : ''}{state}{pincode ? ` - ${pincode}` : ''}</p>
+                )}
+                <p className="text-gray-400 text-[11px] pt-1">Phone: {recipientPhone}</p>
               </>
             ) : (
               <p className="text-gray-400 italic">No specific address record attached.</p>
@@ -207,7 +237,7 @@ const GetOrder = () => {
 
             <div>
               <label className="text-[11px] font-extrabold text-gray-400 uppercase tracking-wider">
-                Payment Status
+                Payment Status ({order.payment_method ? order.payment_method.toUpperCase() : 'COD'})
               </label>
               <select
                 value={selectedPaymentStatus}
@@ -261,15 +291,55 @@ const GetOrder = () => {
                 </tr>
               ) : (
                 items.map((item, idx) => {
-                  const productTitle = item.product?.name || item.name || `Product #${item.product_id}`;
-                  const price = parseFloat(item.price || 0);
+                  const productObj = item.product_id && typeof item.product_id === 'object' ? item.product_id : (item.product || {});
+                  const productTitle = item.product_name || productObj.name || item.name || 'Product Item';
+                  const price = parseFloat(item.price || productObj.price || 0);
                   const qty = item.quantity || 1;
-                  const total = price * qty;
+                  const total = item.total ? parseFloat(item.total) : price * qty;
+
+                  let rawImg = item.image || productObj.image || productObj.image_url;
+                  if (!rawImg && Array.isArray(productObj.images) && productObj.images.length > 0) {
+                    rawImg = productObj.images[0]?.url || productObj.images[0];
+                  }
+                  const formattedImg = formatImageUrl(rawImg);
+
+                  const rawTarget = productObj._id || productObj.id || (typeof item.product_id === 'string' ? item.product_id : null);
+                  const targetProductId = rawTarget ? String(rawTarget) : null;
 
                   return (
                     <tr key={idx} className="hover:bg-[#FAF5EF]/40 transition-colors">
-                      <td className="py-4 px-4 font-bold text-gray-900">
-                        {productTitle}
+                      <td className="py-4 px-4 font-bold text-gray-900 flex items-center gap-3">
+                        {formattedImg ? (
+                          <img
+                            src={formattedImg}
+                            alt={productTitle}
+                            onClick={() => targetProductId && navigate(`/products/${targetProductId}`)}
+                            className={`w-12 h-12 object-cover rounded-xl border border-[#E8DACD] ${targetProductId ? 'cursor-pointer hover:opacity-80 transition-opacity' : ''}`}
+                            onError={(e) => { e.target.style.display = 'none'; }}
+                          />
+                        ) : (
+                          <div
+                            onClick={() => targetProductId && navigate(`/products/${targetProductId}`)}
+                            className={`w-12 h-12 bg-[#FAF5EF] rounded-xl border border-[#E8DACD] flex items-center justify-center text-gray-400 shrink-0 ${targetProductId ? 'cursor-pointer hover:bg-[#E8DACD]/50 transition-colors' : ''}`}
+                          >
+                            <FiPackage className="w-5 h-5" />
+                          </div>
+                        )}
+                        <div>
+                          {targetProductId ? (
+                            <button
+                              onClick={() => navigate(`/products/${targetProductId}`)}
+                              className="font-extrabold text-[#2B1B17] hover:text-[#7A0C1E] text-xs sm:text-sm text-left hover:underline cursor-pointer transition-colors block"
+                            >
+                              {productTitle}
+                            </button>
+                          ) : (
+                            <p className="font-extrabold text-[#2B1B17] text-xs sm:text-sm">{productTitle}</p>
+                          )}
+                          {item.product_sku && (
+                            <p className="text-[10px] text-gray-400 font-mono mt-0.5">SKU: {item.product_sku}</p>
+                          )}
+                        </div>
                       </td>
                       <td className="py-4 px-4 font-semibold text-gray-600">
                         ₹{price.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
@@ -290,21 +360,31 @@ const GetOrder = () => {
 
         {/* Order Totals Summary */}
         <div className="pt-4 border-t border-[#E8DACD] flex justify-end">
-          <div className="w-full sm:w-72 bg-[#FAF5EF]/50 border border-[#E8DACD] p-5 rounded-2xl space-y-3 text-xs">
+          <div className="w-full sm:w-80 bg-[#FAF5EF]/50 border border-[#E8DACD] p-5 rounded-2xl space-y-3 text-xs">
             <div className="flex items-center justify-between text-gray-600 font-semibold">
               <span>Subtotal:</span>
               <span>₹{parseFloat(order.subtotal || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
             </div>
-            <div className="flex items-center justify-between text-gray-600 font-semibold">
-              <span>Shipping Fee:</span>
-              <span>₹{parseFloat(order.shipping_charge || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
-            </div>
-            {parseFloat(order.discount_amount || 0) > 0 && (
+            {discountVal > 0 && (
               <div className="flex items-center justify-between text-[#1E7741] font-semibold">
-                <span>Discount:</span>
-                <span>-₹{parseFloat(order.discount_amount || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
+                <span>Coupon Discount:</span>
+                <span>-₹{discountVal.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
               </div>
             )}
+            {taxVal > 0 && (
+              <div className="flex items-center justify-between text-gray-600 font-semibold">
+                <span>Tax:</span>
+                <span>+₹{taxVal.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
+              </div>
+            )}
+            <div className="flex items-center justify-between text-gray-600 font-semibold">
+              <span>Shipping Charge:</span>
+              <span>
+                {parseFloat(order.shipping_charge || 0) > 0
+                  ? `₹${parseFloat(order.shipping_charge).toLocaleString('en-IN', { minimumFractionDigits: 2 })}`
+                  : 'Free'}
+              </span>
+            </div>
             <div className="flex items-center justify-between text-gray-900 font-black text-sm pt-2 border-t border-[#E8DACD]">
               <span>Grand Total:</span>
               <span className="text-[#7A0C1E]">₹{parseFloat(order.grand_total || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>

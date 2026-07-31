@@ -123,4 +123,10 @@ const getProduct = async (req, res) => {
   } catch (e) { console.error("Error loading product:", e); return helper.error(res, "Server error loading product", 500); }
 };
 
-module.exports = { featuredProducts, bestsellerProducts, newProducts, getProductsList, getProduct };
+module.exports = {
+  featuredProducts,
+  bestsellerProducts,
+  newProducts,
+  getProductsList,
+  getProduct
+};

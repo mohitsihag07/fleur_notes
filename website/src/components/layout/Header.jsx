@@ -85,7 +85,7 @@ export function Header() {
                 <img src={logoUrl} alt={siteName || "Logo"} className="w-full h-full object-contain" />
               </div>
               <span className="font-serif-luxury text-lg sm:text-2xl lg:text-3xl font-semibold tracking-tight text-[#2B1B17]">
-                {siteName || 'Caflore'}
+                {siteName}
               </span>
             </Link>
 
@@ -228,7 +228,7 @@ export function Header() {
           <Menu className="w-4 h-4 text-[#7A0C1E]" />
           <span>Menu</span>
         </button>
-        <span className="text-[11px] font-medium text-[#705B54]">Explore Caflore</span>
+        <span className="text-[11px] font-medium text-[#705B54]">Explore {siteName}</span>
       </div>
 
       {/* Mobile Sidebar Drawer - Account & Support Details Only */}

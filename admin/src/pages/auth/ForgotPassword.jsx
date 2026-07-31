@@ -215,7 +215,7 @@ const ForgotPassword = () => {
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-[#7A0C1E] p-0.5 shadow-md border border-[#F2E6DA] overflow-hidden shrink-0">
-                <img src={logoUrl} alt="Caflore Logo" className="w-full h-full object-cover rounded-lg" />
+                <img src={logoUrl} alt="Fleur Notes Logo" className="w-full h-full object-cover rounded-lg" />
               </div>
               <div className="flex flex-col">
                 <span className="font-serif font-black text-xl tracking-wider text-[#7A0C1E] uppercase">
@@ -271,7 +271,7 @@ const ForgotPassword = () => {
                       id="email"
                       type="text"
                       autoComplete="username"
-                      placeholder="admin@caflore.com"
+                      placeholder="admin@fleur.com"
                       className={`w-full px-4 py-3 rounded-xl bg-gray-50 text-gray-900 text-sm border transition-all outline-none pl-10 ${
                         errors.email 
                           ? 'border-red-500 focus:ring-2 focus:ring-red-400' 

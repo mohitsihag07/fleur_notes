@@ -23,27 +23,27 @@ const useSettingsStore = create((set, get) => ({
 
   getSiteName: () => {
     const { settings } = get();
-    return settings?.site_name || 'Caflore';
+    return settings?.site_name;
   },
 
   getTagline: () => {
     const { settings } = get();
-    return settings?.site_tagline || 'Coffee • Flowers • Gifts';
+    return settings?.site_tagline;
   },
 
   getContactEmail: () => {
     const { settings } = get();
-    return settings?.contact_email || 'hello@caflore.com';
+    return settings?.contact_email;
   },
 
   getContactPhone: () => {
     const { settings } = get();
-    return settings?.contact_phone || '+1 (800) 555-0199';
+    return settings?.contact_phone;
   },
 
   getStoreAddress: () => {
     const { settings } = get();
-    return settings?.store_address || '123 Blossom Avenue, Suite 400, New York, NY 10001';
+    return settings?.store_address;
   },
 
   getInstagramUrl: () => {
