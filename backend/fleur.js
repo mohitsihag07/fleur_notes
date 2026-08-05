@@ -24,12 +24,14 @@ const allowedOrigins = [
   "http://localhost:3000",
   "http://localhost:5173",
   "https://fleur-notes-kczwikjej-mohit-sihag.vercel.app",
-  "https://fleur-notes-admin.vercel.app"
+  "https://fleur-notes-admin.vercel.app",
+  "https://fleur-notes-admin.onrender.com",
+  "https://fleur-notes-website.onrender.com"
 ];
 
 app.use(cors({
   origin(origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
+    if (!origin || allowedOrigins.includes(origin) || origin.endsWith('.onrender.com') || origin.endsWith('.vercel.app')) {
       callback(null, true);
     } else {
       callback(new Error("Not allowed by CORS"));
