@@ -48,12 +48,12 @@ const placeOrder = async (req, res) => {
         user_id: userId,
         full_name: new_address.fullName || new_address.name || req.user.name || 'Valued Customer',
         phone: new_address.phone || req.user.phone || '+91 98765 43210',
-        address_line1: new_address.addressLine1 || new_address.address,
+        address_line1: new_address.addressLine1 || new_address.address || 'Standard Address',
         address_line2: new_address.addressLine2 || new_address.landmark || null,
-        city: new_address.city,
-        state: new_address.state,
-        pincode: new_address.pincode || new_address.pinCode,
-        country: 'India',
+        city: new_address.city || 'Kolkata',
+        state: new_address.state || 'West Bengal',
+        pincode: new_address.pincode || new_address.pinCode || '700016',
+        country: new_address.country || 'India',
         label: (new_address.label || new_address.type || 'home').toLowerCase()
       });
       targetAddressId = createdAddr._id;
@@ -66,8 +66,8 @@ const placeOrder = async (req, res) => {
       } else {
         const createdFallback = await UserAddress.create({
           user_id: userId,
-          full_name: req.user.name || 'Valued Customer',
-          phone: req.user.phone || '+91 98765 43210',
+          full_name: req.user?.name || 'Valued Customer',
+          phone: req.user?.phone || '+91 98765 43210',
           address_line1: '402, Royal Residency, Park Street',
           address_line2: 'Near Central Mall',
           city: 'Kolkata',
