@@ -21,7 +21,7 @@ export function Hero() {
         if (fetchedBanners && fetchedBanners.length > 0) {
           const backendUrl = getBackendURL();
           const mapped = fetchedBanners.map((b) => {
-            let imgUrl = b.image || '/images/banners/hero_banner.jpg';
+            let imgUrl = b.image || '';
             if (imgUrl.includes('localhost:') || imgUrl.includes('127.0.0.1:')) {
               try {
                 const urlObj = new URL(imgUrl);

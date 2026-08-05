@@ -21,14 +21,7 @@ export function Categories() {
           const backendUrl = getBackendURL();
           const formatted = cats.map((c, idx) => {
             let img = c.image || '';
-            if (!img) {
-              const nameLower = (c.name || '').toLowerCase();
-              if (nameLower.includes('bouquet') || nameLower.includes('flower')) img = '/images/categories/home_decor.jpg';
-              else if (nameLower.includes('combo')) img = '/images/categories/accessories.jpg';
-              else if (nameLower.includes('candle')) img = '/images/categories/candles.jpg';
-              else if (nameLower.includes('hamper') || nameLower.includes('gift')) img = '/images/categories/gifts.jpg';
-              else img = '/images/categories/home_decor.jpg';
-            } else if (!img.startsWith('http') && !img.startsWith('data:')) {
+            if (img && !img.startsWith('http') && !img.startsWith('data:')) {
               if (img.startsWith('/images/') || img.startsWith('images/')) {
                 const path = img.startsWith('/') ? img : `/${img}`;
                 img = `${backendUrl}${path}`;

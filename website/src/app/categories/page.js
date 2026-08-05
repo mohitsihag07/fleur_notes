@@ -54,10 +54,10 @@ export default function CategoriesPage() {
   const [categoriesList, setCategoriesList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [banner, setBanner] = useState({
-    title: 'Explore Our Categories',
-    description: 'Handpicked collections crafted with love, just for you.',
-    tagline: 'BROWSE CATEGORIES',
-    image: '/images/banners/hero_banner.jpg'
+    title: '',
+    description: '',
+    tagline: '',
+    image: ''
   });
 
   useEffect(() => {
@@ -67,7 +67,7 @@ export default function CategoriesPage() {
         if (fetchedBanners && fetchedBanners.length > 0) {
           const b = fetchedBanners[0];
           const backendUrl = getBackendURL();
-          let imgUrl = b.image || '/images/banners/hero_banner.jpg';
+          let imgUrl = b.image || '';
           if (imgUrl.includes('localhost:') || imgUrl.includes('127.0.0.1:')) {
             try {
               const urlObj = new URL(imgUrl);

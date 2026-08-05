@@ -23,10 +23,10 @@ export default function ContactPage() {
   const [submitted, setSubmitted] = useState(false);
 
   const [banner, setBanner] = useState({
-    title: "Let's Create Something Beautiful Together",
-    description: "Have a question, need help, or just want to say hello? We're here for you.",
-    tagline: "WE'D LOVE TO HEAR FROM YOU",
-    image: '/images/banners/hero_banner.jpg'
+    title: '',
+    description: '',
+    tagline: '',
+    image: ''
   });
 
   useEffect(() => {
@@ -36,7 +36,7 @@ export default function ContactPage() {
         if (fetchedBanners && fetchedBanners.length > 0) {
           const b = fetchedBanners[0];
           const backendUrl = getBackendURL();
-          let imgUrl = b.image || '/images/banners/hero_banner.jpg';
+          let imgUrl = b.image || '';
           if (imgUrl.includes('localhost:') || imgUrl.includes('127.0.0.1:')) {
             try {
               const urlObj = new URL(imgUrl);

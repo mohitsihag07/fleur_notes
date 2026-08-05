@@ -27,10 +27,10 @@ function ShopContent() {
   const [filters, setFilters] = useState({ colors: [], priceRange: null, minRating: 0 });
 
   const [banner, setBanner] = useState({
-    title: 'Shop Our Collection',
-    description: 'Handcrafted with love, made for you.',
+    title: '',
+    description: '',
     tagline: '',
-    image: '/images/banners/hero_banner.jpg'
+    image: ''
   });
 
   // Read URL params (category, type, filter, page) on load / change
@@ -111,7 +111,7 @@ function ShopContent() {
         if (fetchedBanners && fetchedBanners.length > 0) {
           const b = fetchedBanners[0];
           const backendUrl = getBackendURL();
-          let imgUrl = b.image || '/images/banners/hero_banner.jpg';
+          let imgUrl = b.image || '';
           if (imgUrl.includes('localhost:') || imgUrl.includes('127.0.0.1:')) {
             try {
               const urlObj = new URL(imgUrl);
