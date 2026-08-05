@@ -81,14 +81,19 @@ const getProductsList = async (req, res) => {
     if (category_id) {
       query.category_id = category_id;
     } else if (category_slug && category_slug !== 'all') {
-      const cat = await Category.findOne({
-        $or: [
-          { slug: category_slug },
-          { name: { $regex: `^${category_slug}$`, $options: 'i' } }
-        ]
-      });
+      const isObjectId = /^[0-9a-fA-F]{24}$/.test(category_slug);
+      const catConditions = [
+        { slug: category_slug },
+        { name: { $regex: `^${category_slug}$`, $options: 'i' } }
+      ];
+      if (isObjectId) {
+        catConditions.push({ _id: category_slug });
+      }
+      const cat = await Category.findOne({ $or: catConditions });
       if (cat) {
         query.category_id = cat._id;
+      } else if (isObjectId) {
+        query.category_id = category_slug;
       }
     }
 

@@ -66,7 +66,7 @@ function ShopContent() {
     if (searchQuery) {
       params.set('search', searchQuery);
     }
-    if (newCategory) {
+    if (newCategory && newCategory !== 'all') {
       const isType = ['featured', 'bestsellers', 'best-sellers', 'new-arrivals'].includes(newCategory);
       if (isType) {
         params.set('type', newCategory);
@@ -363,56 +363,72 @@ function ShopContent() {
               </div>
 
               {/* Product Grid / List container */}
-              {loadingProducts ? (
-                <div className="flex items-center justify-center py-16 text-[#7A0C1E]">
-                  <Loader2 className="w-6 h-6 animate-spin mr-2" />
-                  <span className="text-sm font-bold">Loading Products...</span>
-                </div>
-              ) : products.length === 0 ? (
-                <div className="text-center py-16 text-[#705B54]">
-                  <p className="text-base font-semibold">No products found matching your selection.</p>
-                </div>
-              ) : (
-                <div className={viewMode === 'grid'
-                  ? "grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6"
-                  : "flex flex-col gap-4"
-                }>
-                  {products
-                    .filter((product) => {
-                      // ── Price range filter ──
-                      if (filters.priceRange) {
-                        const { min, max } = filters.priceRange;
-                        if (min > 0 || max < 10000) {
-                          if (product.price < min || product.price > max) return false;
-                        }
+              {(() => {
+                const displayedProducts = products
+                  .filter((product) => {
+                    if (filters.priceRange) {
+                      const { min, max } = filters.priceRange;
+                      const price = Number(product.price) || 0;
+                      if (min > 0 || max < 10000) {
+                        if (price < min || price > max) return false;
                       }
+                    }
+                    if (filters.minRating > 0) {
+                      if ((product.rating || 0) < filters.minRating) return false;
+                    }
+                    if (filters.colors && filters.colors.length > 0) {
+                      const productColor = (product.color || product.colour || '').toLowerCase();
+                      const matched = filters.colors.some(c => productColor.includes(c.toLowerCase()));
+                      if (!matched) return false;
+                    }
+                    return true;
+                  })
+                  .sort((a, b) => {
+                    if (sortBy === 'price-low')  return (Number(a.price) || 0) - (Number(b.price) || 0);
+                    if (sortBy === 'price-high') return (Number(b.price) || 0) - (Number(a.price) || 0);
+                    if (sortBy === 'newest')     return (b.isNew ? 1 : 0) - (a.isNew ? 1 : 0);
+                    if (sortBy === 'popular')    return (b.isBestSeller ? 1 : 0) - (a.isBestSeller ? 1 : 0);
+                    return 0;
+                  });
 
-                      // ── Rating filter ──
-                      if (filters.minRating > 0) {
-                        if ((product.rating || 0) < filters.minRating) return false;
-                      }
+                if (loadingProducts) {
+                  return (
+                    <div className="flex items-center justify-center py-16 text-[#7A0C1E]">
+                      <Loader2 className="w-6 h-6 animate-spin mr-2" />
+                      <span className="text-sm font-bold">Loading Products...</span>
+                    </div>
+                  );
+                }
 
-                      // ── Color filter ──
-                      if (filters.colors && filters.colors.length > 0) {
-                        const productColor = (product.color || product.colour || '').toLowerCase();
-                        const matched = filters.colors.some(c => productColor.includes(c.toLowerCase()));
-                        if (!matched) return false;
-                      }
+                if (displayedProducts.length === 0) {
+                  return (
+                    <div className="bg-white/70 rounded-2xl border border-[#E8DACD] p-8 text-center space-y-3">
+                      <p className="text-sm font-bold text-[#2B1B17]">No products found matching your selection.</p>
+                      <p className="text-xs text-[#705B54]">Try clearing your active filters or exploring all products.</p>
+                      <button
+                        onClick={() => {
+                          setFilters({ colors: [], priceRange: null, minRating: 0 });
+                          handleCategorySelect('all');
+                        }}
+                        className="px-5 py-2.5 bg-[#7A0C1E] text-white text-xs font-bold rounded-xl hover:bg-[#5F0917] transition-all cursor-pointer shadow-xs inline-block"
+                      >
+                        View All Products
+                      </button>
+                    </div>
+                  );
+                }
 
-                      return true;
-                    })
-                    .sort((a, b) => {
-                      if (sortBy === 'price-low')  return a.price - b.price;
-                      if (sortBy === 'price-high') return b.price - a.price;
-                      if (sortBy === 'newest')     return (b.isNew ? 1 : 0) - (a.isNew ? 1 : 0);
-                      if (sortBy === 'popular')    return (b.isBestSeller ? 1 : 0) - (a.isBestSeller ? 1 : 0);
-                      return 0;
-                    })
-                    .map((product, idx) => (
+                return (
+                  <div className={viewMode === 'grid'
+                    ? "grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6"
+                    : "flex flex-col gap-4"
+                  }>
+                    {displayedProducts.map((product, idx) => (
                       <ProductCard key={product.id || product._id || `prod-${idx}`} product={product} layout={viewMode} />
                     ))}
-                </div>
-              )}
+                  </div>
+                );
+              })()}
 
               {/* Dynamic Pagination Controls */}
               {meta.totalPages > 1 && (
