@@ -221,6 +221,7 @@ export function Header() {
               </Link>
             </div>
           </div>
+        </div>
       </header>
 
       {/* 3-Line Menu Bar (Shown ONLY on Profile / Account page) */}
