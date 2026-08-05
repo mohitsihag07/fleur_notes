@@ -49,7 +49,12 @@ const getProductsList = async (req, res) => {
     const skip = (page - 1) * limit;
 
     const query = {};
-    if (status) query.status = status;
+    if (status === 'active' || !status) {
+      query.status = { $ne: 'inactive' };
+      query.deleted_at = { $in: [null, undefined] };
+    } else {
+      query.status = status;
+    }
 
     if (search) {
       const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
