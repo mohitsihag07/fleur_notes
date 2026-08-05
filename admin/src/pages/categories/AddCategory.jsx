@@ -9,7 +9,9 @@ import {
   FiActivity,
   FiUploadCloud,
   FiImage,
-  FiX
+  FiX,
+  FiRefreshCw,
+  FiTrash2
 } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import ApiInstance from '../../utils/ApiInstance';
@@ -143,20 +145,35 @@ const AddCategory = () => {
             </label>
 
             {imagePreview ? (
-              <div className="relative w-full sm:w-72 h-44 rounded-2xl overflow-hidden border-2 border-[#7A0C1E] shadow-md group">
-                <img
-                  src={imagePreview}
-                  alt="Category Preview"
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+              <div className="space-y-3">
+                <div className="relative w-full sm:w-72 h-48 rounded-2xl overflow-hidden border-2 border-[#7A0C1E] shadow-md bg-[#FAF5EF]">
+                  <img
+                    src={imagePreview}
+                    alt="Category Preview"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+
+                {/* Mobile & Desktop Accessible Action Buttons */}
+                <div className="flex flex-wrap items-center gap-2.5">
+                  <label className="inline-flex items-center gap-2 px-4 py-2.5 bg-[#FAF5EF] hover:bg-[#E8DACD]/60 text-[#7A0C1E] border border-[#E8DACD] rounded-xl text-xs font-bold transition-all cursor-pointer shadow-xs active:scale-95">
+                    <FiRefreshCw className="w-4 h-4 text-[#7A0C1E]" />
+                    <span>Replace / Change Image</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleFileChange}
+                      className="hidden"
+                    />
+                  </label>
+
                   <button
                     type="button"
                     onClick={handleRemoveImage}
-                    className="p-2.5 rounded-full bg-red-500 text-white hover:bg-red-600 transition-all cursor-pointer shadow-lg"
-                    title="Remove Image"
+                    className="inline-flex items-center gap-2 px-4 py-2.5 bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 rounded-xl text-xs font-bold transition-all cursor-pointer shadow-xs active:scale-95"
                   >
-                    <FiX className="w-5 h-5" />
+                    <FiTrash2 className="w-4 h-4 text-red-600" />
+                    <span>Remove Image</span>
                   </button>
                 </div>
               </div>
