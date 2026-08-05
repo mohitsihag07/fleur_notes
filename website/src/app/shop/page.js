@@ -33,6 +33,8 @@ function ShopContent() {
     image: ''
   });
 
+  const searchQuery = (searchParams.get('search') || searchParams.get('q') || '').trim();
+
   // Read URL params (category, type, filter, page) on load / change
   useEffect(() => {
     const cat = searchParams.get('category');
@@ -61,7 +63,10 @@ function ShopContent() {
   // Helper to update URL query params when page or category changes
   const updateUrlParams = (newCategory, newPage) => {
     const params = new URLSearchParams();
-    if (newCategory && newCategory !== 'all') {
+    if (searchQuery) {
+      params.set('search', searchQuery);
+    }
+    if (newCategory) {
       const isType = ['featured', 'bestsellers', 'best-sellers', 'new-arrivals'].includes(newCategory);
       if (isType) {
         params.set('type', newCategory);
@@ -94,16 +99,19 @@ function ShopContent() {
       setLoadingProducts(true);
       try {
         const isType = ['featured', 'bestsellers', 'new-arrivals'].includes(activeCategory);
-        const categoryParam = activeCategory !== 'all' && !isType ? activeCategory : '';
+        const isAll = !activeCategory || activeCategory === 'all';
+        const categoryParam = !isAll && !isType ? activeCategory : '';
         const typeParam = isType ? activeCategory : '';
+        const fetchLimit = isAll || searchQuery ? 1000 : 20;
 
         const [fetchedBanners, response] = await Promise.all([
           bannerService.getBanners({ limit: 1, type: 'shop' }),
           productService.getProducts({
             page: currentPage,
-            limit: 20,
+            limit: fetchLimit,
             category: categoryParam,
             type: typeParam,
+            search: searchQuery,
             status: 'active'
           })
         ]);
@@ -179,7 +187,7 @@ function ShopContent() {
       }
     }
     loadShopData();
-  }, [currentPage, activeCategory]);
+  }, [currentPage, activeCategory, searchQuery]);
 
   return (
     <div className="bg-[#FAF5EF] min-h-screen">

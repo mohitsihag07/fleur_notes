@@ -41,7 +41,7 @@ const getProductsList = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 20;
-    const search = req.query.search || '';
+    const search = (req.query.search || req.query.q || '').trim();
     const status = req.query.status || 'active';
     const category_id = req.query.category_id || '';
     const category_slug = req.query.category || req.query.category_slug || '';
@@ -50,7 +50,33 @@ const getProductsList = async (req, res) => {
 
     const query = {};
     if (status) query.status = status;
-    if (search) query.$or = [{ name: { $regex: search, $options: 'i' } }, { slug: { $regex: search, $options: 'i' } }, { sku: { $regex: search, $options: 'i' } }];
+
+    if (search) {
+      const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const searchRegex = new RegExp(escapeRegex(search), 'i');
+
+      const matchedCats = await Category.find({
+        $or: [
+          { name: searchRegex },
+          { slug: searchRegex }
+        ]
+      }).select('_id');
+      const matchedCatIds = matchedCats.map(c => c._id);
+
+      const searchOr = [
+        { name: searchRegex },
+        { slug: searchRegex },
+        { sku: searchRegex },
+        { description: searchRegex },
+        { color: searchRegex }
+      ];
+
+      if (matchedCatIds.length > 0) {
+        searchOr.push({ category_id: { $in: matchedCatIds } });
+      }
+
+      query.$or = searchOr;
+    }
 
     if (category_id) {
       query.category_id = category_id;
