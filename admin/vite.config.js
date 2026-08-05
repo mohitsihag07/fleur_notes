@@ -7,5 +7,8 @@ export default defineConfig({
   plugins: [react(), tailwindcss()],
   server: {
     open: '/admin/login',
+  },
+  preview: {
+    allowedHosts: true
   }
 })
